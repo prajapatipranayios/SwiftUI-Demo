@@ -1,4 +1,11 @@
 //
+//  SideMenuView.swift
+//  GEClone-UI
+//
+//  Created by Auxano on 18/10/24.
+//
+
+//
 //  Sidebar.swift
 //  ExSwiftUI1
 //
@@ -66,7 +73,7 @@ var profileActions: [MenuItem] = [
              text: "Logout"),
 ]
 
-struct SideMenu: View {
+struct SideMenuView: View {
     @Binding var isSidebarVisible: Bool
     var sideBarWidth = UIScreen.main.bounds.size.width * 0.6
     var bgColor: Color = Color(.init(
