@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		12AC432A2CC66A8E00469F55 /* DashboardItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AC43292CC66A8E00469F55 /* DashboardItemView.swift */; };
+		12AC432D2CC66D2E00469F55 /* DashboardItemView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AC432C2CC66D2E00469F55 /* DashboardItemView2.swift */; };
 		12DECEBC2CC2451300AAB6D4 /* GEClone_UIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DECEBB2CC2451300AAB6D4 /* GEClone_UIApp.swift */; };
 		12DECEBE2CC2451300AAB6D4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DECEBD2CC2451300AAB6D4 /* ContentView.swift */; };
 		12DECEC02CC2451500AAB6D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12DECEBF2CC2451500AAB6D4 /* Assets.xcassets */; };
@@ -19,6 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		12AC43292CC66A8E00469F55 /* DashboardItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardItemView.swift; sourceTree = "<group>"; };
+		12AC432C2CC66D2E00469F55 /* DashboardItemView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardItemView2.swift; sourceTree = "<group>"; };
 		12DECEB82CC2451300AAB6D4 /* GEClone-UI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GEClone-UI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12DECEBB2CC2451300AAB6D4 /* GEClone_UIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEClone_UIApp.swift; sourceTree = "<group>"; };
 		12DECEBD2CC2451300AAB6D4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -42,6 +46,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		12AC432B2CC66CB800469F55 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				12DECEC92CC24BD700AAB6D4 /* LoginView.swift */,
+				12DECECB2CC24C0600AAB6D4 /* HomeView.swift */,
+				12AC43292CC66A8E00469F55 /* DashboardItemView.swift */,
+				12AC432C2CC66D2E00469F55 /* DashboardItemView2.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		12DECEAF2CC2451300AAB6D4 = {
 			isa = PBXGroup;
 			children = (
@@ -63,8 +78,7 @@
 			children = (
 				12DECEBB2CC2451300AAB6D4 /* GEClone_UIApp.swift */,
 				12DECEBD2CC2451300AAB6D4 /* ContentView.swift */,
-				12DECEC92CC24BD700AAB6D4 /* LoginView.swift */,
-				12DECECB2CC24C0600AAB6D4 /* HomeView.swift */,
+				12AC432B2CC66CB800469F55 /* View */,
 				12DECECD2CC26EA400AAB6D4 /* SideMenuView.swift */,
 				12DECECF2CC26FAA00AAB6D4 /* ProfileView.swift */,
 				12DECED12CC26FC400AAB6D4 /* SettingsView.swift */,
@@ -156,8 +170,10 @@
 				12DECECA2CC24BD700AAB6D4 /* LoginView.swift in Sources */,
 				12DECECC2CC24C0600AAB6D4 /* HomeView.swift in Sources */,
 				12DECECE2CC26EA400AAB6D4 /* SideMenuView.swift in Sources */,
+				12AC432A2CC66A8E00469F55 /* DashboardItemView.swift in Sources */,
 				12DECEBE2CC2451300AAB6D4 /* ContentView.swift in Sources */,
 				12DECED02CC26FAA00AAB6D4 /* ProfileView.swift in Sources */,
+				12AC432D2CC66D2E00469F55 /* DashboardItemView2.swift in Sources */,
 				12DECEBC2CC2451300AAB6D4 /* GEClone_UIApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
