@@ -16,7 +16,8 @@ struct ContentView: View {
        var body: some View {
            Group {
                if loginManager.isLoggedIn {
-                   HomeView() // Shows the HomeView with side menu after login
+                   //HomeView() // Shows the HomeView with side menu after login
+                   Dashboard() // Shows the HomeView with side menu after login
                } else {
                    LoginView() // Shows the login screen
                }

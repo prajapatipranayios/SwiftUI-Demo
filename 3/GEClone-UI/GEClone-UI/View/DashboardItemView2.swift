@@ -11,7 +11,7 @@ struct DashboardItemView2: View {
     var label: String
     var count: String
     var iconName: String
-    let destination: () -> AnyView
+    //let destination: () -> AnyView
     
     var body: some View {
         var strText: String
@@ -59,9 +59,9 @@ struct DashboardItemView2: View {
         //.background(Color.pink.opacity(0.4))
         .cornerRadius(12)
         //.shadow(color: .gray, radius: 1, x: 0, y: 2)
-        .onTapGesture {
-            destination()
-        }
+//        .onTapGesture {
+//            destination()
+//        }
     }
 }
 

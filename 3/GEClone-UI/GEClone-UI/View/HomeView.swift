@@ -82,17 +82,7 @@ struct HomeView: View {
             LazyVGrid(columns: columns, spacing: 20) {
                 ForEach(items_1, id: \.0) { item in
                     if item.3 == "1" {
-                        DashboardItemView(label: item.0, count: item.1, iconName: item.2) {
-                            AnyView {
-                                if item.0 == "Item 1" {
-                                    print("Item --> \(item.0)")
-                                } else if item.0 == "Item 2" {
-                                    print("Item --> \(item.0)")
-                                } else {
-                                    print("Item --> \(item.0)")
-                                }
-                            }
-                        }
+                        DashboardItemView(label: item.0, count: item.1, iconName: item.2)
                     }
                 }
             }
@@ -101,9 +91,7 @@ struct HomeView: View {
             LazyVGrid(columns: columns2, spacing: 20) {
                 ForEach(items_2, id: \.0) { item in
                     if item.3 == "1" {
-                        DashboardItemView2(label: item.0, count: item.1, iconName: item.2) {
-                            
-                        }
+                        DashboardItemView2(label: item.0, count: item.1, iconName: item.2)
                     }
                 }
             }
