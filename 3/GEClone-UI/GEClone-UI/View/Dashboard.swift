@@ -141,7 +141,7 @@ struct Dashboard: View {
                             .frame(width: (UIScreen.main.bounds.width - 60) / 2, height: 95)
                             .background(Color.white)
                             .cornerRadius(12)
-                            .shadow(radius: 2)
+                            .shadow(radius: 1)
                         }
                     }
                 }
@@ -161,7 +161,7 @@ struct Dashboard: View {
                             VStack(alignment: .leading) {
                                 Image(item.iconName)
                                     .resizable()
-                                    .frame(width: 65, height: 65)
+                                    .frame(width: 70, height: 70)
                                     .padding(.bottom, 0)
                                     .padding(.leading, 8)
                                     .padding(.top, 0)
@@ -183,7 +183,7 @@ struct Dashboard: View {
                             }
                             .frame(width: (UIScreen.main.bounds.width - 80) / 3, height: 110)
                             .background(Color.white)
-                            .cornerRadius(10)
+                            //.cornerRadius(10)
                             //.shadow(radius: 5)
                         }
                     }
