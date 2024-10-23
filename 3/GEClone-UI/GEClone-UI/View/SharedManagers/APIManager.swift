@@ -30,19 +30,13 @@ class APIManager {
     //var authToken: String = (Utilities.MD5(string: "GE@!23")).map { String(format: "%02hhx", $0) }.joined()
     var authToken: String = ""
     var userId: Int = 0
-    var userDetail: UserDetail?
     
     var isSideMenuLoad: Bool = false
     
     var isRefreshData: Bool = false
     
     var companyType: Int? = 1
-    var arrBranches: [Branch]? = []
     var isCommissionActive: Bool = false
-    
-    // Expense
-    var arrExpenseCategory: [ExpensesCategory]? = []
-    var arrTravelMode: [TravelMode]? = []
     
     
     
