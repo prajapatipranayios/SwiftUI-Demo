@@ -13,8 +13,7 @@
 		12AC432D2CC66D2E00469F55 /* DashboardItemView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AC432C2CC66D2E00469F55 /* DashboardItemView2.swift */; };
 		12D619E92CC90E3B006072B3 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D619E82CC90E3A006072B3 /* APIManager.swift */; };
 		12D619EC2CC912CE006072B3 /* ApiResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D619EB2CC912CE006072B3 /* ApiResponse.swift */; };
-		12D619EF2CC918D1006072B3 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D619EE2CC918D1006072B3 /* ToastView.swift */; };
-		12D619F22CC92598006072B3 /* ToastViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D619F12CC92598006072B3 /* ToastViewRepresentable.swift */; };
+		12D619F22CC92598006072B3 /* ToastMessageUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D619F12CC92598006072B3 /* ToastMessageUI.swift */; };
 		12DECEBC2CC2451300AAB6D4 /* GEClone_UIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DECEBB2CC2451300AAB6D4 /* GEClone_UIApp.swift */; };
 		12DECEBE2CC2451300AAB6D4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DECEBD2CC2451300AAB6D4 /* ContentView.swift */; };
 		12DECEC02CC2451500AAB6D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12DECEBF2CC2451500AAB6D4 /* Assets.xcassets */; };
@@ -33,8 +32,7 @@
 		12AC432C2CC66D2E00469F55 /* DashboardItemView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardItemView2.swift; sourceTree = "<group>"; };
 		12D619E82CC90E3A006072B3 /* APIManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		12D619EB2CC912CE006072B3 /* ApiResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiResponse.swift; sourceTree = "<group>"; };
-		12D619EE2CC918D1006072B3 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
-		12D619F12CC92598006072B3 /* ToastViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewRepresentable.swift; sourceTree = "<group>"; };
+		12D619F12CC92598006072B3 /* ToastMessageUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastMessageUI.swift; sourceTree = "<group>"; };
 		12DECEB82CC2451300AAB6D4 /* GEClone-UI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GEClone-UI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		12DECEBB2CC2451300AAB6D4 /* GEClone_UIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GEClone_UIApp.swift; sourceTree = "<group>"; };
 		12DECEBD2CC2451300AAB6D4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -93,8 +91,7 @@
 		12D619F02CC918E6006072B3 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				12D619EE2CC918D1006072B3 /* ToastView.swift */,
-				12D619F12CC92598006072B3 /* ToastViewRepresentable.swift */,
+				12D619F12CC92598006072B3 /* ToastMessageUI.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -210,14 +207,13 @@
 			files = (
 				12D619E92CC90E3B006072B3 /* APIManager.swift in Sources */,
 				12DECED22CC26FC400AAB6D4 /* SettingsView.swift in Sources */,
-				12D619F22CC92598006072B3 /* ToastViewRepresentable.swift in Sources */,
+				12D619F22CC92598006072B3 /* ToastMessageUI.swift in Sources */,
 				12DECECA2CC24BD700AAB6D4 /* LoginView.swift in Sources */,
 				124A4C8A2CC775F00008465F /* Dashboard.swift in Sources */,
 				12DECECC2CC24C0600AAB6D4 /* HomeView.swift in Sources */,
 				12D619EC2CC912CE006072B3 /* ApiResponse.swift in Sources */,
 				12DECECE2CC26EA400AAB6D4 /* SideMenuView.swift in Sources */,
 				12AC432A2CC66A8E00469F55 /* DashboardItemView.swift in Sources */,
-				12D619EF2CC918D1006072B3 /* ToastView.swift in Sources */,
 				12DECEBE2CC2451300AAB6D4 /* ContentView.swift in Sources */,
 				12DECED02CC26FAA00AAB6D4 /* ProfileView.swift in Sources */,
 				12AC432D2CC66D2E00469F55 /* DashboardItemView2.swift in Sources */,
