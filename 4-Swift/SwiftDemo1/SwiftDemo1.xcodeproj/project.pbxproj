@@ -14,6 +14,8 @@
 		12F476492CCA115E00BE01E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12F476482CCA115E00BE01E0 /* Assets.xcassets */; };
 		12F4764C2CCA115E00BE01E0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12F4764A2CCA115E00BE01E0 /* LaunchScreen.storyboard */; };
 		12F476562CCA4D1E00BE01E0 /* ToastMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F476552CCA4D1E00BE01E0 /* ToastMessage.swift */; };
+		12F476582CCA5E5B00BE01E0 /* PopupHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F476572CCA5E5B00BE01E0 /* PopupHelper.swift */; };
+		12F4765A2CCA646700BE01E0 /* CustomPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F476592CCA646600BE01E0 /* CustomPopupView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		12F4764B2CCA115E00BE01E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		12F4764D2CCA115E00BE01E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		12F476552CCA4D1E00BE01E0 /* ToastMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ToastMessage.swift; path = ../../../SupportFiles/Swift/ToastMessage.swift; sourceTree = "<group>"; };
+		12F476572CCA5E5B00BE01E0 /* PopupHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupHelper.swift; sourceTree = "<group>"; };
+		12F476592CCA646600BE01E0 /* CustomPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPopupView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +66,8 @@
 				12F476412CCA115B00BE01E0 /* SceneDelegate.swift */,
 				12F476432CCA115B00BE01E0 /* ViewController.swift */,
 				12F476552CCA4D1E00BE01E0 /* ToastMessage.swift */,
+				12F476572CCA5E5B00BE01E0 /* PopupHelper.swift */,
+				12F476592CCA646600BE01E0 /* CustomPopupView.swift */,
 				12F476452CCA115C00BE01E0 /* Main.storyboard */,
 				12F476482CCA115E00BE01E0 /* Assets.xcassets */,
 				12F4764A2CCA115E00BE01E0 /* LaunchScreen.storyboard */,
@@ -143,6 +149,8 @@
 			files = (
 				12F476442CCA115B00BE01E0 /* ViewController.swift in Sources */,
 				12F476562CCA4D1E00BE01E0 /* ToastMessage.swift in Sources */,
+				12F4765A2CCA646700BE01E0 /* CustomPopupView.swift in Sources */,
+				12F476582CCA5E5B00BE01E0 /* PopupHelper.swift in Sources */,
 				12F476402CCA115B00BE01E0 /* AppDelegate.swift in Sources */,
 				12F476422CCA115B00BE01E0 /* SceneDelegate.swift in Sources */,
 			);
