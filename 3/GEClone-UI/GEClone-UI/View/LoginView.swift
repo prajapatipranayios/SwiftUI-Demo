@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
+    //@AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
     
     @EnvironmentObject var loginManager: LoginManager
     @State private var username: String = ""
@@ -61,6 +62,91 @@ struct LoginView: View {
             }
         }
     }
+    
+    /*var body: some View {
+     VStack {
+     Button("Show Success Toast") {
+     showToast.toggle()
+     }
+     .padding()
+     
+     // Toast overlay
+     if showToast {
+     ToastMessage(
+     message: "Operation was successful!",
+     type: .success
+     )
+     .onTapGesture {
+     // Dismiss the toast when tapped
+     showToast = false
+     }
+     .onAppear {
+     // Automatically dismiss the toast after 3 seconds
+     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+     showToast = false
+     }
+     }
+     }
+     }
+     }   //  */
+    
+    /*var body: some View {
+     VStack {
+     TextField("Username", text: $username)
+     .padding()
+     .background(Color.gray.opacity(0.2))
+     .cornerRadius(5.0)
+     .autocapitalization(.none)
+     
+     SecureField("Password", text: $password)
+     .padding()
+     .background(Color.gray.opacity(0.2))
+     .cornerRadius(5.0)
+     
+     Button(action: login) {
+     Text("Login")
+     .font(.headline)
+     .foregroundColor(.white)
+     .padding()
+     .frame(width: 200, height: 50)
+     .background(Color.blue)
+     .cornerRadius(10.0)
+     }
+     }
+     .padding()
+     }   //  */
+    
+    /*func login() {
+     // Simulate login validation
+     showToast = true
+     if username != "" && password != "" {
+     // Mark as logged in
+     //isLoggedIn = true
+     //loginManager.isLoggedIn = true
+     
+     let param = [
+     "mobile_no": username,
+     "password": password,
+     "device_id": (UIDevice.current.identifierForVendor?.uuidString)!,
+     "fcm_token": "UserDefaults.standard.value(forKey: UserDefaultType.fcmToken) as Any"
+     ]
+     
+     APIManager.sharedManager.postData(url: APIManager.sharedManager.LOGIN, parameters: param) { (response: ApiResponse?, error) in
+     if response?.status == 1 {
+     print(response?.message ?? "")
+     
+     print(response?.result)
+     }
+     else {
+     print(response?.message ?? "")
+     }
+     }
+     
+     } else {
+     print("Login failed")
+     }
+     }   //  */
+    
 }
 
 #Preview {
