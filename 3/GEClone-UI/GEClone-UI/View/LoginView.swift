@@ -20,8 +20,81 @@ struct LoginView: View {
     @State private var toastType: ToastType = .success // Tracks the type of toast
     @State private var toastPosition: ToastPosition = .bottom // Tracks the position of toast
     
+    @State private var showAlert = false
+    @State private var alertType: AlertPopupView.AlertType = .message
+    @State private var alertInputText = ""
+    @State private var responseText = ""
+    
+    @State private var showPopup = false
+    @State private var popupResponse: PopupResponse?
+    
     var body: some View {
-        ZStack {
+        
+        VStack(spacing: 20) {
+            Button("Show Message Popup") {
+                showPopup.toggle()
+            }
+            
+            if let response = popupResponse {
+                Text("Popup Response: \(response.inputText ?? "No Input")")
+                    .padding()
+            }
+        }
+        .customPopup(show: $showPopup, type: .message, title: "Notice", message: "This is a message.", placeholder: "Enter text", colors: defaultColors(), onConfirm: { response in
+            popupResponse = response
+        }, onCancel: {
+            popupResponse = nil
+        })
+        
+        /*VStack(spacing: 20) {
+            Button("Show Message Alert") {
+                alertType = .message
+                showAlert.toggle()
+            }
+            
+            Button("Show Confirmation Alert") {
+                alertType = .confirmation
+                showAlert.toggle()
+            }
+            
+            Button("Show Input Alert") {
+                alertType = .input
+                showAlert.toggle()
+            }
+            
+            Text("Response: \(responseText)")
+                .padding()
+        }
+                .overlay(
+                    AlertPopupView(
+                        isPresented: $showAlert,
+                        inputText: $alertInputText,
+                        type: alertType,
+                        title: "Custom Alert",
+                        message: alertType == .input ? "Please enter your input" : "This is a custom alert message. This is a custom alert message. This is a custom alert message. ",
+                        onOK: {
+                            responseText = alertType == .input ? "Input: \(alertInputText)" : "OK Pressed"
+                            alertInputText = ""
+                            print(responseText)
+                        },
+                        onCancel: {
+                            responseText = "Cancel Pressed"
+                        },
+                        // Customize colors here as needed
+                        popupColor: .white,
+                        titleTextColor: .white,
+                        titleBackgroundColor: .blue,
+                        messageTextColor: .black,
+                        okButtonTextColor: .white,
+                        okButtonColor: .green,
+                        cancelButtonTextColor: .white,
+                        cancelButtonColor: .red
+                    )
+                    .opacity(showAlert ? 1 : 0)
+                    .animation(.easeInOut)
+                )   //  */
+        
+        /*ZStack {
             VStack(spacing: 20) {
                 // Buttons to trigger toast at various positions and types
                 Button("Show Success Toast at Bottom") {
@@ -60,7 +133,20 @@ struct LoginView: View {
                         }
                 }
             }
-        }
+        }   //  */
+    }
+    
+    func defaultColors() -> PopupColors {
+        return PopupColors(
+            popupBackgroundColor: Color.white,
+            titleTextColor: Color.black,
+            titleBackgroundColor: Color.gray.opacity(0.2),
+            messageTextColor: Color.gray,
+            okButtonColor: Color.blue,
+            okButtonTextColor: Color.white,
+            cancelButtonColor: Color.red,
+            cancelButtonTextColor: Color.white
+        )
     }
     
     /*var body: some View {

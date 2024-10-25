@@ -21,13 +21,14 @@ class ViewController: UIViewController {
     }
     
     @IBAction func btnDisplayConfirmationDialogTap(_ sender: UIButton) {
-        CustomPopupView.shared.show(title: "Test Title...", message: "Message for test custom popup. Message for test custom popup. Message for test custom popup. ", dialogType: .confirmationDialog) { strValue in
+        CustomPopupView.shared.show(title: "Test Title...", message: "Message for test custom popup. Message for test custom popup. Message for test custom popup. ", dialogType: .textInputDialog) { strValue in
             print("Confirmed --> \(strValue ?? "")")
         } onCancel: { }
 
     }
     
     @IBAction func btnDisplayInputDialogTap(_ sender: UIButton) {
+        let popup = PopupType()
         
     }
     

@@ -23,6 +23,8 @@
 		12DECECE2CC26EA400AAB6D4 /* SideMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DECECD2CC26EA400AAB6D4 /* SideMenuView.swift */; };
 		12DECED02CC26FAA00AAB6D4 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DECECF2CC26FAA00AAB6D4 /* ProfileView.swift */; };
 		12DECED22CC26FC400AAB6D4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DECED12CC26FC400AAB6D4 /* SettingsView.swift */; };
+		12E3FEC72CCB6C0B0014B440 /* AlertPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E3FEC62CCB6C0B0014B440 /* AlertPopupView.swift */; };
+		12E3FEC92CCB7E830014B440 /* CustomPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E3FEC82CCB7E830014B440 /* CustomPopup.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +45,8 @@
 		12DECECD2CC26EA400AAB6D4 /* SideMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuView.swift; sourceTree = "<group>"; };
 		12DECECF2CC26FAA00AAB6D4 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		12DECED12CC26FC400AAB6D4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		12E3FEC62CCB6C0B0014B440 /* AlertPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPopupView.swift; sourceTree = "<group>"; };
+		12E3FEC82CCB7E830014B440 /* CustomPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPopup.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +96,8 @@
 			isa = PBXGroup;
 			children = (
 				12D619F12CC92598006072B3 /* ToastMessageUI.swift */,
+				12E3FEC62CCB6C0B0014B440 /* AlertPopupView.swift */,
+				12E3FEC82CCB7E830014B440 /* CustomPopup.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -216,6 +222,8 @@
 				12AC432A2CC66A8E00469F55 /* DashboardItemView.swift in Sources */,
 				12DECEBE2CC2451300AAB6D4 /* ContentView.swift in Sources */,
 				12DECED02CC26FAA00AAB6D4 /* ProfileView.swift in Sources */,
+				12E3FEC92CCB7E830014B440 /* CustomPopup.swift in Sources */,
+				12E3FEC72CCB6C0B0014B440 /* AlertPopupView.swift in Sources */,
 				12AC432D2CC66D2E00469F55 /* DashboardItemView2.swift in Sources */,
 				124A4C8C2CC790800008465F /* TestPage.swift in Sources */,
 				12DECEBC2CC2451300AAB6D4 /* GEClone_UIApp.swift in Sources */,
