@@ -35,10 +35,10 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q7L-Xb-iWd">
-                                <rect key="frame" x="141" y="223" width="111" height="35"/>
+                                <rect key="frame" x="129" y="223" width="135" height="35"/>
                                 <color key="backgroundColor" red="0.44705882349999998" green="0.76470588240000004" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="InputDialog"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Date Selection"/>
                                 <connections>
                                     <action selector="btnDisplayInputDialogTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xCi-HJ-V9z"/>
                                 </connections>

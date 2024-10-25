@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		12E3FECB2CCBC5480014B440 /* CustomDateSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E3FECA2CCBC5480014B440 /* CustomDateSelection.swift */; };
 		12F476402CCA115B00BE01E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F4763F2CCA115B00BE01E0 /* AppDelegate.swift */; };
 		12F476422CCA115B00BE01E0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F476412CCA115B00BE01E0 /* SceneDelegate.swift */; };
 		12F476442CCA115B00BE01E0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F476432CCA115B00BE01E0 /* ViewController.swift */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		12E3FECA2CCBC5480014B440 /* CustomDateSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDateSelection.swift; sourceTree = "<group>"; };
 		12F4763C2CCA115B00BE01E0 /* SwiftDemo1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftDemo1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		12F4763F2CCA115B00BE01E0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		12F476412CCA115B00BE01E0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 				12F476552CCA4D1E00BE01E0 /* ToastMessage.swift */,
 				12F476572CCA5E5B00BE01E0 /* PopupHelper.swift */,
 				12F476592CCA646600BE01E0 /* CustomPopupView.swift */,
+				12E3FECA2CCBC5480014B440 /* CustomDateSelection.swift */,
 				12F476452CCA115C00BE01E0 /* Main.storyboard */,
 				12F476482CCA115E00BE01E0 /* Assets.xcassets */,
 				12F4764A2CCA115E00BE01E0 /* LaunchScreen.storyboard */,
@@ -150,6 +153,7 @@
 				12F476442CCA115B00BE01E0 /* ViewController.swift in Sources */,
 				12F476562CCA4D1E00BE01E0 /* ToastMessage.swift in Sources */,
 				12F4765A2CCA646700BE01E0 /* CustomPopupView.swift in Sources */,
+				12E3FECB2CCBC5480014B440 /* CustomDateSelection.swift in Sources */,
 				12F476582CCA5E5B00BE01E0 /* PopupHelper.swift in Sources */,
 				12F476402CCA115B00BE01E0 /* AppDelegate.swift in Sources */,
 				12F476422CCA115B00BE01E0 /* SceneDelegate.swift in Sources */,
