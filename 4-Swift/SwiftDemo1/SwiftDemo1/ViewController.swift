@@ -28,16 +28,13 @@ class ViewController: UIViewController {
     }
     
     @IBAction func btnDisplayInputDialogTap(_ sender: UIButton) {
-        self.selectDate()
+        self.setupDatePicker()
     }
     
     @IBAction func btnDisplayMessageDialogTap(_ sender: UIButton) {
         
     }
     
-    
-    
-    var datePickerView: CustomDatePickerView!
     
     
     
@@ -47,16 +44,33 @@ class ViewController: UIViewController {
         
     }
     
-    func selectDate() {
-        let datePickerView = CustomDatePickerView()
-        datePickerView.onDone = { selectedDates in
-            print("Selected Dates: \(selectedDates)")
+    // Function to configure and show the custom date picker
+    private func setupDatePicker() {
+        let calendarVC = CalendarViewController()
+        
+        // Customize the calendar settings
+        calendarVC.selectionMode = .single  // Options: .single, .multiple, .range
+        calendarVC.selectionColor = .green  // Custom selection color
+        calendarVC.selectionShape = .roundedCSquare    // Options: .round, .square, .custom
+        
+        // Custom date format example
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        calendarVC.customDateFormatter = dateFormatter
+        
+        // Set up the closure to receive selected dates
+        calendarVC.onDatesSelected = { selectedDates in
+            print("Selected Dates: \(selectedDates)")  // Handle dates as needed
         }
-        datePickerView.onCancel = {
-            print("Picker cancelled")
-        }
-        self.view.addSubview(datePickerView)
+        
+        // Present the CalendarViewController
+        self.present(calendarVC, animated: true, completion: nil)
     }
     
+    // Function to handle selected dates
+    func handleDateSelection(dates: [String]) {
+        print("Selected Dates: \(dates)")
+        // No need to remove the date picker manually; it's done in CustomDatePickerView
+    }
 }
 
