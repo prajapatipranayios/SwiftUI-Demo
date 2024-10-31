@@ -31,6 +31,8 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     var collectionView: UICollectionView!
     var selectionMode: DateSelectionMode = .single
     var selectionColor: UIColor = .lightBlue
+    var calendarBgColor: UIColor = .white
+    var calendarTextColor: UIColor = .black
     var selectionShape: DateSelectionShape = .round
     var customDateFormatter: DateFormatter?
     
@@ -59,6 +61,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     private func setupWeekdayHeader() {
         let weekdayHeader = WeekdayHeaderView(frame: CGRect(x: 0, y: 44, width: view.frame.width, height: 30))
         weekdayHeader.backgroundColor = self.selectionColor
+        view.backgroundColor = self.calendarBgColor
         view.addSubview(weekdayHeader)
     }
     
@@ -91,6 +94,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         collectionView.register(CalendarHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "CalendarHeaderView")
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.backgroundColor = self.calendarBgColor
         view.addSubview(collectionView)
     }
     
@@ -161,9 +165,9 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             let isPastDate = disablePastDates && calendar.compare(validDate, to: today, toGranularity: .day) == .orderedAscending
             let isSelectable = !isPastDate
             
-            cell.configure(with: validDate, isSelected: selectedDates.contains(validDate), isSelectable: isSelectable, selectionColor: selectionColor, selectionShape: selectionShape)
+            cell.configure(with: validDate, isSelected: selectedDates.contains(validDate), isSelectable: isSelectable, textColor: self.calendarTextColor, bgColor: self.calendarBgColor, selectionColor: selectionColor, selectionShape: selectionShape)
         } else {
-            cell.configure(with: nil, isSelected: false, isSelectable: false, selectionColor: selectionColor, selectionShape: selectionShape)
+            cell.configure(with: nil, isSelected: false, isSelectable: false, textColor: self.calendarTextColor, bgColor: self.calendarBgColor, selectionColor: selectionColor, selectionShape: selectionShape)
         }
         
         return cell
@@ -177,6 +181,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         }
         
         header.titleLabel.text = monthNames[indexPath.section]
+        header.titleLabel.textColor = (self.calendarBgColor == self.calendarTextColor) ? (self.calendarBgColor == .black ? .white : .black) : self.calendarTextColor
         return header
     }
     
@@ -327,14 +332,15 @@ class CalendarCell: UICollectionViewCell {
         ])
     }
     
-    func configure(with date: Date?, isSelected: Bool, isSelectable: Bool, selectionColor: UIColor, selectionShape: DateSelectionShape) {
+    func configure(with date: Date?, isSelected: Bool, isSelectable: Bool, textColor: UIColor, bgColor: UIColor, selectionColor: UIColor, selectionShape: DateSelectionShape) {
         
         if let date = date {
             // Configure for a valid date
             let formatter = DateFormatter()
             formatter.dateFormat = "d"
             dateLabel.text = formatter.string(from: date)
-            dateLabel.textColor = isSelectable ? .black : .lightGray
+            //dateLabel.textColor = isSelectable ? ((textColor == .black) ? .white : .black) : .lightGray
+            dateLabel.textColor = isSelectable ? ((bgColor == textColor) ? (bgColor == .black ? .white : .black) : textColor) : .lightGray
             backgroundColor = isSelected ? selectionColor : .clear
         } else {
             // Handle empty placeholder cell
@@ -344,7 +350,8 @@ class CalendarCell: UICollectionViewCell {
         
         if isSelectable {
             backgroundColor = isSelected ? selectionColor : .clear
-            dateLabel.textColor = .black
+            //dateLabel.textColor = (textColor == .black) ? .white : textColor
+            dateLabel.textColor = (bgColor == textColor) ? (bgColor == .black ? .white : .black) : textColor
             isUserInteractionEnabled = true
         } else {
             backgroundColor = .clear
@@ -374,28 +381,28 @@ extension UIColor {
 
 
 /*// Function to configure and show the custom date picker
-private func setupDatePicker() {
-    let calendarVC = CalendarViewController()
-    
-    // Customize the calendar settings
-    //calendarVC.selectionMode = .multiple  // Options: .single, .multiple, .range
-    calendarVC.selectionMode = .range  // Options: .single, .multiple, .range
-    calendarVC.selectionColor = .cyan  // Custom selection color
-    calendarVC.selectionShape = .custom    // Options: .round, .square, .custom
-    //calendarVC.monthsBefore = 2
-    calendarVC.monthsAfter   = 1
-    calendarVC.disablePastDates = true
-    
-    // Custom date format example
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "dd-MM-yyyy"
-    calendarVC.customDateFormatter = dateFormatter
-    
-    // Set up the closure to receive selected dates
-    calendarVC.onDatesSelected = { selectedDates in
-        print("Selected Dates: \(selectedDates)")  // Handle dates as needed
-    }
-    
-    // Present the CalendarViewController
-    self.present(calendarVC, animated: true, completion: nil)
-}   //  */
+ private func setupDatePicker() {
+     let calendarVC = CalendarViewController()
+     
+     // Customize the calendar settings
+     //calendarVC.selectionMode = .multiple  // Options: .single, .multiple, .range
+     calendarVC.selectionMode = .range  // Options: .single, .multiple, .range
+     calendarVC.selectionColor = .lightBlue  // Custom selection color
+     calendarVC.selectionShape = .custom    // Options: .round, .square, .custom
+     //calendarVC.monthsBefore = 2
+     calendarVC.monthsAfter   = 1
+     calendarVC.disablePastDates = true
+     
+     // Custom date format example
+     let dateFormatter = DateFormatter()
+     dateFormatter.dateFormat = "dd-MM-yyyy"
+     calendarVC.customDateFormatter = dateFormatter
+     
+     // Set up the closure to receive selected dates
+     calendarVC.onDatesSelected = { selectedDates in
+         print("Selected Dates: \(selectedDates)")  // Handle dates as needed
+     }
+     
+     // Present the CalendarViewController
+     self.present(calendarVC, animated: true, completion: nil)
+ }   //  */

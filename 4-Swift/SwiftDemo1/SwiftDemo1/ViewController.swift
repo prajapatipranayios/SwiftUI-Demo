@@ -28,7 +28,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func btnDisplayInputDialogTap(_ sender: UIButton) {
-        //self.setupDatePicker()
+        self.setupDatePicker()
     }
     
     @IBAction func btnDisplayMessageDialogTap(_ sender: UIButton) {
@@ -40,5 +40,31 @@ class ViewController: UIViewController {
         
     }
     
+    // Function to configure and show the custom date picker
+    private func setupDatePicker() {
+        let calendarVC = CalendarViewController()
+        
+        // Customize the calendar settings
+        //calendarVC.selectionMode = .multiple  // Options: .single, .multiple, .range
+        calendarVC.selectionMode = .range  // Options: .single, .multiple, .range
+        calendarVC.selectionColor = .lightBlue  // Custom selection color
+        calendarVC.selectionShape = .custom    // Options: .round, .square, .custom
+        //calendarVC.monthsBefore = 2
+        calendarVC.monthsAfter   = 1
+        calendarVC.disablePastDates = true
+        
+        // Custom date format example
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy"
+        calendarVC.customDateFormatter = dateFormatter
+        
+        // Set up the closure to receive selected dates
+        calendarVC.onDatesSelected = { selectedDates in
+            print("Selected Dates: \(selectedDates)")  // Handle dates as needed
+        }
+        
+        // Present the CalendarViewController
+        self.present(calendarVC, animated: true, completion: nil)
+    }
 }
 
