@@ -77,7 +77,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         layout.minimumLineSpacing = 5
         layout.headerReferenceSize = CGSize(width: view.frame.width, height: 30) // Header size
         
-        collectionView = UICollectionView(frame: CGRect(x: 0, y: 44, width: view.bounds.width, height: view.bounds.height - 44), collectionViewLayout: layout)
+        collectionView = UICollectionView(frame: CGRect(x: 0, y: 44, width: view.bounds.width, height: view.bounds.height - 100), collectionViewLayout: layout)
         collectionView.register(CalendarCell.self, forCellWithReuseIdentifier: "CalendarCell")
         collectionView.register(CalendarHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "CalendarHeaderView")
         collectionView.delegate = self
