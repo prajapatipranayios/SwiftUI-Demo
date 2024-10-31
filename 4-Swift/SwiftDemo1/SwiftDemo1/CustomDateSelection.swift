@@ -36,22 +36,30 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     var onDatesSelected: (([String]) -> Void)?
     
     // Customizable properties for months before and after the current month
-    var monthsBefore: Int = 0  // Number of months before the current month
-    var monthsAfter: Int = 0   // Number of months after the current month
-    var disablePastDates: Bool = false // Disable all past dates
+    var monthsBefore: Int = 0
+    var monthsAfter: Int = 0
+    var disablePastDates: Bool = false
 
     private var selectedDates: [Date] = []
     private let calendar = Calendar.current
-    private var monthsData: [[Date?]] = []  // Array of arrays, each containing dates for a month
-    private var monthNames: [String] = []   // Names of the months displayed
+    private var monthsData: [[Date?]] = []
+    private var monthNames: [String] = []
     private let today = Date()
     
     // MARK: - Initialization
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
+        setupWeekdayHeader()
         setupCollectionView()
         loadMonthsData()
+    }
+    
+    // MARK: - Setup Weekday Header
+    private func setupWeekdayHeader() {
+        let weekdayHeader = WeekdayHeaderView(frame: CGRect(x: 0, y: 44, width: view.frame.width, height: 30))
+        weekdayHeader.backgroundColor = self.selectionColor
+        view.addSubview(weekdayHeader)
     }
     
     // MARK: - Setup Navigation Bar
@@ -72,12 +80,12 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     // MARK: - Setup Collection View
     private func setupCollectionView() {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 40, height: 40)
-        layout.minimumInteritemSpacing = 5
+        layout.itemSize = CGSize(width: view.frame.width / 7, height: 40)
+        layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 5
         layout.headerReferenceSize = CGSize(width: view.frame.width, height: 30) // Header size
         
-        collectionView = UICollectionView(frame: CGRect(x: 0, y: 44, width: view.bounds.width, height: view.bounds.height - 100), collectionViewLayout: layout)
+        collectionView = UICollectionView(frame: CGRect(x: 0, y: 74, width: view.bounds.width, height: view.bounds.height - 144), collectionViewLayout: layout)
         collectionView.register(CalendarCell.self, forCellWithReuseIdentifier: "CalendarCell")
         collectionView.register(CalendarHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "CalendarHeaderView")
         collectionView.delegate = self
@@ -90,7 +98,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         monthsData = []
         monthNames = []
         
-        // Calculate months from previous, current, to future
         for offset in -monthsBefore...monthsAfter {
             if let monthStart = calendar.date(byAdding: .month, value: offset, to: today) {
                 let monthName = DateFormatter().monthSymbols[calendar.component(.month, from: monthStart) - 1]
@@ -106,16 +113,13 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     private func datesWithWeekdayAlignment(for interval: DateInterval) -> [Date?] {
         var dates: [Date?] = []
         
-        // Get the weekday of the first date (1 = Sunday, ..., 7 = Saturday)
         let firstDate = interval.start
         let weekday = calendar.component(.weekday, from: firstDate)
         
-        // Add nil placeholders to align the first date of the month with the correct weekday
         for _ in 1..<weekday {
             dates.append(nil)
         }
         
-        // Populate actual dates of the month, stopping before next month starts
         var date = firstDate
         while calendar.isDate(date, equalTo: interval.start, toGranularity: .month) {
             dates.append(date)
@@ -138,7 +142,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     // MARK: - Collection View Data Source
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return monthsData.count  // Each month is its own section
+        return monthsData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -152,15 +156,12 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         let date = monthsData[indexPath.section][indexPath.row]
         
-        // Determine if cell is selectable based on whether it's a past or future date
         if let validDate = date {
             let isPastDate = disablePastDates && calendar.compare(validDate, to: today, toGranularity: .day) == .orderedAscending
             let isSelectable = !isPastDate
             
-            // Configure cell with valid date
             cell.configure(with: validDate, isSelected: selectedDates.contains(validDate), isSelectable: isSelectable, selectionColor: selectionColor, selectionShape: selectionShape)
         } else {
-            // Configure cell as a placeholder (empty cell)
             cell.configure(with: nil, isSelected: false, isSelectable: false, selectionColor: selectionColor, selectionShape: selectionShape)
         }
         
@@ -213,6 +214,36 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         let formatter = customDateFormatter ?? DateFormatter()
         formatter.dateFormat = customDateFormatter?.dateFormat ?? "dd-MM-yyyy"
         return formatter.string(from: date)
+    }
+}
+
+
+
+
+// MARK: - Weekday Header View
+class WeekdayHeaderView: UIView {
+    private let weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupWeekdayLabels()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupWeekdayLabels()
+    }
+    
+    private func setupWeekdayLabels() {
+        let labelWidth = frame.width / 7
+        for (index, day) in weekdays.enumerated() {
+            let label = UILabel()
+            label.text = day
+            label.textAlignment = .center
+            label.font = UIFont.boldSystemFont(ofSize: 14)
+            label.frame = CGRect(x: CGFloat(index) * labelWidth, y: 0, width: labelWidth, height: frame.height)
+            addSubview(label)
+        }
     }
 }
 

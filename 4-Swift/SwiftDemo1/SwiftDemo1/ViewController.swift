@@ -52,7 +52,7 @@ class ViewController: UIViewController {
         calendarVC.selectionMode = .multiple  // Options: .single, .multiple, .range
         calendarVC.selectionColor = .green  // Custom selection color
         calendarVC.selectionShape = .roundedCSquare    // Options: .round, .square, .custom
-        calendarVC.monthsBefore = 2
+        //calendarVC.monthsBefore = 2
         calendarVC.monthsAfter   = 2
         calendarVC.disablePastDates = true
         
