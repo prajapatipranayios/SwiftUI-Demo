@@ -50,7 +50,7 @@ class ViewController: UIViewController {
         
         // Customize the calendar settings
         //calendarVC.selectionMode = .multiple  // Options: .single, .multiple, .range
-        calendarVC.selectionMode = .single  // Options: .single, .multiple, .range
+        calendarVC.selectionMode = .range  // Options: .single, .multiple, .range
         calendarVC.selectionColor = .green  // Custom selection color
         calendarVC.selectionShape = .round    // Options: .round, .square, .custom
         //calendarVC.monthsBefore = 2

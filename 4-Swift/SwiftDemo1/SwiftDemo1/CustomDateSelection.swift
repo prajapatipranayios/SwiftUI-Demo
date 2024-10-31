@@ -80,7 +80,8 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     // MARK: - Setup Collection View
     private func setupCollectionView() {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.frame.width / 7, height: 40)
+        //layout.itemSize = CGSize(width: view.frame.width / 7, height: 40)
+        layout.itemSize = CGSize(width: view.frame.width / 7, height: view.frame.width / 7)
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 5
         layout.headerReferenceSize = CGSize(width: view.frame.width, height: 30) // Header size
@@ -196,17 +197,41 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
                 selectedDates.append(date)
             }
         case .range:
-            if selectedDates.count == 2 {
+            if selectedDates.count == 1 {
+                selectedDates.append(date)
+                selectedDates.sort()
+                // Add dates between the range
+                if let start = selectedDates.first, let end = selectedDates.last {
+                    selectedDates = datesBetween(start: start, end: end)
+                }
+            } else {
+                // Reset to only one date (the starting date)
+                selectedDates = [date]
+            }
+            /*if selectedDates.count == 2 {
                 selectedDates = [date]
             } else {
                 selectedDates.append(date)
                 if selectedDates.count == 2 {
                     selectedDates.sort()
                 }
-            }
+            }   //  */
         }
         
         collectionView.reloadData()
+    }
+    
+    // MARK: - Helper to Calculate Dates Between Range
+    private func datesBetween(start: Date, end: Date) -> [Date] {
+        var dates: [Date] = []
+        var currentDate = start
+        
+        while currentDate <= end {
+            dates.append(currentDate)
+            currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate)!
+        }
+        
+        return dates
     }
     
     // MARK: - Date Formatter
