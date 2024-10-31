@@ -24,7 +24,8 @@ enum DateSelectionShape {
 }
 
 
-class CalendarViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+
+class CalendarViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     // MARK: - Properties
     var collectionView: UICollectionView!
@@ -35,7 +36,6 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     var onDatesSelected: (([String]) -> Void)?
     
-    // Customizable properties for months before and after the current month
     var monthsBefore: Int = 0
     var monthsAfter: Int = 0
     var disablePastDates: Bool = false
@@ -215,7 +215,18 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         formatter.dateFormat = customDateFormatter?.dateFormat ?? "dd-MM-yyyy"
         return formatter.string(from: date)
     }
+    
+    // MARK: - UICollectionViewDelegateFlowLayout
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0) // Space between months
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 5
+    }
 }
+
+
 
 
 

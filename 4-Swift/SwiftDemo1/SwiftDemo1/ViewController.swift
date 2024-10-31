@@ -49,9 +49,10 @@ class ViewController: UIViewController {
         let calendarVC = CalendarViewController()
         
         // Customize the calendar settings
-        calendarVC.selectionMode = .multiple  // Options: .single, .multiple, .range
+        //calendarVC.selectionMode = .multiple  // Options: .single, .multiple, .range
+        calendarVC.selectionMode = .single  // Options: .single, .multiple, .range
         calendarVC.selectionColor = .green  // Custom selection color
-        calendarVC.selectionShape = .roundedCSquare    // Options: .round, .square, .custom
+        calendarVC.selectionShape = .round    // Options: .round, .square, .custom
         //calendarVC.monthsBefore = 2
         calendarVC.monthsAfter   = 2
         calendarVC.disablePastDates = true
