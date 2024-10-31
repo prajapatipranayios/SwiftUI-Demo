@@ -23,8 +23,9 @@ enum DateSelectionShape {
     case custom
 }
 
+
 class CalendarViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
-    
+
     // MARK: - Properties
     var collectionView: UICollectionView!
     var selectionMode: DateSelectionMode = .single
@@ -34,10 +35,15 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     var onDatesSelected: (([String]) -> Void)?
     
+    // Customizable properties for months before and after the current month
+    var monthsBefore: Int = 0  // Number of months before the current month
+    var monthsAfter: Int = 0   // Number of months after the current month
+    var disablePastDates: Bool = false // Disable all past dates
+
     private var selectedDates: [Date] = []
     private let calendar = Calendar.current
-    private var currentMonthDates: [Date] = []
-    private var nextMonthDates: [Date] = []
+    private var monthsData: [[Date?]] = []  // Array of arrays, each containing dates for a month
+    private var monthNames: [String] = []   // Names of the months displayed
     private let today = Date()
     
     // MARK: - Initialization
@@ -45,7 +51,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         super.viewDidLoad()
         setupNavigationBar()
         setupCollectionView()
-        loadDates()
+        loadMonthsData()
     }
     
     // MARK: - Setup Navigation Bar
@@ -79,24 +85,43 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         view.addSubview(collectionView)
     }
     
-    // MARK: - Load Dates
-    private func loadDates() {
-        let currentMonth = calendar.dateInterval(of: .month, for: today)!
-        let nextMonthStart = calendar.date(byAdding: .month, value: 1, to: currentMonth.start)!
-        let nextMonth = calendar.dateInterval(of: .month, for: nextMonthStart)!
+    // MARK: - Load Months Data
+    private func loadMonthsData() {
+        monthsData = []
+        monthNames = []
         
-        currentMonthDates = datesInMonth(interval: currentMonth)
-        nextMonthDates = datesInMonth(interval: nextMonth)
+        // Calculate months from previous, current, to future
+        for offset in -monthsBefore...monthsAfter {
+            if let monthStart = calendar.date(byAdding: .month, value: offset, to: today) {
+                let monthName = DateFormatter().monthSymbols[calendar.component(.month, from: monthStart) - 1]
+                monthNames.append(monthName)
+                
+                let monthInterval = calendar.dateInterval(of: .month, for: monthStart)!
+                let monthDates = datesWithWeekdayAlignment(for: monthInterval)
+                monthsData.append(monthDates)
+            }
+        }
     }
     
-    private func datesInMonth(interval: DateInterval) -> [Date] {
-        var dates: [Date] = []
-        var date = interval.start
+    private func datesWithWeekdayAlignment(for interval: DateInterval) -> [Date?] {
+        var dates: [Date?] = []
         
-        while date <= interval.end {
+        // Get the weekday of the first date (1 = Sunday, ..., 7 = Saturday)
+        let firstDate = interval.start
+        let weekday = calendar.component(.weekday, from: firstDate)
+        
+        // Add nil placeholders to align the first date of the month with the correct weekday
+        for _ in 1..<weekday {
+            dates.append(nil)
+        }
+        
+        // Populate actual dates of the month, stopping before next month starts
+        var date = firstDate
+        while calendar.isDate(date, equalTo: interval.start, toGranularity: .month) {
             dates.append(date)
             date = calendar.date(byAdding: .day, value: 1, to: date)!
         }
+        
         return dates
     }
     
@@ -113,11 +138,11 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     // MARK: - Collection View Data Source
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2  // Current month and next month
+        return monthsData.count  // Each month is its own section
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return section == 0 ? currentMonthDates.count : nextMonthDates.count
+        return monthsData[section].count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -125,11 +150,20 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             return UICollectionViewCell()
         }
         
-        let date = indexPath.section == 0 ? currentMonthDates[indexPath.row] : nextMonthDates[indexPath.row]
-        let isPastDate = calendar.compare(date, to: today, toGranularity: .day) == .orderedAscending
-        let isSelectable = !isPastDate
+        let date = monthsData[indexPath.section][indexPath.row]
         
-        cell.configure(with: date, isSelected: selectedDates.contains(date), isSelectable: isSelectable, selectionColor: selectionColor, selectionShape: selectionShape)
+        // Determine if cell is selectable based on whether it's a past or future date
+        if let validDate = date {
+            let isPastDate = disablePastDates && calendar.compare(validDate, to: today, toGranularity: .day) == .orderedAscending
+            let isSelectable = !isPastDate
+            
+            // Configure cell with valid date
+            cell.configure(with: validDate, isSelected: selectedDates.contains(validDate), isSelectable: isSelectable, selectionColor: selectionColor, selectionShape: selectionShape)
+        } else {
+            // Configure cell as a placeholder (empty cell)
+            cell.configure(with: nil, isSelected: false, isSelectable: false, selectionColor: selectionColor, selectionShape: selectionShape)
+        }
+        
         return cell
     }
     
@@ -140,16 +174,16 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
             return UICollectionReusableView()
         }
         
-        header.titleLabel.text = indexPath.section == 0 ? "Current Month" : "Next Month"
+        header.titleLabel.text = monthNames[indexPath.section]
         return header
     }
     
     // MARK: - Collection View Delegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let date = indexPath.section == 0 ? currentMonthDates[indexPath.row] : nextMonthDates[indexPath.row]
-        let isPastDate = calendar.compare(date, to: today, toGranularity: .day) == .orderedAscending
-        
-        guard !isPastDate else { return }
+        guard let date = monthsData[indexPath.section][indexPath.row],
+              !disablePastDates || calendar.compare(date, to: today, toGranularity: .day) != .orderedAscending else {
+            return
+        }
         
         switch selectionMode {
         case .single:
@@ -181,6 +215,8 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
         return formatter.string(from: date)
     }
 }
+
+
 
 // MARK: - Calendar Header View
 class CalendarHeaderView: UICollectionReusableView {
@@ -227,10 +263,23 @@ class CalendarCell: UICollectionViewCell {
         ])
     }
     
-    func configure(with date: Date, isSelected: Bool, isSelectable: Bool, selectionColor: UIColor, selectionShape: DateSelectionShape) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d"
-        dateLabel.text = formatter.string(from: date)
+    func configure(with date: Date?, isSelected: Bool, isSelectable: Bool, selectionColor: UIColor, selectionShape: DateSelectionShape) {
+        //let formatter = DateFormatter()
+        //formatter.dateFormat = "d"
+        //dateLabel.text = formatter.string(from: date)
+        
+        if let date = date {
+            // Configure for a valid date
+            let formatter = DateFormatter()
+            formatter.dateFormat = "d"
+            dateLabel.text = formatter.string(from: date)
+            dateLabel.textColor = isSelectable ? .black : .lightGray
+            backgroundColor = isSelected ? selectionColor : .clear
+        } else {
+            // Handle empty placeholder cell
+            dateLabel.text = ""
+            backgroundColor = .clear
+        }
         
         if isSelectable {
             backgroundColor = isSelected ? selectionColor : .clear
