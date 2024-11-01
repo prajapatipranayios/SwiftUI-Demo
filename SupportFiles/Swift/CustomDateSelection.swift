@@ -248,7 +248,7 @@ class CalendarViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     // MARK: - UICollectionViewDelegateFlowLayout
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0) // Space between months
+        return UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0) // Space between months
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
