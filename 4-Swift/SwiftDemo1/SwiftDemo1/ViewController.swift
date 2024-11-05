@@ -81,7 +81,8 @@ class ViewController: UIViewController {
     }
     
     func openAction() {
-        let actionSheet = CustomActionSheetViewController(items: ["Option 1", "Option 2", "Option 3"], multipleSelection: false, shouldAnimate: true)
+        let actionSheet = CustomActionSheetViewController(items: ["Option 1", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3", "Option 2", "Option 3"], multipleSelection: false, shouldAnimate: true)
+        //let actionSheet = CustomActionSheetViewController(items: ["Option 1", "Option 2", "Option 3"], multipleSelection: false, shouldAnimate: true)
         actionSheet.onSelection = { selectedItems in
             print("Selected items: \(selectedItems)")
         }
