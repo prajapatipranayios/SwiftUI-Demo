@@ -44,33 +44,45 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NAa-j9-DWR">
-                                <rect key="frame" x="98" y="283" width="197" height="35"/>
+                                <rect key="frame" x="135" y="283" width="123" height="35"/>
                                 <color key="backgroundColor" red="0.44705882349999998" green="0.76470588240000004" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="DisplayMessageDialog"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Select Image"/>
                                 <connections>
                                     <action selector="btnDisplayMessageDialogTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="p6L-LR-Mrj"/>
                                 </connections>
                             </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nmu-aX-5sg">
+                                <rect key="frame" x="16" y="326" width="361" height="180.66666666666663"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="nmu-aX-5sg" secondAttribute="height" multiplier="2:1" id="jT1-pC-G0S"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="4D9-Bc-BqA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BM1-Zc-Mtx"/>
                             <constraint firstItem="xAL-75-TQ4" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BUR-Kc-7Oc"/>
+                            <constraint firstItem="nmu-aX-5sg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="Cel-wZ-CI5"/>
                             <constraint firstItem="NAa-j9-DWR" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="EhB-lt-7An"/>
                             <constraint firstItem="q7L-Xb-iWd" firstAttribute="top" secondItem="xAL-75-TQ4" secondAttribute="bottom" constant="25" id="M8h-XH-vgY"/>
+                            <constraint firstItem="nmu-aX-5sg" firstAttribute="top" secondItem="NAa-j9-DWR" secondAttribute="bottom" constant="8" symbolic="YES" id="RKT-et-52j"/>
                             <constraint firstItem="4D9-Bc-BqA" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="iTY-MX-WXo"/>
                             <constraint firstItem="q7L-Xb-iWd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ldi-eG-caz"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="nmu-aX-5sg" secondAttribute="trailing" constant="16" id="pYU-X1-OAp"/>
                             <constraint firstItem="xAL-75-TQ4" firstAttribute="top" secondItem="4D9-Bc-BqA" secondAttribute="bottom" constant="25" id="shE-A2-E7y"/>
                             <constraint firstItem="NAa-j9-DWR" firstAttribute="top" secondItem="q7L-Xb-iWd" secondAttribute="bottom" constant="25" id="yVy-SA-7fU"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="CEn-Nn-wGI"/>
+                    <connections>
+                        <outlet property="ivImage" destination="nmu-aX-5sg" id="bx5-bI-pxI"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="877" y="-27"/>
+            <point key="canvasLocation" x="875.57251908396938" y="-27.464788732394368"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Z3J-Fg-wsN">

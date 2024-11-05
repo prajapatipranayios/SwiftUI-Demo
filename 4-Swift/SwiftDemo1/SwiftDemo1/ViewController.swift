@@ -32,12 +32,25 @@ class ViewController: UIViewController {
     }
     
     @IBAction func btnDisplayMessageDialogTap(_ sender: UIButton) {
+        /*let isSelectImageFromCamera = true
         
+        CameraUtilitySingleImage.shared.showImagePicker(from: self, isSelectImageFromCamera: isSelectImageFromCamera) { image in
+            self.ivImage.image = image
+        }   //  */
+        
+        self.openAction()
     }
+    
+    @IBOutlet weak var ivImage: UIImageView!
+    
+    
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.ivImage.contentMode = .scaleAspectFit
     }
     
     // Function to configure and show the custom date picker
@@ -66,5 +79,12 @@ class ViewController: UIViewController {
         // Present the CalendarViewController
         self.present(calendarVC, animated: true, completion: nil)
     }
+    
+    func openAction() {
+        let actionSheet = CustomActionSheetViewController(items: ["Option 1", "Option 2", "Option 3"], multipleSelection: false, shouldAnimate: true)
+        actionSheet.onSelection = { selectedItems in
+            print("Selected items: \(selectedItems)")
+        }
+        present(actionSheet, animated: true)
+    }
 }
-
