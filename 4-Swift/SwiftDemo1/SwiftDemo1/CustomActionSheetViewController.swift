@@ -11,11 +11,18 @@ class CustomActionSheetViewController: UIViewController {
     
     // MARK: - Properties
     
+    // Title properties
+    private let titleText: String
+    private let titleBackgroundColor: UIColor
+    private let titleTextColor: UIColor
+    private let titleFontSize: CGFloat
+    
     private let items: [Any] // Can be either [String] or [Int]
     private let isMultipleSelectionEnabled: Bool
     private var selectedItems = [Any]()
     private let shouldAnimate: Bool
     private let rowHeight: CGFloat
+    private let cellTextColor: UIColor
     
     // Customizable button colors and texts
     private let cancelButtonBackgroundColor: UIColor
@@ -26,12 +33,11 @@ class CustomActionSheetViewController: UIViewController {
     private let confirmButtonText: String
     private let cancelButtonFontSize: CGFloat
     private let confirmButtonFontSize: CGFloat
-    
-    // Title properties
-    private let titleText: String
-    private let titleBackgroundColor: UIColor
-    private let titleTextColor: UIColor
-    private let titleFontSize: CGFloat
+    private var separatorColor: UIColor
+    private let isCellBorder: Bool
+    private let cellBordeColor: UIColor
+    private let deselectColor: UIColor
+    private let selectColor: UIColor
     
     // Closure to handle item selection
     var onSelection: (([Any]) -> Void)?
@@ -47,10 +53,14 @@ class CustomActionSheetViewController: UIViewController {
     
     init(
         items: [Any],
+        initialSelectedItems: [Any] = [],
         multipleSelection: Bool = false,
         shouldAnimate: Bool = false,
-        rowHeight: CGFloat = 45,
-        cancelButtonBackgroundColor: UIColor = .brown,
+        titleText: String = "Select Option",
+        titleBackgroundColor: UIColor = .white,
+        titleTextColor: UIColor = .black,
+        titleFontSize: CGFloat = 20,
+        cancelButtonBackgroundColor: UIColor = .white,
         confirmButtonBackgroundColor: UIColor = .white,
         cancelButtonTextColor: UIColor = .systemBlue,
         confirmButtonTextColor: UIColor = .systemBlue,
@@ -58,12 +68,16 @@ class CustomActionSheetViewController: UIViewController {
         confirmButtonText: String = "Done",
         cancelButtonFontSize: CGFloat = 19,
         confirmButtonFontSize: CGFloat = 19,
-        titleText: String = "Select Option",
-        titleBackgroundColor: UIColor = .white,
-        titleTextColor: UIColor = .black,
-        titleFontSize: CGFloat = 20
+        rowHeight: CGFloat = 48,
+        separatorColor: UIColor? = nil,
+        isCellBorder: Bool = false,
+        cellTextColor: UIColor = .black,
+        cellBordeColor: UIColor = .lightGray,
+        deselectColor: UIColor = .lightGray,
+        selectColor: UIColor = .green
     ) {
         self.items = items
+        self.selectedItems = initialSelectedItems // Assign initial selected items
         self.isMultipleSelectionEnabled = multipleSelection
         self.shouldAnimate = shouldAnimate
         self.cancelButtonBackgroundColor = cancelButtonBackgroundColor
@@ -79,6 +93,17 @@ class CustomActionSheetViewController: UIViewController {
         self.titleBackgroundColor = titleBackgroundColor
         self.titleTextColor = titleTextColor
         self.titleFontSize = titleFontSize
+        self.separatorColor = titleBackgroundColor
+        self.isCellBorder = isCellBorder
+        self.cellTextColor = cellTextColor
+        self.cellBordeColor = cellBordeColor
+        self.deselectColor = deselectColor
+        self.selectColor = selectColor
+        
+        if let sepColor = separatorColor {
+            self.separatorColor = sepColor
+        }
+        
         super.init(nibName: nil, bundle: nil)
         
         if shouldAnimate {
@@ -98,6 +123,11 @@ class CustomActionSheetViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Register the custom cell class
+        CustomActionSheetCell.SelectionStyle.none
+        tableView.register(CustomActionSheetCell.self, forCellReuseIdentifier: "CustomActionSheetCell")
+        
         setupUI()
     }
     
@@ -115,6 +145,7 @@ class CustomActionSheetViewController: UIViewController {
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.clipsToBounds = true
         containerView.layer.cornerRadius = 15.0
+        containerView.backgroundColor = self.separatorColor
         view.addSubview(containerView)
         
         // Title label setup
@@ -122,7 +153,7 @@ class CustomActionSheetViewController: UIViewController {
         titleLabel.backgroundColor = titleBackgroundColor
         titleLabel.textColor = titleTextColor
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.systemFont(ofSize: titleFontSize)
+        titleLabel.font = UIFont.boldSystemFont(ofSize: titleFontSize)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(titleLabel)
         
@@ -132,6 +163,7 @@ class CustomActionSheetViewController: UIViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.allowsMultipleSelection = isMultipleSelectionEnabled
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorStyle = .none
         
         containerView.addSubview(tableView)
         
@@ -154,33 +186,31 @@ class CustomActionSheetViewController: UIViewController {
         containerView.addSubview(confirmButton)
         
         // Dynamic height constraint calculation
-        let maxTableViewHeight = view.frame.height - 200
+        _ = view.frame.height - 190
         
         // Layout constraints
         NSLayoutConstraint.activate([
             
             // Center container view in main view
-            //containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             containerView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
             containerView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
-            containerView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: 0),
+            containerView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -15),
             
             // Confirm and Cancel buttons layout
-            cancelButton.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 0),
-            confirmButton.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 0),
-            cancelButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
-            confirmButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
+            cancelButton.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 1),
+            confirmButton.topAnchor.constraint(equalTo: cancelButton.topAnchor, constant: 0),
+            cancelButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0),
+            confirmButton.bottomAnchor.constraint(equalTo: cancelButton.bottomAnchor),
             cancelButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             confirmButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             cancelButton.trailingAnchor.constraint(equalTo: confirmButton.leadingAnchor),
             
             
             // Button dimensions
-            //cancelButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5),
-            //confirmButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5),
             cancelButton.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.5, constant: 0),
-            cancelButton.heightAnchor.constraint(equalToConstant: 50),
-            confirmButton.heightAnchor.constraint(equalToConstant: 50),
+            cancelButton.heightAnchor.constraint(equalToConstant: 45),
+            //confirmButton.heightAnchor.constraint(equalToConstant: 45),
+            confirmButton.heightAnchor.constraint(equalTo: cancelButton.heightAnchor, multiplier: 1),
             
             // Title label layout
             titleLabel.topAnchor.constraint(equalTo: containerView.topAnchor),
@@ -189,13 +219,9 @@ class CustomActionSheetViewController: UIViewController {
             titleLabel.heightAnchor.constraint(equalToConstant: 55),
             
             // TableView layout
-            tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 0),
-            tableView.bottomAnchor.constraint(equalTo: cancelButton.topAnchor, constant: 0),
+            tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 1),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            //tableView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            //tableView.heightAnchor.constraint(lessThanOrEqualToConstant: maxTableViewHeight),
-            //tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 0)
             
         ])
         
@@ -205,16 +231,7 @@ class CustomActionSheetViewController: UIViewController {
     
     private func adjustTableViewHeight() {
         // Calculate maximum height based on the available space
-        let maxTableViewHeight = view.frame.height - 200
-        
-        // Remove existing height constraint if any
-        //if let existingConstraint = tableViewHeightConstraint {
-            //tableView.removeConstraint(existingConstraint)
-        //}
-        
-        // Apply new height constraint
-        //tableViewHeightConstraint = tableView.heightAnchor.constraint(lessThanOrEqualToConstant: maxTableViewHeight)
-        //tableViewHeightConstraint?.isActive = true
+        let maxTableViewHeight = view.frame.height - 190
         
         self.tableView.heightAnchor.constraint(equalToConstant: (CGFloat(self.items.count * 45) > maxTableViewHeight ? maxTableViewHeight : CGFloat(self.items.count * 45))).isActive = true
         
@@ -256,13 +273,28 @@ class CustomActionSheetViewController: UIViewController {
 // MARK: - TableView DataSource & Delegate
 
 extension CustomActionSheetViewController: UITableViewDataSource, UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = "\(items[indexPath.row])"
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CustomActionSheetCell", for: indexPath) as! CustomActionSheetCell
+        let itemText = "\(items[indexPath.row])"
+        let isSelected = selectedItems.contains { "\($0)" == itemText }
+        
+        // Set selection style based on whether multiple selection is enabled
+        cell.configure(
+            with: itemText, 
+            textColor: self.cellTextColor,
+            isSelectedState: isSelected,
+            isRoundSelection: !isMultipleSelectionEnabled,
+            selectedColor: self.selectColor,
+            unselectedColor: self.deselectColor,
+            hasBorder: self.isCellBorder, // Pass border option here
+            bordeColor: cellBordeColor
+        )
+        
         return cell
     }
     
@@ -270,11 +302,20 @@ extension CustomActionSheetViewController: UITableViewDataSource, UITableViewDel
         let selectedItem = items[indexPath.row]
         
         if isMultipleSelectionEnabled {
-            selectedItems.append(selectedItem)
+            if !selectedItems.contains(where: { ($0 as? String) == (selectedItem as? String) }) {
+                selectedItems.append(selectedItem)
+            }
+            else {
+                if let index = selectedItems.firstIndex(where: { "\($0)" == "\(selectedItem)" }) {
+                    selectedItems.remove(at: index)
+                }
+            }
         } else {
             selectedItems = [selectedItem]
             confirmSelection()
         }
+        
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
@@ -284,9 +325,103 @@ extension CustomActionSheetViewController: UITableViewDataSource, UITableViewDel
                 selectedItems.remove(at: index)
             }
         }
+        
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return self.rowHeight
+    }
+}
+
+
+// Enum to define selection style
+enum SelectionStyle {
+    case round
+    case square
+}
+
+class CustomActionSheetCell: UITableViewCell {
+    // Selection indicator
+    private let selectionIndicator = UIImageView()
+    
+    private let containerView = UIView() // Container view to add padding
+    
+    var isSelectedState: Bool = false {
+        didSet {
+            updateSelectionIndicator()
+        }
+    }
+
+    // Configure selection colors
+    var selectedColor: UIColor = .green
+    var unselectedColor: UIColor = .gray
+    var isRoundSelection: Bool = true
+    var hasBorder: Bool = false // New property for border toggle
+    var borderColor: UIColor = .lightGray
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        // Set up container view
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(containerView)
+        
+        // Constraints for containerView to create a 5-point padding from contentView edges
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -3),
+            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 3),
+            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -3),
+        ])
+        
+        // Add selection indicator inside containerView
+        selectionIndicator.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(selectionIndicator)
+        
+        // Constraints for selection indicator
+        NSLayoutConstraint.activate([
+            selectionIndicator.widthAnchor.constraint(equalToConstant: 24),
+            selectionIndicator.heightAnchor.constraint(equalToConstant: 24),
+            selectionIndicator.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            selectionIndicator.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
+        ])
+        
+        updateBorder()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configure(with text: String, textColor: UIColor, isSelectedState: Bool, isRoundSelection: Bool, selectedColor: UIColor, unselectedColor: UIColor, hasBorder: Bool, bordeColor: UIColor) {
+        self.textLabel?.text = text
+        self.textLabel?.textColor = textColor
+        self.isSelectedState = isSelectedState
+        self.isRoundSelection = isRoundSelection
+        self.selectedColor = selectedColor
+        self.unselectedColor = unselectedColor
+        self.hasBorder = hasBorder
+        self.borderColor = bordeColor
+        updateSelectionIndicator()
+        updateBorder() // Update border when configuration is set
+    }
+    
+    private func updateSelectionIndicator() {
+        // Configure shape based on selection type
+        selectionIndicator.layer.cornerRadius = isRoundSelection ? 12 : 4
+        selectionIndicator.backgroundColor = isSelectedState ? selectedColor : unselectedColor
+    }
+    
+    private func updateBorder() {
+        // Apply border to the containerView if hasBorder is true
+        if hasBorder {
+            containerView.layer.borderColor = self.borderColor.cgColor
+            containerView.layer.borderWidth = 1.0
+            containerView.layer.cornerRadius = 8
+            containerView.clipsToBounds = true
+        } else {
+            containerView.layer.borderWidth = 0
+        }
     }
 }
