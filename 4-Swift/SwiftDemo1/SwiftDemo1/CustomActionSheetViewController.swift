@@ -39,6 +39,8 @@ class CustomActionSheetViewController: UIViewController {
     private let cellBordeColor: UIColor
     private let deselectColor: UIColor
     private let selectColor: UIColor
+    private let deselectImage: UIImage?
+    private let selectImage: UIImage?
     
     // Closure to handle item selection
     var onSelection: (([Any]) -> Void)?
@@ -76,6 +78,8 @@ class CustomActionSheetViewController: UIViewController {
         cellBordeColor: UIColor = .lightGray,
         deselectColor: UIColor = .lightGray,
         selectColor: UIColor = .green,
+        deselectImage: UIImage? = nil,
+        selectImage: UIImage? = nil,
         selectionStyle: SelectionStyle? = nil
     ) {
         self.items = items
@@ -101,6 +105,8 @@ class CustomActionSheetViewController: UIViewController {
         self.cellBordeColor = cellBordeColor
         self.deselectColor = deselectColor
         self.selectColor = selectColor
+        self.deselectImage = deselectImage
+        self.selectImage = selectImage
         self.selectionStyle = selectionStyle ?? (multipleSelection ? .square : .round)
         
         if let sepColor = separatorColor {
@@ -298,7 +304,9 @@ extension CustomActionSheetViewController: UITableViewDataSource, UITableViewDel
             selectedColor: self.selectColor,
             unselectedColor: self.deselectColor,
             hasBorder: self.isCellBorder, // Pass border option here
-            bordeColor: cellBordeColor
+            bordeColor: cellBordeColor,
+            unselectedImage: self.deselectImage,
+            selectedImage: self.selectImage
         )
         
         return cell
@@ -353,6 +361,10 @@ class CustomActionSheetCell: UITableViewCell {
     private let selectionIndicator = UIView()
     private let insetCircleLayer = CALayer()
     
+    // Images for selected and unselected states
+    var unselectedImage: UIImage?
+    var selectedImage: UIImage?
+    
     private let containerView = UIView() // Container view to add padding
     
     var isSelectedState: Bool = false {
@@ -377,7 +389,7 @@ class CustomActionSheetCell: UITableViewCell {
         
         // Constraints for containerView to create a 5-point padding from contentView edges
         NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -3),
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 3),
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -3),
@@ -416,7 +428,18 @@ class CustomActionSheetCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with text: String, textColor: UIColor, isSelectedState: Bool, isRoundSelection: Bool, selectedColor: UIColor, unselectedColor: UIColor, hasBorder: Bool, bordeColor: UIColor) {
+    func configure(
+        with text: String,
+        textColor: UIColor,
+        isSelectedState: Bool,
+        isRoundSelection: Bool,
+        selectedColor: UIColor,
+        unselectedColor: UIColor,
+        hasBorder: Bool,
+        bordeColor: UIColor,
+        unselectedImage: UIImage? = nil,
+        selectedImage: UIImage? = nil
+    ) {
         self.textLabel?.text = text
         self.textLabel?.textColor = textColor
         self.isSelectedState = isSelectedState
@@ -425,17 +448,32 @@ class CustomActionSheetCell: UITableViewCell {
         self.unselectedColor = unselectedColor
         self.hasBorder = hasBorder
         self.borderColor = bordeColor
+        self.unselectedImage = unselectedImage
+        self.selectedImage = selectedImage
+        
         updateSelectionIndicator()
         updateBorder() // Update border when configuration is set
     }
     
     private func updateSelectionIndicator() {
-        // Configure shape based on selection type
-        selectionIndicator.layer.borderColor = isSelectedState ? selectedColor.cgColor : unselectedColor.cgColor
-        insetCircleLayer.backgroundColor = selectedColor.cgColor
-        selectionIndicator.layer.cornerRadius = isRoundSelection ? 12 : 4
-        insetCircleLayer.cornerRadius = isRoundSelection ? 7 : 2 // Adjust radius based on shape
-        insetCircleLayer.isHidden = !isSelectedState // Show only if selected
+        
+        if let unselectedImage = unselectedImage, let selectedImage = selectedImage {
+            // Use images for selection indicator
+            selectionIndicator.layer.contents = isSelectedState ? selectedImage.cgImage : unselectedImage.cgImage
+            selectionIndicator.layer.borderWidth = 0 // No border if using images
+            selectionIndicator.backgroundColor = .clear
+        }
+        else {
+            // Configure shape based on selection type
+            
+            selectionIndicator.layer.contents = nil // Remove any set image
+            selectionIndicator.layer.borderColor = isSelectedState ? selectedColor.cgColor : unselectedColor.cgColor
+            insetCircleLayer.backgroundColor = selectedColor.cgColor
+            selectionIndicator.layer.cornerRadius = isRoundSelection ? 12 : 4
+            
+            insetCircleLayer.cornerRadius = isRoundSelection ? 7 : 2 // Adjust radius based on shape
+            insetCircleLayer.isHidden = !isSelectedState // Show only if selected
+        }
     }
     
     private func updateBorder() {
