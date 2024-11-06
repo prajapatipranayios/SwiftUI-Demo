@@ -23,6 +23,7 @@ class CustomActionSheetViewController: UIViewController {
     private let shouldAnimate: Bool
     private let rowHeight: CGFloat
     private let cellTextColor: UIColor
+    private let selectionStyle: SelectionStyle
     
     // Customizable button colors and texts
     private let cancelButtonBackgroundColor: UIColor
@@ -74,7 +75,8 @@ class CustomActionSheetViewController: UIViewController {
         cellTextColor: UIColor = .black,
         cellBordeColor: UIColor = .lightGray,
         deselectColor: UIColor = .lightGray,
-        selectColor: UIColor = .green
+        selectColor: UIColor = .green,
+        selectionStyle: SelectionStyle? = nil
     ) {
         self.items = items
         self.selectedItems = initialSelectedItems // Assign initial selected items
@@ -99,6 +101,7 @@ class CustomActionSheetViewController: UIViewController {
         self.cellBordeColor = cellBordeColor
         self.deselectColor = deselectColor
         self.selectColor = selectColor
+        self.selectionStyle = selectionStyle ?? (multipleSelection ? .square : .round)
         
         if let sepColor = separatorColor {
             self.separatorColor = sepColor
@@ -283,12 +286,15 @@ extension CustomActionSheetViewController: UITableViewDataSource, UITableViewDel
         let itemText = "\(items[indexPath.row])"
         let isSelected = selectedItems.contains { "\($0)" == itemText }
         
+        // Set selection style based on the selectionStyle property
+        let isRoundSelection = (selectionStyle == .round)
+        
         // Set selection style based on whether multiple selection is enabled
         cell.configure(
             with: itemText, 
             textColor: self.cellTextColor,
             isSelectedState: isSelected,
-            isRoundSelection: !isMultipleSelectionEnabled,
+            isRoundSelection: isRoundSelection,
             selectedColor: self.selectColor,
             unselectedColor: self.deselectColor,
             hasBorder: self.isCellBorder, // Pass border option here
@@ -342,8 +348,10 @@ enum SelectionStyle {
 }
 
 class CustomActionSheetCell: UITableViewCell {
+    
     // Selection indicator
-    private let selectionIndicator = UIImageView()
+    private let selectionIndicator = UIView()
+    private let insetCircleLayer = CALayer()
     
     private let containerView = UIView() // Container view to add padding
     
@@ -387,6 +395,20 @@ class CustomActionSheetCell: UITableViewCell {
             selectionIndicator.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
         ])
         
+        // Configure the outer circle layer
+        selectionIndicator.layer.cornerRadius = 12 // Radius for round shape
+        selectionIndicator.layer.borderWidth = 1.5 // Border width for outer circle
+        selectionIndicator.layer.borderColor = isSelectedState ? selectedColor.cgColor : unselectedColor.cgColor
+        selectionIndicator.layer.masksToBounds = true
+        
+        // Configure the inner inset layer
+        insetCircleLayer.backgroundColor = selectedColor.cgColor
+        insetCircleLayer.cornerRadius = 7 // Adjust radius for inset effect
+        //insetCircleLayer.frame = CGRect(x: 2, y: 2, width: 20, height: 20) // Position inside the outer circle
+        insetCircleLayer.frame = CGRect(x: 5, y: 5, width: 14, height: 14) // Position inside the outer circle
+        
+        selectionIndicator.layer.addSublayer(insetCircleLayer) // Add inset layer to outer layer
+        
         updateBorder()
     }
 
@@ -409,8 +431,11 @@ class CustomActionSheetCell: UITableViewCell {
     
     private func updateSelectionIndicator() {
         // Configure shape based on selection type
+        selectionIndicator.layer.borderColor = isSelectedState ? selectedColor.cgColor : unselectedColor.cgColor
+        insetCircleLayer.backgroundColor = selectedColor.cgColor
         selectionIndicator.layer.cornerRadius = isRoundSelection ? 12 : 4
-        selectionIndicator.backgroundColor = isSelectedState ? selectedColor : unselectedColor
+        insetCircleLayer.cornerRadius = isRoundSelection ? 7 : 2 // Adjust radius based on shape
+        insetCircleLayer.isHidden = !isSelectedState // Show only if selected
     }
     
     private func updateBorder() {
@@ -425,3 +450,10 @@ class CustomActionSheetCell: UITableViewCell {
         }
     }
 }
+
+
+
+
+// MARK: - For Call
+
+//let actionSheet = CustomActionSheetViewController(items: <#T##[Any]#>, initialSelectedItems: <#T##[Any]#>, multipleSelection: <#T##Bool#>, shouldAnimate: <#T##Bool#>, titleText: <#T##String#>, titleBackgroundColor: <#T##UIColor#>, titleTextColor: <#T##UIColor#>, titleFontSize: <#T##CGFloat#>, cancelButtonBackgroundColor: <#T##UIColor#>, confirmButtonBackgroundColor: <#T##UIColor#>, cancelButtonTextColor: <#T##UIColor#>, confirmButtonTextColor: <#T##UIColor#>, cancelButtonText: <#T##String#>, confirmButtonText: <#T##String#>, cancelButtonFontSize: <#T##CGFloat#>, confirmButtonFontSize: <#T##CGFloat#>, rowHeight: <#T##CGFloat#>, separatorColor: <#T##UIColor#>, isCellBorder: <#T##Bool#>, cellTextColor: <#T##UIColor#>, cellBordeColor: <#T##UIColor#>, deselectColor: <#T##UIColor#>, selectColor: <#T##UIColor#>, selectionStyle: <#T##SelectionStyle#>)
