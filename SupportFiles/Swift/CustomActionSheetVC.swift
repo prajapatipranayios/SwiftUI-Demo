@@ -1,5 +1,5 @@
 //
-//  CustomActionSheetViewController.swift
+//  CustomActionSheetVC.swift
 //
 //  Created by Pranay on 05/11/24.
 //
@@ -7,7 +7,7 @@
 import Foundation
 import UIKit
 
-class CustomActionSheetViewController: UIViewController {
+class CustomActionSheetVC: UIViewController {
     
     // MARK: - Properties
     
@@ -281,7 +281,7 @@ class CustomActionSheetViewController: UIViewController {
 
 // MARK: - TableView DataSource & Delegate
 
-extension CustomActionSheetViewController: UITableViewDataSource, UITableViewDelegate {
+extension CustomActionSheetVC: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
@@ -494,4 +494,4 @@ class CustomActionSheetCell: UITableViewCell {
 
 // MARK: - For Call
 
-//let actionSheet = CustomActionSheetViewController(items: <#T##[Any]#>, initialSelectedItems: <#T##[Any]#>, multipleSelection: <#T##Bool#>, shouldAnimate: <#T##Bool#>, titleText: <#T##String#>, titleBackgroundColor: <#T##UIColor#>, titleTextColor: <#T##UIColor#>, titleFontSize: <#T##CGFloat#>, cancelButtonBackgroundColor: <#T##UIColor#>, confirmButtonBackgroundColor: <#T##UIColor#>, cancelButtonTextColor: <#T##UIColor#>, confirmButtonTextColor: <#T##UIColor#>, cancelButtonText: <#T##String#>, confirmButtonText: <#T##String#>, cancelButtonFontSize: <#T##CGFloat#>, confirmButtonFontSize: <#T##CGFloat#>, rowHeight: <#T##CGFloat#>, separatorColor: <#T##UIColor#>, isCellBorder: <#T##Bool#>, cellTextColor: <#T##UIColor#>, cellBordeColor: <#T##UIColor#>, deselectColor: <#T##UIColor#>, selectColor: <#T##UIColor#>, selectionStyle: <#T##SelectionStyle#>)
+//let actionSheet = CustomActionSheetVC(items: <#T##[Any]#>, initialSelectedItems: <#T##[Any]#>, multipleSelection: <#T##Bool#>, shouldAnimate: <#T##Bool#>, titleText: <#T##String#>, titleBackgroundColor: <#T##UIColor#>, titleTextColor: <#T##UIColor#>, titleFontSize: <#T##CGFloat#>, cancelButtonBackgroundColor: <#T##UIColor#>, confirmButtonBackgroundColor: <#T##UIColor#>, cancelButtonTextColor: <#T##UIColor#>, confirmButtonTextColor: <#T##UIColor#>, cancelButtonText: <#T##String#>, confirmButtonText: <#T##String#>, cancelButtonFontSize: <#T##CGFloat#>, confirmButtonFontSize: <#T##CGFloat#>, rowHeight: <#T##CGFloat#>, separatorColor: <#T##UIColor#>, isCellBorder: <#T##Bool#>, cellTextColor: <#T##UIColor#>, cellBordeColor: <#T##UIColor#>, deselectColor: <#T##UIColor#>, selectColor: <#T##UIColor#>, deselectImage: <#T##UIImage?#>, selectImage: <#T##UIImage?#>, selectionStyle: <#T##SelectionStyle#>)
