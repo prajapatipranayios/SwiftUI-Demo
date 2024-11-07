@@ -65,8 +65,8 @@ class CustomActionSheetVC: UIViewController {
         titleFontSize: CGFloat = 20,
         cancelButtonBackgroundColor: UIColor = .white,
         confirmButtonBackgroundColor: UIColor = .white,
-        cancelButtonTextColor: UIColor = .systemBlue,
-        confirmButtonTextColor: UIColor = .systemBlue,
+        cancelButtonTextColor: UIColor = .black,
+        confirmButtonTextColor: UIColor = .black,
         cancelButtonText: String = "Cancel",
         confirmButtonText: String = "Done",
         cancelButtonFontSize: CGFloat = 19,
@@ -462,6 +462,7 @@ class CustomActionSheetCell: UITableViewCell {
             selectionIndicator.layer.contents = isSelectedState ? selectedImage.cgImage : unselectedImage.cgImage
             selectionIndicator.layer.borderWidth = 0 // No border if using images
             selectionIndicator.backgroundColor = .clear
+            insetCircleLayer.isHidden = true
         }
         else {
             // Configure shape based on selection type
@@ -494,4 +495,31 @@ class CustomActionSheetCell: UITableViewCell {
 
 // MARK: - For Call
 
-//let actionSheet = CustomActionSheetVC(items: <#T##[Any]#>, initialSelectedItems: <#T##[Any]#>, multipleSelection: <#T##Bool#>, shouldAnimate: <#T##Bool#>, titleText: <#T##String#>, titleBackgroundColor: <#T##UIColor#>, titleTextColor: <#T##UIColor#>, titleFontSize: <#T##CGFloat#>, cancelButtonBackgroundColor: <#T##UIColor#>, confirmButtonBackgroundColor: <#T##UIColor#>, cancelButtonTextColor: <#T##UIColor#>, confirmButtonTextColor: <#T##UIColor#>, cancelButtonText: <#T##String#>, confirmButtonText: <#T##String#>, cancelButtonFontSize: <#T##CGFloat#>, confirmButtonFontSize: <#T##CGFloat#>, rowHeight: <#T##CGFloat#>, separatorColor: <#T##UIColor#>, isCellBorder: <#T##Bool#>, cellTextColor: <#T##UIColor#>, cellBordeColor: <#T##UIColor#>, deselectColor: <#T##UIColor#>, selectColor: <#T##UIColor#>, deselectImage: <#T##UIImage?#>, selectImage: <#T##UIImage?#>, selectionStyle: <#T##SelectionStyle#>)
+//let actionSheet = CustomActionSheetVC(
+//    items: <#T##[Any]#>,
+//    initialSelectedItems: <#T##[Any]#>,
+//    multipleSelection: <#T##Bool#>,
+//    shouldAnimate: <#T##Bool#>,
+//    titleText: <#T##String#>,
+//    titleBackgroundColor: <#T##UIColor#>,
+//    titleTextColor: <#T##UIColor#>,
+//    titleFontSize: <#T##CGFloat#>,
+//    cancelButtonBackgroundColor: <#T##UIColor#>,
+//    confirmButtonBackgroundColor: <#T##UIColor#>,
+//    cancelButtonTextColor: <#T##UIColor#>,
+//    confirmButtonTextColor: <#T##UIColor#>,
+//    cancelButtonText: <#T##String#>,
+//    confirmButtonText: <#T##String#>,
+//    cancelButtonFontSize: <#T##CGFloat#>,
+//    confirmButtonFontSize: <#T##CGFloat#>,
+//    rowHeight: <#T##CGFloat#>,
+//    separatorColor: <#T##UIColor#>,
+//    isCellBorder: <#T##Bool#>,
+//    cellTextColor: <#T##UIColor#>,
+//    cellBordeColor: <#T##UIColor#>,
+//    deselectColor: <#T##UIColor#>,
+//    selectColor: <#T##UIColor#>,
+//    deselectImage: <#T##UIImage?#>,
+//    selectImage: <#T##UIImage?#>,
+//    selectionStyle: <#T##SelectionStyle#>
+//)

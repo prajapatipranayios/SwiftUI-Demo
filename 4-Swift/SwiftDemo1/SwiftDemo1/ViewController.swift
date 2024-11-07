@@ -82,7 +82,29 @@ class ViewController: UIViewController {
     }
     
     func openAction() {
-        let actionSheet = CustomActionSheetVC(items: ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6", "Option 7", "Option 8", "Option 9", "Option 10", "Option 11", "Option 12", "Option 13", "Option 14", "Option 15", "Option 16", "Option 17", "Option 18", "Option 19", "Option 20", "Option 21", "Option 22", "Option 23", "Option 24", "Option 25", "Option 26", "Option 27"], initialSelectedItems: self.arrStrItem, multipleSelection: true, shouldAnimate: false, isCellBorder: true)
+        let imgSelelct: UIImage = UIImage(named: "select") ?? UIImage(systemName: "circle")!
+        let imgDeselelct: UIImage = UIImage(named: "deselect") ?? UIImage(systemName: "circle.inset.filled")!
+        
+        let actionSheet = CustomActionSheetVC(
+            items: ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6", "Option 7", "Option 8", "Option 9", "Option 10", "Option 11", "Option 12", "Option 13", "Option 14", "Option 15", "Option 16", "Option 17", "Option 18", "Option 19", "Option 20", "Option 21", "Option 22", "Option 23", "Option 24", "Option 25", "Option 26", "Option 27"],
+            initialSelectedItems: self.arrStrItem,
+            multipleSelection: true,
+            shouldAnimate: false,
+            titleText: "Test Options",
+            cancelButtonBackgroundColor: .white,
+            confirmButtonBackgroundColor: .white,
+            cancelButtonTextColor: .red,
+            confirmButtonTextColor: .red,
+            cancelButtonText: "Close",
+            confirmButtonText: "Save",
+            cancelButtonFontSize: 22,
+            confirmButtonFontSize: 22,
+            isCellBorder: true,
+            deselectColor: .systemBlue,
+            selectColor: .darkGray
+            //deselectImage: imgDeselelct,
+            //selectImage: imgSelelct
+        )
         //let actionSheet = CustomActionSheetVC(items: ["Option 1", "Option 2", "Option 3"], initialSelectedItems: self.arrStrItem, multipleSelection: false, shouldAnimate: true, separatorColor: .systemBrown)
         actionSheet.onSelection = { selectedItems in
             print("Selected items: \(selectedItems)")
