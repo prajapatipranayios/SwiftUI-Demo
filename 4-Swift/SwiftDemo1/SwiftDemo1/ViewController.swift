@@ -38,7 +38,8 @@ class ViewController: UIViewController {
             self.ivImage.image = image
         }   //  */
         
-        self.openAction()
+        //self.openAction()
+        videoPlayer.togglePictureInPicture()
     }
     
     @IBOutlet weak var ivImage: UIImageView!
@@ -46,12 +47,19 @@ class ViewController: UIViewController {
     
     var arrStrItem: [Any] = []
     
+    private var videoPlayer: CustomVideoPlayer!
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.ivImage.contentMode = .scaleAspectFit
+        
+        self.setupVideoPlayer()
+        
+        //videoPlayer.togglePictureInPicture()
+        
     }
     
     // Function to configure and show the custom date picker
@@ -111,5 +119,15 @@ class ViewController: UIViewController {
             self.arrStrItem = selectedItems
         }
         present(actionSheet, animated: true)
+    }
+    
+    private func setupVideoPlayer() {
+        let videoURL = URL(string: "https://example.com/sample.mp4")!
+        
+        // Initialize video player with PiP disabled by default
+        videoPlayer = CustomVideoPlayer(frame: CGRect(x: 0, y: 100, width: view.frame.width, height: 300))
+        videoPlayer.setupPlayer(with: videoURL, enablePiP: true) // Pass `true` to enable PiP
+        view.addSubview(videoPlayer)
+        videoPlayer.play()
     }
 }
