@@ -52,12 +52,18 @@
                                     <action selector="btnDisplayMessageDialogTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2M6-lX-bXm"/>
                                 </connections>
                             </button>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="select" translatesAutoresizingMaskIntoConstraints="NO" id="nmu-aX-5sg">
-                                <rect key="frame" x="16" y="326" width="361" height="180.66666666666663"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="profile" translatesAutoresizingMaskIntoConstraints="NO" id="nmu-aX-5sg">
+                                <rect key="frame" x="16" y="326" width="361" height="120.33333333333331"/>
+                                <color key="backgroundColor" systemColor="linkColor"/>
+                                <color key="tintColor" systemColor="linkColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="nmu-aX-5sg" secondAttribute="height" multiplier="2:1" id="jT1-pC-G0S"/>
+                                    <constraint firstAttribute="width" secondItem="nmu-aX-5sg" secondAttribute="height" multiplier="3:1" id="jT1-pC-G0S"/>
                                 </constraints>
                             </imageView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="dOd-Xr-HK4">
+                                <rect key="frame" x="0.0" y="446.33333333333326" width="393" height="371.66666666666674"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -68,16 +74,21 @@
                             <constraint firstItem="NAa-j9-DWR" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="EhB-lt-7An"/>
                             <constraint firstItem="q7L-Xb-iWd" firstAttribute="top" secondItem="xAL-75-TQ4" secondAttribute="bottom" constant="25" id="M8h-XH-vgY"/>
                             <constraint firstItem="nmu-aX-5sg" firstAttribute="top" secondItem="NAa-j9-DWR" secondAttribute="bottom" constant="8" symbolic="YES" id="RKT-et-52j"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="dOd-Xr-HK4" secondAttribute="trailing" id="a2c-xO-qmi"/>
+                            <constraint firstItem="dOd-Xr-HK4" firstAttribute="top" secondItem="nmu-aX-5sg" secondAttribute="bottom" id="bEU-Iw-lmW"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="dOd-Xr-HK4" secondAttribute="bottom" id="frQ-w6-dOX"/>
                             <constraint firstItem="4D9-Bc-BqA" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="iTY-MX-WXo"/>
                             <constraint firstItem="q7L-Xb-iWd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ldi-eG-caz"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="nmu-aX-5sg" secondAttribute="trailing" constant="16" id="pYU-X1-OAp"/>
                             <constraint firstItem="xAL-75-TQ4" firstAttribute="top" secondItem="4D9-Bc-BqA" secondAttribute="bottom" constant="25" id="shE-A2-E7y"/>
+                            <constraint firstItem="dOd-Xr-HK4" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="tgv-SN-0Sf"/>
                             <constraint firstItem="NAa-j9-DWR" firstAttribute="top" secondItem="q7L-Xb-iWd" secondAttribute="bottom" constant="25" id="yVy-SA-7fU"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="CEn-Nn-wGI"/>
                     <connections>
                         <outlet property="ivImage" destination="nmu-aX-5sg" id="bx5-bI-pxI"/>
+                        <outlet property="tableView" destination="dOd-Xr-HK4" id="Ugn-nL-64G"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -104,7 +115,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="select" width="40" height="40"/>
+        <image name="profile" width="512" height="512"/>
+        <systemColor name="linkColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

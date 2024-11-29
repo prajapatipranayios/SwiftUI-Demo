@@ -7,6 +7,19 @@
 
 import UIKit
 
+
+class Section {
+    let title: String
+    let option: [String]
+    var isOpened: Bool = false
+    
+    init(title: String, option: [String], isOpened: Bool = false) {
+        self.title = title
+        self.option = option
+        self.isOpened = isOpened
+    }
+}
+
 class ViewController: UIViewController {
     
     @IBAction func btnShowToastTap(_ sender: UIButton) {
@@ -38,16 +51,34 @@ class ViewController: UIViewController {
             self.ivImage.image = image
         }   //  */
         
-        //self.openAction()
-        videoPlayer.togglePictureInPicture()
+        self.setupVideoPlayer()
     }
     
     @IBOutlet weak var ivImage: UIImageView!
     
     
+    
+    // MARK: - Outlet
+    
+    @IBOutlet weak var tableView: UITableView! {
+        didSet{
+            tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+            //tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        }
+    }
+    
+    private var sections = [Section]()
+    
+    
+    
+    
+    
+    // MARK: - Variable
+    
     var arrStrItem: [Any] = []
     
-    private var videoPlayer: CustomVideoPlayer!
+    
+    
     
     
     
@@ -56,9 +87,19 @@ class ViewController: UIViewController {
         
         self.ivImage.contentMode = .scaleAspectFit
         
-        self.setupVideoPlayer()
         
-        //videoPlayer.togglePictureInPicture()
+        // Setup models
+        
+        sections = [
+            Section(title: "Section 1", option: [1, 2, 3].compactMap({ return "Cell \($0)" })),
+            Section(title: "Section 2", option: [4, 5, 6].compactMap({ return "Cell \($0)" })),
+            Section(title: "Section 3", option: [7, 8, 9].compactMap({ return "Cell \($0)" })),
+            Section(title: "Section 4", option: [10, 11, 12].compactMap({ return "Cell \($0)" }))
+        ]
+        
+        
+        tableView.delegate = self
+        tableView.dataSource = self
         
     }
     
@@ -122,12 +163,59 @@ class ViewController: UIViewController {
     }
     
     private func setupVideoPlayer() {
-        let videoURL = URL(string: "https://example.com/sample.mp4")!
+        // Create the video player view
+        let videoPlayerView = VideoPlayerView(frame: CGRect(x: 20, y: 100, width: 300, height: 200))
+        view.addSubview(videoPlayerView)
         
-        // Initialize video player with PiP disabled by default
-        videoPlayer = CustomVideoPlayer(frame: CGRect(x: 0, y: 100, width: view.frame.width, height: 300))
-        videoPlayer.setupPlayer(with: videoURL, enablePiP: true) // Pass `true` to enable PiP
-        view.addSubview(videoPlayer)
-        videoPlayer.play()
+        // Load and play a video
+        if let videoURL = URL(string: "https://www.example.com/sample.mp4") {
+            videoPlayerView.loadVideo(with: videoURL)
+            videoPlayerView.play()
+        }
     }
+}
+
+
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sections.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let section = sections[section]
+        
+        if section.isOpened {
+            return section.option.count + 1
+        }
+        else {
+            return 1
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        
+        if indexPath.row == 0 {
+            cell.textLabel?.text = sections[indexPath.section].title
+            //return cell
+        }
+        else {
+            cell.textLabel?.text = sections[indexPath.section].option[indexPath.row - 1]
+        }
+        return cell
+        //return UITableViewCell()
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        if indexPath.row == 0 {
+            sections[indexPath.section].isOpened = !sections[indexPath.section].isOpened
+            tableView.reloadSections([indexPath.section], with: .none)
+        }
+        else {
+            print("Selected cell --> \(sections[indexPath.section].option[indexPath.row - 1])")
+        }
+    }
+    
 }

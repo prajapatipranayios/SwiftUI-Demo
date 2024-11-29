@@ -7,42 +7,55 @@
 
 import Foundation
 import UIKit
-import AVKit
 import AVFoundation
 
-class CustomVideoPlayer: UIView {
+class VideoPlayerView: UIView {
     
+    // MARK: - Properties
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
-    private var pipController: AVPictureInPictureController?
-    private var isPipEnabled = false // Default PiP mode is off
-
+    private var playerItem: AVPlayerItem?
+    
+    // Observers
+    private var playerObserver: Any?
+    
+    // MARK: - Initializers
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupPlayerLayer()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        setupPlayerLayer()
     }
     
-    func setupPlayer(with url: URL, enablePiP: Bool = false) {
-        // Set the PiP enable flag
-        isPipEnabled = enablePiP
-
-        // Initialize AVPlayer
-        player = AVPlayer(url: url)
+    deinit {
+        removeObservers()
+    }
+    
+    // MARK: - Setup Methods
+    private func setupPlayerLayer() {
+        player = AVPlayer()
         playerLayer = AVPlayerLayer(player: player)
+        guard let playerLayer = playerLayer else { return }
+        playerLayer.videoGravity = .resizeAspect
+        layer.addSublayer(playerLayer)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
         playerLayer?.frame = bounds
-        playerLayer?.videoGravity = .resizeAspect
-        if let playerLayer = playerLayer {
-            layer.addSublayer(playerLayer)
-        }
+    }
+    
+    // MARK: - Public Methods
+    func loadVideo(with url: URL) {
+        removeObservers()
         
-        // Setup Picture-in-Picture only if enabled
-        if isPipEnabled, AVPictureInPictureController.isPictureInPictureSupported(), let playerLayer = playerLayer {
-            pipController = AVPictureInPictureController(playerLayer: playerLayer)
-            pipController?.delegate = self
-        }
+        playerItem = AVPlayerItem(url: url)
+        player?.replaceCurrentItem(with: playerItem)
+        
+        addObservers()
     }
     
     func play() {
@@ -53,39 +66,36 @@ class CustomVideoPlayer: UIView {
         player?.pause()
     }
     
-    func togglePictureInPicture() {
-        guard isPipEnabled, let pipController = pipController else {
-            print("PiP is not enabled or supported")
-            return
+    func stop() {
+        player?.pause()
+        player?.seek(to: .zero)
+    }
+    
+    // MARK: - Observers
+    private func addObservers() {
+        guard let player = player else { return }
+        playerObserver = player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 600), queue: .main) { [weak self] time in
+            let currentTime = CMTimeGetSeconds(time)
+            print("Current Time: \(currentTime)")
         }
         
-        if pipController.isPictureInPictureActive {
-            pipController.stopPictureInPicture()
-        } else {
-            pipController.startPictureInPicture()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(videoDidEnd),
+                                               name: .AVPlayerItemDidPlayToEndTime,
+                                               object: playerItem)
+    }
+    
+    private func removeObservers() {
+        if let observer = playerObserver {
+            player?.removeTimeObserver(observer)
+            playerObserver = nil
         }
-    }
-}
-
-// MARK: - AVPictureInPictureControllerDelegate
-extension CustomVideoPlayer: AVPictureInPictureControllerDelegate {
-    func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        print("PiP will start")
+        NotificationCenter.default.removeObserver(self)
     }
     
-    func pictureInPictureControllerDidStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        print("PiP started")
-    }
-    
-    func pictureInPictureControllerWillStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        print("PiP will stop")
-    }
-    
-    func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        print("PiP stopped")
-    }
-    
-    func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, failedToStartPictureInPictureWithError error: Error) {
-        print("Failed to start PiP: \(error.localizedDescription)")
+    // MARK: - Notification Handlers
+    @objc private func videoDidEnd() {
+        print("Video ended")
+        stop() // Reset to start
     }
 }
