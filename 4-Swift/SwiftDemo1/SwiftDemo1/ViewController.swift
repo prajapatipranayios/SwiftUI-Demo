@@ -44,6 +44,7 @@ class ViewController: UIViewController {
         self.setupDatePicker()
     }
     
+    @IBOutlet weak var btnDisplayMessageDialog: UIButton!
     @IBAction func btnDisplayMessageDialogTap(_ sender: UIButton) {
         /*let isSelectImageFromCamera = true
         
@@ -51,7 +52,47 @@ class ViewController: UIViewController {
             self.ivImage.image = image
         }   //  */
         
-        self.setupVideoPlayer()
+        //self.setupVideoPlayer()
+        
+        if !self.isOpen1 {
+            self.isOpen1 = true
+            // Create DropdownView
+            dropdownView = DropdownView(items: ["Select", "Sec", "Min"], parentView: view, textAlignment: .left)
+            
+            dropdownView.didSelectItem = { [weak self] selectedItem in
+                //self?.customButton.setTitle(selectedItem, for: .normal)
+                print("Selected item: \(selectedItem)")
+            }
+        }
+        
+        dropdownView.frame = self.btnDisplayMessageDialog.frame
+        dropdownView.toggleDropdown()
+    }
+    
+    @IBOutlet weak var btnDropdownDialog: UIButton!
+    @IBAction func btnDropdownDialogTap(_ sender: UIButton) {
+        /*let isSelectImageFromCamera = true
+            
+        CameraUtilitySingleImage.shared.showImagePicker(from: self, isSelectImageFromCamera: isSelectImageFromCamera) { image in
+            self.ivImage.image = image
+        }   //  */
+        
+        //self.setupVideoPlayer()
+        
+        if !self.isOpen2 {
+            self.isOpen2 = true
+            // Create DropdownView
+            //["Short", "Longer text that might wrap to a second line", "Extremely long text example that goes over multiple lines to test wrapping and sizing."]
+            dropdownView = DropdownView(items: ["Short", "Longer text that might wrap to a second line", "Extremely long text example that goes over multiple lines to test wrapping and sizing."], parentView: view, textAlignment: .left)
+            
+            dropdownView.didSelectItem = { [weak self] selectedItem in
+                //self?.customButton.setTitle(selectedItem, for: .normal)
+                print("Selected item: \(selectedItem)")
+            }
+        }
+        
+        dropdownView.frame = self.btnDropdownDialog.frame
+        dropdownView.toggleDropdown()
     }
     
     @IBOutlet weak var ivImage: UIImageView!
@@ -77,7 +118,10 @@ class ViewController: UIViewController {
     
     var arrStrItem: [Any] = []
     
+    private var dropdownView: DropdownView!
     
+    var isOpen1: Bool = false
+    var isOpen2: Bool = false
     
     
     

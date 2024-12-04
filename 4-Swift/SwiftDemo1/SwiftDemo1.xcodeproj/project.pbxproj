@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1218834F2CF4AF0D00D89A74 /* CustomVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1218834E2CF4AF0D00D89A74 /* CustomVideoPlayer.swift */; };
+		124998992D005DEB003A29CE /* DropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 124998982D005DEB003A29CE /* DropdownView.swift */; };
 		12E3FECB2CCBC5480014B440 /* CustomDateSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E3FECA2CCBC5480014B440 /* CustomDateSelection.swift */; };
 		12EA23692CD9F511008CAC98 /* CameraUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EA23682CD9F511008CAC98 /* CameraUtility.swift */; };
 		12EA236B2CDA3244008CAC98 /* CustomActionSheetVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EA236A2CDA3244008CAC98 /* CustomActionSheetVC.swift */; };
@@ -26,6 +27,7 @@
 
 /* Begin PBXFileReference section */
 		1218834E2CF4AF0D00D89A74 /* CustomVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomVideoPlayer.swift; sourceTree = "<group>"; };
+		124998982D005DEB003A29CE /* DropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropdownView.swift; sourceTree = "<group>"; };
 		12E3FECA2CCBC5480014B440 /* CustomDateSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDateSelection.swift; sourceTree = "<group>"; };
 		12EA23682CD9F511008CAC98 /* CameraUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraUtility.swift; path = ../../../SupportFiles/Swift/CameraUtility.swift; sourceTree = "<group>"; };
 		12EA236A2CDA3244008CAC98 /* CustomActionSheetVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomActionSheetVC.swift; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 				12F476482CCA115E00BE01E0 /* Assets.xcassets */,
 				12F4764A2CCA115E00BE01E0 /* LaunchScreen.storyboard */,
 				12F4764D2CCA115E00BE01E0 /* Info.plist */,
+				124998982D005DEB003A29CE /* DropdownView.swift */,
 			);
 			path = SwiftDemo1;
 			sourceTree = "<group>";
@@ -171,6 +174,7 @@
 				12F4765A2CCA646700BE01E0 /* CustomPopupView.swift in Sources */,
 				12EA23692CD9F511008CAC98 /* CameraUtility.swift in Sources */,
 				1218834F2CF4AF0D00D89A74 /* CustomVideoPlayer.swift in Sources */,
+				124998992D005DEB003A29CE /* DropdownView.swift in Sources */,
 				12E3FECB2CCBC5480014B440 /* CustomDateSelection.swift in Sources */,
 				12F28A302CDB50AB009FB484 /* TableViewCell.swift in Sources */,
 				12F476582CCA5E5B00BE01E0 /* PopupHelper.swift in Sources */,
