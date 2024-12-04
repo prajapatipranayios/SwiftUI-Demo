@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class DropdownView: UIView, UITableViewDelegate, UITableViewDataSource {
+class CustomDropdownView: UIView, UITableViewDelegate, UITableViewDataSource {
 
     // MARK: - Properties
     private let tableView = UITableView()

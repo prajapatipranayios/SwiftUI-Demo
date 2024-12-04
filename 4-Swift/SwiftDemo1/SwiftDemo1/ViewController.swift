@@ -57,7 +57,7 @@ class ViewController: UIViewController {
         if !self.isOpen1 {
             self.isOpen1 = true
             // Create DropdownView
-            dropdownView = DropdownView(items: ["Select", "Sec", "Min"], parentView: view, textAlignment: .left)
+            dropdownView = CustomDropdownView(items: ["Select", "Sec", "Min"], parentView: view, textAlignment: .left)
             
             dropdownView.didSelectItem = { [weak self] selectedItem in
                 //self?.customButton.setTitle(selectedItem, for: .normal)
@@ -83,7 +83,7 @@ class ViewController: UIViewController {
             self.isOpen2 = true
             // Create DropdownView
             //["Short", "Longer text that might wrap to a second line", "Extremely long text example that goes over multiple lines to test wrapping and sizing."]
-            dropdownView = DropdownView(items: ["Short", "Longer text that might wrap to a second line", "Extremely long text example that goes over multiple lines to test wrapping and sizing."], parentView: view, textAlignment: .left)
+            dropdownView = CustomDropdownView(items: ["Short", "Longer text that might wrap to a second line", "Extremely long text example that goes over multiple lines to test wrapping and sizing."], parentView: view, textAlignment: .left)
             
             dropdownView.didSelectItem = { [weak self] selectedItem in
                 //self?.customButton.setTitle(selectedItem, for: .normal)
@@ -118,7 +118,7 @@ class ViewController: UIViewController {
     
     var arrStrItem: [Any] = []
     
-    private var dropdownView: DropdownView!
+    private var dropdownView: CustomDropdownView!
     
     var isOpen1: Bool = false
     var isOpen2: Bool = false
