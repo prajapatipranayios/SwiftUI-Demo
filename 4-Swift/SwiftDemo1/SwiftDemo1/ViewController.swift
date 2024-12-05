@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import DropDown
 
 
 class Section {
@@ -54,7 +55,7 @@ class ViewController: UIViewController {
         
         //self.setupVideoPlayer()
         
-        if !self.isOpen1 {
+        /*if !self.isOpen1 {
             self.isOpen1 = true
             // Create DropdownView
             dropdownView = CustomDropdownView(items: ["Select", "Sec", "Min"], parentView: view, textAlignment: .left)
@@ -66,7 +67,9 @@ class ViewController: UIViewController {
         }
         
         dropdownView.frame = self.btnDisplayMessageDialog.frame
-        dropdownView.toggleDropdown()
+        dropdownView.toggleDropdown()   /// */
+        
+        self.menu.show()
     }
     
     @IBOutlet weak var btnDropdownDialog: UIButton!
@@ -79,7 +82,7 @@ class ViewController: UIViewController {
         
         //self.setupVideoPlayer()
         
-        if !self.isOpen2 {
+        /*if !self.isOpen2 {
             self.isOpen2 = true
             // Create DropdownView
             //["Short", "Longer text that might wrap to a second line", "Extremely long text example that goes over multiple lines to test wrapping and sizing."]
@@ -92,11 +95,26 @@ class ViewController: UIViewController {
         }
         
         dropdownView.frame = self.btnDropdownDialog.frame
-        dropdownView.toggleDropdown()
+        dropdownView.toggleDropdown()   ///  */
+        
+        
+        self.menu.show()
     }
     
     @IBOutlet weak var ivImage: UIImageView!
     
+    
+    let menu: DropDown = {
+        let menu = DropDown()
+        menu.dataSource = [
+            "Item 1",
+            "Item 2",
+            "Item 3",
+            "Item 4",
+            "Item 5"
+        ]
+        return menu
+    }()
     
     
     // MARK: - Outlet
@@ -144,6 +162,9 @@ class ViewController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
+        
+        //self.menu.anchorView = self.btnDisplayMessageDialog
+        self.menu.anchorView = self.btnDropdownDialog
         
     }
     
