@@ -98,7 +98,71 @@ class ViewController: UIViewController {
         dropdownView.toggleDropdown()   ///  */
         
         
-        self.menu.show()
+        //self.menu.show()
+        
+        
+        
+        // Example Usage:
+//        let usdFormatter = CurrencyFormatter(currencyCode: "USD", amount: 12345634.78)
+//        let usdInfo = usdFormatter.formattedCurrency()
+//
+//        if let symbol = usdInfo.symbol, let unicode = usdInfo.unicode, let formattedAmount = usdInfo.formattedAmount {
+//            print("USD:")
+//            print("Symbol: \(symbol)")
+//            print("Unicode (Code): \(unicode)")
+//            print("Formatted Amount: \(formattedAmount)")
+//        } else {
+//            print("Could not format USD currency.")
+//        }
+
+//        let eurFormatter = CurrencyFormatter(currencyCode: "EUR", amount: 98734234.65)
+//        let eurInfo = eurFormatter.formattedCurrency()
+//
+//        if let symbol = eurInfo.symbol, let unicode = eurInfo.unicode, let formattedAmount = eurInfo.formattedAmount {
+//            print("\nEUR:")
+//            print("Symbol: \(symbol)")
+//            print("Unicode (Code): \(unicode)")
+//            print("Formatted Amount: \(formattedAmount)")
+//        } else {
+//            print("Could not format EUR currency.")
+//        }
+
+//        if let details = CurrencyFormatter.formattedCurrency(for: .INR, amount: 1234567.89) {
+//            print("Symbol: \(details.symbol)")
+//            print("Unicode: \(details.unicode)")
+//            print("Formatted Amount: \(details.formattedAmount)")
+//        }
+        
+        if let details = CurrencyFormatter.formattedCurrency(for: .USD, amount: 12345678.90) {
+            print("Symbol: \(details.symbol)")
+            print("Formatted Amount: \(details.formattedAmount)")
+        }
+
+//        let jpyFormatter = CurrencyFormatter(currencyCode: "JPY", amount: 10000)
+//        let jpyInfo = jpyFormatter.formattedCurrency()
+//
+//        if let symbol = jpyInfo.symbol, let unicode = jpyInfo.unicode, let formattedAmount = jpyInfo.formattedAmount {
+//            print("\nJPY:")
+//            print("Symbol: \(symbol)")
+//            print("Unicode (Code): \(unicode)")
+//            print("Formatted Amount: \(formattedAmount)")
+//        } else {
+//            print("Could not format JPY currency.")
+//        }
+
+//        let unknownFormatter = CurrencyFormatter(currencyCode: "XYZ", amount: 100)
+//        let unknownInfo = unknownFormatter.formattedCurrency()
+//
+//        if let symbol = unknownInfo.symbol, let unicode = unknownInfo.unicode, let formattedAmount = unknownInfo.formattedAmount {
+//            print("\nXYZ:")
+//            print("Symbol: \(symbol)")
+//            print("Unicode (Code): \(unicode)")
+//            print("Formatted Amount: \(formattedAmount)")
+//        } else {
+//            print("Could not format XYZ currency.")
+//        }
+
+        
     }
     
     @IBOutlet weak var ivImage: UIImageView!
