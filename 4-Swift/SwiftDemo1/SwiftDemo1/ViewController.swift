@@ -162,6 +162,15 @@ class ViewController: UIViewController {
 //            print("Could not format XYZ currency.")
 //        }
 
+        let a = ["1", "2", "3", "4", "5"]
+        let b = ["a", "b"]
+        
+        for i in 0..<a.count {
+            print(a[i])
+            if b.count > i {
+                print(b[i])
+            }
+        }
         
     }
     
