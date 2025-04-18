@@ -260,6 +260,7 @@ class ViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(UINib(nibName: "SenderMessageBubbleTVCell", bundle: nil), forCellReuseIdentifier: "SenderMessageBubbleTVCell")
         
 //        ViewController.shared = self
 //        setupSideMenu()
@@ -293,72 +294,6 @@ class ViewController: UIViewController {
         menuVC.delegate = self  // Ensure delegate is set before showing menu
         menuVC.showMenu(from: self)
     }
-    
-//    @IBAction func toggleSideMenu(_ sender: Any) {
-//        if sideMenuViewController.view.frame.origin.x < 0 {
-//            // Show the side menu
-//            UIView.animate(withDuration: 0.3) {
-//                self.sideMenuViewController.view.frame.origin.x = 0
-//                //self.dimmingView.alpha = 0
-//            }
-//        } else {
-//            // Hide the side menu
-//            UIView.animate(withDuration: 0.3) {
-//                self.sideMenuViewController.view.frame.origin.x = -self.view.frame.width
-//                //self.dimmingView.alpha = 1
-//            }
-//        }
-//    }
-    
-//    func setupSideMenu() {
-//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//        sideMenuViewController = storyboard.instantiateViewController(withIdentifier: "SideMenuViewController") as? SideMenuViewController
-//        
-//        addChild(sideMenuViewController)
-//        sideMenuViewController.view.frame = CGRect(x: -view.frame.width, y: 0, width: view.frame.width * 0.75, height: view.frame.height)
-//        view.addSubview(sideMenuViewController.view)
-//        sideMenuViewController.didMove(toParent: self)
-//    }
-    
-//    func toggleSideMenu() {
-//        UIView.animate(withDuration: 0.3) {
-//            if self.sideMenuViewController.view.frame.origin.x < 0 {
-//                self.sideMenuViewController.view.frame.origin.x = 0
-//            } else {
-//                self.sideMenuViewController.view.frame.origin.x = -self.view.frame.width
-//            }
-//        }
-//    }
-    
-
-//    @objc func handlePanGesture(_ recognizer: UIPanGestureRecognizer) {
-//        let translation = recognizer.translation(in: view)
-//        let velocity = recognizer.velocity(in: view)
-//
-//        switch recognizer.state {
-//        case .began, .changed:
-//            // Move the side menu based on the pan gesture
-//            if sideMenuViewController.view.frame.origin.x + translation.x >= -view.frame.width && sideMenuViewController.view.frame.origin.x + translation.x <= 0 {
-//                sideMenuViewController.view.frame.origin.x += translation.x
-//                recognizer.setTranslation(.zero, in: view)
-//            }
-//        case .ended:
-//            // Animate the side menu to open or close based on velocity
-//            if velocity.x > 0 {
-//                // Open the side menu
-//                UIView.animate(withDuration: 0.3) {
-//                    self.sideMenuViewController.view.frame.origin.x = 0
-//                }
-//            } else {
-//                // Close the side menu
-//                UIView.animate(withDuration: 0.3) {
-//                    self.sideMenuViewController.view.frame.origin.x = -self.view.frame.width
-//                }
-//            }
-//        default:
-//            break
-//        }
-//    }
     
     // Function to configure and show the custom date picker
     private func setupDatePicker() {
@@ -458,7 +393,22 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
             //return cell
         }
         else {
-            cell.textLabel?.text = sections[indexPath.section].option[indexPath.row - 1]
+            //cell.textLabel?.text = sections[indexPath.section].option[indexPath.row - 1]
+            let cell1 = tableView.dequeueReusableCell(withIdentifier: "SenderMessageBubbleTVCell", for: indexPath) as! SenderMessageBubbleTVCell
+            
+            if indexPath.row % 2 == 0 {
+                cell1.constraintTopViewMsgToSuper.priority = .required
+                cell1.viewDateSection.isHidden = true
+                cell1.lblEdited.text = ""
+            }
+            else {
+                cell1.constraintTopViewMsgToSuper.priority = .defaultLow
+                cell1.viewDateSection.isHidden = false
+                cell1.lblMsg.text = "f sdf fdsf g"
+                cell1.lblEdited.text = "Edited"
+            }
+            
+            return cell1
         }
         return cell
         //return UITableViewCell()
@@ -479,78 +429,45 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension ViewController: SideMenuDelegate {
     
-//    func didSelectMenuItem(named: String) {
-//        print("Selected: \(named)")
-//        switch named {
-//            case "Dashboard":
-//            navigationController?.pushViewController(SecondScreenVC(), animated: true)
-//        case "Profile":
-//            navigationController?.pushViewController(ThirdScreenVC(), animated: true)
-//        case "Settings":
-//            navigationController?.pushViewController(ForthScreenVC(), animated: true)
-//        case "Logout":
-//            isLoggedIn = false
-//            menuVC.updateMenuItems(forUserLoggedIn: isLoggedIn)
-//        case "Login":
-//            isLoggedIn = true
-//            menuVC.updateMenuItems(forUserLoggedIn: isLoggedIn)
-//            navigationController?.pushViewController(SecondScreenVC(), animated: true)
-//        case "About":
-//            navigationController?.pushViewController(ThirdScreenVC(), animated: true)
-//        case "Help":
-//            navigationController?.pushViewController(ForthScreenVC(), animated: true)
-//        default:
-//            break
-//        }
-//    }
-    
     func didSelectMenuItem(named: String) {
-        print("Selected: \(named)")
-        
-        // Get the root navigation controller
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                  let window = windowScene.windows.first,
-                  let rootNav = window.rootViewController as? UINavigationController else {
-                return
-            }
-        
-        dismiss(animated: true) { [weak self] in
-            guard let self = self else { return }
-            
-            var viewController: UIViewController?
-            
-            switch named {
-            case "Dashboard":
-                viewController = SecondScreenVC()
-            case "Profile":
-                viewController = ThirdScreenVC()
-            case "Settings":
-                viewController = ForthScreenVC()
-            case "Logout":
-                self.isLoggedIn = false
-                self.menuVC.updateMenuItems(forUserLoggedIn: self.isLoggedIn)
-            case "Login":
-                self.isLoggedIn = true
-                self.menuVC.updateMenuItems(forUserLoggedIn: self.isLoggedIn)
-                viewController = SecondScreenVC()
-            case "About":
-                viewController = ThirdScreenVC()
-            case "Help":
-                viewController = ForthScreenVC()
-            default:
-                break
-            }
-            
-//            if let vc = viewController {
-//                //self.navigationController?.pushViewController(vc, animated: true)
-//                
-//                rootNavController.setViewControllers([ViewController(), vc], animated: true)
-//            }
-            // Navigate only if a valid ViewController is found
-            if let vc = viewController {
-                rootNav.popToRootViewController(animated: false) // Ensure navigation starts from root
-                rootNav.pushViewController(vc, animated: true) // Navigate to the selected screen
-            }
+              let window = windowScene.windows.first,
+              let rootNav = window.rootViewController as? UINavigationController else {
+            print("❌ Navigation Controller not found!")
+            return
         }
+        
+        // Choose the correct view controller to navigate
+        var viewController: UIViewController?
+        
+        switch named {
+        case "Dashboard":
+            viewController = SecondScreenVC()
+        case "Profile":
+            viewController = ThirdScreenVC()
+        case "Settings":
+            viewController = ForthScreenVC()
+        case "Logout":
+            self.isLoggedIn = false
+            self.menuVC.updateMenuItems(forUserLoggedIn: self.isLoggedIn)
+        case "Login":
+            self.isLoggedIn = true
+            self.menuVC.updateMenuItems(forUserLoggedIn: self.isLoggedIn)
+            viewController = SecondScreenVC()
+        case "About":
+            viewController = ThirdScreenVC()
+        case "Help":
+            viewController = ForthScreenVC()
+        default:
+            break
+        }
+        
+        // Navigate only if a valid ViewController is found
+        if let vc = viewController {
+            rootNav.popToRootViewController(animated: false) // Ensure we start navigation from root
+            rootNav.pushViewController(vc, animated: true) // Navigate to selected screen
+        }
+        
+        //dismissMenu() // Close the side menu
     }
 }

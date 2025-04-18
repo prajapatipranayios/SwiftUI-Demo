@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -64,6 +64,10 @@
 		FB48CFD825F54D8A56CEA3A9 /* Pods_SwiftDemo1.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftDemo1.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		1250C1962DB22B850052D0D6 /* ChatBubble */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ChatBubble; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		12F476392CCA115B00BE01E0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -116,6 +120,7 @@
 				12FEFE732D916BD30056AB00 /* SecondScreenVC.swift */,
 				12FEFE752D916C080056AB00 /* ThirdScreenVC.swift */,
 				12FEFE772D916C210056AB00 /* ForthScreenVC.swift */,
+				1250C1962DB22B850052D0D6 /* ChatBubble */,
 				12F476452CCA115C00BE01E0 /* Main.storyboard */,
 				12F476482CCA115E00BE01E0 /* Assets.xcassets */,
 				12F4764A2CCA115E00BE01E0 /* LaunchScreen.storyboard */,
@@ -158,6 +163,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				1250C1962DB22B850052D0D6 /* ChatBubble */,
 			);
 			name = SwiftDemo1;
 			productName = SwiftDemo1;
@@ -220,9 +228,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SwiftDemo1/Pods-SwiftDemo1-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SwiftDemo1/Pods-SwiftDemo1-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

@@ -19,15 +19,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
             
-            // Instantiate ViewController from Storyboard
+            // Ensure the initial ViewController is embedded in NavigationController
             let rootVC = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
-            
-            // Wrap ViewController in a NavigationController
             let navController = UINavigationController(rootViewController: rootVC)
-            
-            // Set root view controller
+
             window.rootViewController = navController
             window.makeKeyAndVisible()
             self.window = window

@@ -15,24 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-//        let homeVC = ViewController()
-//        let sideMenuController = SideMenuController(contentViewController: homeVC)
-//        window?.rootViewController = sideMenuController
-//        window?.makeKeyAndVisible()
-        
-        //SideMenuManager.shared.setup()
-        
-//        let rootVC = ViewController()
-//        let navController = UINavigationController(rootViewController: rootVC)
-//        window?.rootViewController = navController
-//        window?.makeKeyAndVisible()
-        
-//        let rootVC = ViewController() // Your main screen
-//        let navController = UINavigationController(rootViewController: rootVC)
-//        window?.rootViewController = navController
-//        window?.makeKeyAndVisible()
-        
-        
         return true
     }
 
