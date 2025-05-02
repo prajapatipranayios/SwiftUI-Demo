@@ -117,14 +117,23 @@
                                     <action selector="btnDropdownDialogTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jkc-4V-BgL"/>
                                 </connections>
                             </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QTX-Re-9lc" customClass="CustomVideoPlayerView" customModule="SwiftDemo1" customModuleProvider="target">
+                                <rect key="frame" x="16" y="162" width="361" height="155"/>
+                                <color key="backgroundColor" systemColor="systemGray5Color"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="155" id="7gI-hw-1uA"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="YWZ-ul-lTz" secondAttribute="bottom" id="2LD-4c-Yfl"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="QTX-Re-9lc" secondAttribute="trailing" constant="16" id="7yv-BB-J1i"/>
                             <constraint firstItem="4D9-Bc-BqA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BM1-Zc-Mtx"/>
                             <constraint firstItem="xAL-75-TQ4" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BUR-Kc-7Oc"/>
                             <constraint firstItem="nmu-aX-5sg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="Cel-wZ-CI5"/>
+                            <constraint firstItem="QTX-Re-9lc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="KIC-EA-WIc"/>
                             <constraint firstItem="q7L-Xb-iWd" firstAttribute="top" secondItem="xAL-75-TQ4" secondAttribute="bottom" constant="25" id="M8h-XH-vgY"/>
                             <constraint firstItem="nmu-aX-5sg" firstAttribute="top" secondItem="NAa-j9-DWR" secondAttribute="bottom" constant="8" symbolic="YES" id="RKT-et-52j"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="YWZ-ul-lTz" secondAttribute="trailing" constant="26" id="Zef-nG-sUv"/>
@@ -137,6 +146,7 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="nmu-aX-5sg" secondAttribute="trailing" constant="16" id="pYU-X1-OAp"/>
                             <constraint firstItem="xAL-75-TQ4" firstAttribute="top" secondItem="4D9-Bc-BqA" secondAttribute="bottom" constant="25" id="shE-A2-E7y"/>
                             <constraint firstItem="dOd-Xr-HK4" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="tgv-SN-0Sf"/>
+                            <constraint firstItem="QTX-Re-9lc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="vko-bn-pGb"/>
                             <constraint firstItem="NAa-j9-DWR" firstAttribute="top" secondItem="q7L-Xb-iWd" secondAttribute="bottom" constant="25" id="yVy-SA-7fU"/>
                         </constraints>
                     </view>
@@ -146,6 +156,7 @@
                         <outlet property="btnDropdownDialog" destination="YWZ-ul-lTz" id="yve-ko-MA1"/>
                         <outlet property="ivImage" destination="nmu-aX-5sg" id="bx5-bI-pxI"/>
                         <outlet property="tableView" destination="dOd-Xr-HK4" id="o8U-7U-Nvy"/>
+                        <outlet property="viewPlayer" destination="QTX-Re-9lc" id="S5I-zv-gtR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

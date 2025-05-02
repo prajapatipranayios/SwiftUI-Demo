@@ -7,6 +7,7 @@
 
 import UIKit
 import DropDown
+import AVKit
 
 
 class Section {
@@ -188,8 +189,21 @@ class ViewController: UIViewController {
 //        }
         
         //SideMenuManager.shared.toggleMenu()
-        self.showMenu()
+        //self.showMenu()
         
+        if let videoURL = URL(string: "https://growy-lamda.s3.eu-west-2.amazonaws.com/post/post_18_16_49_59_345253.mp4") {
+            playVideo(from: videoURL, on: self)
+        }
+        
+    }
+    
+    func playVideo(from url: URL, on viewController: UIViewController) {
+        let player = AVPlayer(url: url)
+        let playerViewController = AVPlayerViewController()
+        playerViewController.player = player
+        viewController.present(playerViewController, animated: true) {
+            player.play()
+        }
     }
     
     @IBOutlet weak var ivImage: UIImageView!
@@ -207,7 +221,6 @@ class ViewController: UIViewController {
         return menu
     }()
     
-    
     // MARK: - Outlet
     
     @IBOutlet weak var tableView: UITableView!
@@ -220,6 +233,8 @@ class ViewController: UIViewController {
     
     private var sections = [Section]()
     
+    //@IBOutlet weak var viewPlayer: VideoPlayerView!
+    @IBOutlet weak var viewPlayer: CustomVideoPlayerView!
     
     
     // MARK: - Variable
@@ -282,6 +297,11 @@ class ViewController: UIViewController {
         menuVC.delegate = self
         menuVC.updateMenuItems(forUserLoggedIn: isLoggedIn)
         setupNavigationBar()
+        
+        
+        if let url = URL(string: "https://www.w3schools.com/html/mov_bbb.mp4") {
+            self.viewPlayer.playVideo(with: url)
+        }
         
     }
     
@@ -354,17 +374,17 @@ class ViewController: UIViewController {
         present(actionSheet, animated: true)
     }
     
-    private func setupVideoPlayer() {
-        // Create the video player view
-        let videoPlayerView = VideoPlayerView(frame: CGRect(x: 20, y: 100, width: 300, height: 200))
-        view.addSubview(videoPlayerView)
-        
-        // Load and play a video
-        if let videoURL = URL(string: "https://www.example.com/sample.mp4") {
-            videoPlayerView.loadVideo(with: videoURL)
-            videoPlayerView.play()
-        }
-    }
+//    private func setupVideoPlayer() {
+//        // Create the video player view
+//        let videoPlayerView = VideoPlayerView(frame: CGRect(x: 20, y: 100, width: 300, height: 200))
+//        view.addSubview(videoPlayerView)
+//        
+//        // Load and play a video
+//        if let videoURL = URL(string: "https://www.example.com/sample.mp4") {
+//            //videoPlayerView.loadVideo(with: videoURL)
+//            //videoPlayerView.play()
+//        }
+//    }
 }
 
 
