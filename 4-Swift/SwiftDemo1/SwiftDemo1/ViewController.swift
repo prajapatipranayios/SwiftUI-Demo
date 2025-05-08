@@ -307,8 +307,8 @@ class ViewController: UIViewController {
             // height is handled internally
         ])
         
-        //if let url = URL(string: "https://www.w3schools.com/html/mov_bbb.mp4") {
-        if let url = URL(string: "https://growy-lamda.s3.eu-west-2.amazonaws.com/post/post_18_16_49_59_345253.mp4") {
+        if let url = URL(string: "https://www.w3schools.com/html/mov_bbb.mp4") {
+        //if let url = URL(string: "https://growy-lamda.s3.eu-west-2.amazonaws.com/post/post_18_16_49_59_345253.mp4") {
             self.viewPlayer.playVideo(with: url)
         }
     }

@@ -11,10 +11,14 @@ import AVFoundation
 
 class FullscreenVideoViewController: UIViewController {
     var videoView: CustomVideoPlayerView?
+    var preferredVideoSize: CGSize = .zero
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .allButUpsideDown
+        let isPortrait = preferredVideoSize.height > preferredVideoSize.width
+        return isPortrait ? .portrait : .landscape
     }
+
+    override var shouldAutorotate: Bool { true }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +33,12 @@ class FullscreenVideoViewController: UIViewController {
                 videoView.topAnchor.constraint(equalTo: view.topAnchor),
                 videoView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
             ])
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            let isPortrait = self.preferredVideoSize.height > self.preferredVideoSize.width
+            let value = isPortrait ? UIInterfaceOrientation.portrait.rawValue : UIInterfaceOrientation.landscapeRight.rawValue
+            UIDevice.current.setValue(value, forKey: "orientation")
         }
     }
 }
@@ -55,6 +65,7 @@ class CustomVideoPlayerView: UIView {
     private var timeObserver: Any?
     private weak var originalSuperview: UIView?
     private var originalConstraints: [NSLayoutConstraint] = []
+    private var videoNaturalSize: CGSize = .zero
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -240,6 +251,9 @@ class CustomVideoPlayerView: UIView {
 
             let fullscreenVC = FullscreenVideoViewController()
             fullscreenVC.videoView = self
+            fullscreenVC.modalPresentationStyle = .fullScreen
+            fullscreenVC.preferredVideoSize = self.videoNaturalSize
+
             parentVC.present(fullscreenVC, animated: true)
             isFullscreen = true
         }
@@ -262,6 +276,10 @@ class CustomVideoPlayerView: UIView {
            let item = object as? AVPlayerItem,
            item.status == .readyToPlay {
             activityIndicator.stopAnimating()
+
+            if let track = item.asset.tracks(withMediaType: .video).first {
+                videoNaturalSize = track.naturalSize.applying(track.preferredTransform)
+            }
         }
     }
 }
