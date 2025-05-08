@@ -117,11 +117,22 @@
                                     <action selector="btnDropdownDialogTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jkc-4V-BgL"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QTX-Re-9lc" customClass="CustomVideoPlayerView" customModule="SwiftDemo1" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="162" width="393" height="250"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QTX-Re-9lc">
+                                <rect key="frame" x="0.0" y="162" width="393" height="622"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Bi-DY-4Eo" customClass="CustomVideoPlayerView" customModule="SwiftDemo1" customModuleProvider="target">
+                                        <rect key="frame" x="8" y="8" width="377" height="200"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="200" id="iQ1-6x-U5n"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
                                 <color key="backgroundColor" systemColor="systemGray5Color"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="250" id="a0g-qJ-xnt"/>
+                                    <constraint firstItem="8Bi-DY-4Eo" firstAttribute="top" secondItem="QTX-Re-9lc" secondAttribute="top" constant="8" id="EZe-wG-BmF"/>
+                                    <constraint firstItem="8Bi-DY-4Eo" firstAttribute="leading" secondItem="QTX-Re-9lc" secondAttribute="leading" constant="8" id="L0q-oU-3se"/>
+                                    <constraint firstAttribute="trailing" secondItem="8Bi-DY-4Eo" secondAttribute="trailing" constant="8" id="fRD-iw-n8j"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -133,6 +144,7 @@
                             <constraint firstItem="xAL-75-TQ4" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BUR-Kc-7Oc"/>
                             <constraint firstItem="nmu-aX-5sg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="Cel-wZ-CI5"/>
                             <constraint firstItem="QTX-Re-9lc" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Cp8-xU-6gQ"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="QTX-Re-9lc" secondAttribute="bottom" id="DPG-zB-Lx2"/>
                             <constraint firstItem="QTX-Re-9lc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Hpm-1P-dH3"/>
                             <constraint firstItem="q7L-Xb-iWd" firstAttribute="top" secondItem="xAL-75-TQ4" secondAttribute="bottom" constant="25" id="M8h-XH-vgY"/>
                             <constraint firstItem="nmu-aX-5sg" firstAttribute="top" secondItem="NAa-j9-DWR" secondAttribute="bottom" constant="8" symbolic="YES" id="RKT-et-52j"/>
@@ -156,7 +168,7 @@
                         <outlet property="btnDropdownDialog" destination="YWZ-ul-lTz" id="yve-ko-MA1"/>
                         <outlet property="ivImage" destination="nmu-aX-5sg" id="bx5-bI-pxI"/>
                         <outlet property="tableView" destination="dOd-Xr-HK4" id="o8U-7U-Nvy"/>
-                        <outlet property="viewPlayer" destination="QTX-Re-9lc" id="S5I-zv-gtR"/>
+                        <outlet property="viewPlayer" destination="8Bi-DY-4Eo" id="iZk-ml-tgH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

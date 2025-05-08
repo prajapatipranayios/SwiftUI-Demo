@@ -244,16 +244,34 @@ class CustomVideoPlayerView: UIView {
         if isFullscreen {
             parentVC.dismiss(animated: true) { [weak self] in
                 guard let self = self, let superview = self.originalSuperview else { return }
-                superview.addSubview(self)
-                NSLayoutConstraint.activate(self.originalConstraints)
+
                 self.translatesAutoresizingMaskIntoConstraints = false
-                self.setNeedsLayout()
-                self.layoutIfNeeded()
+                superview.addSubview(self)
+
+                // Deactivate old constraints and apply new one with 25% height
+                NSLayoutConstraint.deactivate(self.constraints)
+
+                let screenHeight = UIScreen.main.bounds.height
+                let heightConstraint = self.heightAnchor.constraint(equalToConstant: screenHeight * 0.25)
+
+                NSLayoutConstraint.activate([
+                    self.leadingAnchor.constraint(equalTo: superview.leadingAnchor),
+                    self.trailingAnchor.constraint(equalTo: superview.trailingAnchor),
+                    self.topAnchor.constraint(equalTo: superview.topAnchor),
+                    heightConstraint
+                ])
+
+                superview.setNeedsLayout()
+                superview.layoutIfNeeded()
+
                 self.isFullscreen = false
             }
         } else {
             originalSuperview = self.superview
-            originalConstraints = self.constraints
+            originalConstraints = self.superview?.constraints.filter {
+                $0.firstItem as? UIView == self || $0.secondItem as? UIView == self
+            } ?? []
+
             self.removeFromSuperview()
 
             let fullscreenVC = FullscreenVideoViewController()
