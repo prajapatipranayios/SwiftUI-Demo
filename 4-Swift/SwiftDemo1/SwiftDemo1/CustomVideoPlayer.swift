@@ -57,6 +57,7 @@ class CustomVideoPlayerView: UIView {
     private let bottomControlsView = UIView()
     private let muteButton = UIButton(type: .custom)
     private let fullscreenButton = UIButton(type: .custom)
+    private let forwardButton = UIButton(type: .custom)
     private let activityIndicator = UIActivityIndicatorView(style: .large)
 
     private var isPlaying = false
@@ -152,6 +153,11 @@ class CustomVideoPlayerView: UIView {
         fullscreenButton.tintColor = .white
         fullscreenButton.addTarget(self, action: #selector(didTapFullscreen), for: .touchUpInside)
         bottomControlsView.addSubview(fullscreenButton)
+
+        forwardButton.setImage(UIImage(systemName: "goforward.10"), for: .normal)
+        forwardButton.tintColor = .white
+        forwardButton.addTarget(self, action: #selector(didTapForward), for: .touchUpInside)
+        bottomControlsView.addSubview(forwardButton)
     }
 
     private func layoutBottomControls() {
@@ -166,9 +172,10 @@ class CustomVideoPlayerView: UIView {
 
         muteButton.frame = CGRect(x: padding, y: 10, width: buttonSize, height: buttonSize)
         fullscreenButton.frame = CGRect(x: bottomControlsView.frame.width - buttonSize - padding, y: 10, width: buttonSize, height: buttonSize)
+        forwardButton.frame = CGRect(x: fullscreenButton.frame.minX - buttonSize - padding, y: 10, width: buttonSize, height: buttonSize)
 
         currentTimeLabel.frame = CGRect(x: muteButton.frame.maxX + padding, y: 15, width: labelWidth, height: 20)
-        durationLabel.frame = CGRect(x: fullscreenButton.frame.minX - labelWidth - padding, y: 15, width: labelWidth, height: 20)
+        durationLabel.frame = CGRect(x: forwardButton.frame.minX - labelWidth - padding, y: 15, width: labelWidth, height: 20)
 
         slider.frame = CGRect(
             x: currentTimeLabel.frame.maxX + padding,
@@ -259,6 +266,14 @@ class CustomVideoPlayerView: UIView {
         }
     }
 
+    @objc private func didTapForward() {
+        guard let player = player else { return }
+        let currentTime = CMTimeGetSeconds(player.currentTime())
+        let newTime = currentTime + 10.0
+        let seekTime = CMTime(seconds: newTime, preferredTimescale: 1)
+        player.seek(to: seekTime)
+    }
+
     private func findParentViewController() -> UIViewController? {
         var responder: UIResponder? = self
         while let next = responder?.next {
@@ -276,7 +291,9 @@ class CustomVideoPlayerView: UIView {
            let item = object as? AVPlayerItem,
            item.status == .readyToPlay {
             activityIndicator.stopAnimating()
-
+            player?.play()
+            isPlaying = true
+            updatePlayPauseButton()
             if let track = item.asset.tracks(withMediaType: .video).first {
                 videoNaturalSize = track.naturalSize.applying(track.preferredTransform)
             }
