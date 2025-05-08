@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1218834F2CF4AF0D00D89A74 /* CustomVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1218834E2CF4AF0D00D89A74 /* CustomVideoPlayer.swift */; };
 		124998992D005DEB003A29CE /* CustomDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 124998982D005DEB003A29CE /* CustomDropdownView.swift */; };
 		1264F22F2D9289F0006A16A5 /* SidemenuComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1264F22E2D9289F0006A16A5 /* SidemenuComponent.swift */; };
 		12B54DE02D3F7404008B2441 /* CurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B54DDF2D3F7404008B2441 /* CurrencyFormatter.swift */; };
@@ -34,7 +33,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1218834E2CF4AF0D00D89A74 /* CustomVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomVideoPlayer.swift; sourceTree = "<group>"; };
 		124998982D005DEB003A29CE /* CustomDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDropdownView.swift; sourceTree = "<group>"; };
 		1264F22E2D9289F0006A16A5 /* SidemenuComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidemenuComponent.swift; sourceTree = "<group>"; };
 		12B54DDF2D3F7404008B2441 /* CurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatter.swift; sourceTree = "<group>"; };
@@ -66,6 +64,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1250C1962DB22B850052D0D6 /* ChatBubble */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ChatBubble; sourceTree = "<group>"; };
+		12A190E32DCCE3FC004B0E8B /* VideoPlayer */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = VideoPlayer; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,7 +109,7 @@
 				12E3FECA2CCBC5480014B440 /* CustomDateSelection.swift */,
 				12EA23682CD9F511008CAC98 /* CameraUtility.swift */,
 				12EA236A2CDA3244008CAC98 /* CustomActionSheetVC.swift */,
-				1218834E2CF4AF0D00D89A74 /* CustomVideoPlayer.swift */,
+				12A190E32DCCE3FC004B0E8B /* VideoPlayer */,
 				12B54DDF2D3F7404008B2441 /* CurrencyFormatter.swift */,
 				12F28A2E2CDB50AB009FB484 /* TableViewCell.swift */,
 				12F28A2F2CDB50AB009FB484 /* TableViewCell.xib */,
@@ -166,6 +165,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				1250C1962DB22B850052D0D6 /* ChatBubble */,
+				12A190E32DCCE3FC004B0E8B /* VideoPlayer */,
 			);
 			name = SwiftDemo1;
 			productName = SwiftDemo1;
@@ -277,7 +277,6 @@
 				12F476562CCA4D1E00BE01E0 /* ToastMessage.swift in Sources */,
 				12F4765A2CCA646700BE01E0 /* CustomPopupView.swift in Sources */,
 				12EA23692CD9F511008CAC98 /* CameraUtility.swift in Sources */,
-				1218834F2CF4AF0D00D89A74 /* CustomVideoPlayer.swift in Sources */,
 				124998992D005DEB003A29CE /* CustomDropdownView.swift in Sources */,
 				12B54DE02D3F7404008B2441 /* CurrencyFormatter.swift in Sources */,
 				12FEFE782D916C210056AB00 /* ForthScreenVC.swift in Sources */,

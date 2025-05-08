@@ -120,7 +120,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QTX-Re-9lc">
                                 <rect key="frame" x="0.0" y="162" width="393" height="622"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Bi-DY-4Eo" customClass="CustomVideoPlayerView" customModule="SwiftDemo1" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Bi-DY-4Eo" customClass="APVideoPlayer" customModule="SwiftDemo1" customModuleProvider="target">
                                         <rect key="frame" x="8" y="8" width="377" height="200"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
@@ -168,7 +168,7 @@
                         <outlet property="btnDropdownDialog" destination="YWZ-ul-lTz" id="yve-ko-MA1"/>
                         <outlet property="ivImage" destination="nmu-aX-5sg" id="bx5-bI-pxI"/>
                         <outlet property="tableView" destination="dOd-Xr-HK4" id="o8U-7U-Nvy"/>
-                        <outlet property="viewPlayer" destination="8Bi-DY-4Eo" id="iZk-ml-tgH"/>
+                        <outlet property="viewPlayer" destination="8Bi-DY-4Eo" id="NaJ-Rg-IPQ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
