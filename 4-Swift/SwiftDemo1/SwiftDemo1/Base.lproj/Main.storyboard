@@ -117,10 +117,12 @@
                                     <action selector="btnDropdownDialogTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jkc-4V-BgL"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QTX-Re-9lc" customClass="CustomVideoPlayerView" customModule="SwiftDemo1" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="162" width="393" height="622"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QTX-Re-9lc" customClass="CustomVideoPlayerView" customModule="SwiftDemo1" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="162" width="393" height="250"/>
                                 <color key="backgroundColor" systemColor="systemGray5Color"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="250" id="a0g-qJ-xnt"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -130,11 +132,14 @@
                             <constraint firstItem="4D9-Bc-BqA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BM1-Zc-Mtx"/>
                             <constraint firstItem="xAL-75-TQ4" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BUR-Kc-7Oc"/>
                             <constraint firstItem="nmu-aX-5sg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="Cel-wZ-CI5"/>
+                            <constraint firstItem="QTX-Re-9lc" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Cp8-xU-6gQ"/>
+                            <constraint firstItem="QTX-Re-9lc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Hpm-1P-dH3"/>
                             <constraint firstItem="q7L-Xb-iWd" firstAttribute="top" secondItem="xAL-75-TQ4" secondAttribute="bottom" constant="25" id="M8h-XH-vgY"/>
                             <constraint firstItem="nmu-aX-5sg" firstAttribute="top" secondItem="NAa-j9-DWR" secondAttribute="bottom" constant="8" symbolic="YES" id="RKT-et-52j"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="YWZ-ul-lTz" secondAttribute="trailing" constant="26" id="Zef-nG-sUv"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="dOd-Xr-HK4" secondAttribute="trailing" id="a2c-xO-qmi"/>
                             <constraint firstItem="dOd-Xr-HK4" firstAttribute="top" secondItem="nmu-aX-5sg" secondAttribute="bottom" id="bEU-Iw-lmW"/>
+                            <constraint firstItem="QTX-Re-9lc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="dgm-Tq-ApF"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="dOd-Xr-HK4" secondAttribute="bottom" id="frQ-w6-dOX"/>
                             <constraint firstItem="4D9-Bc-BqA" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="iTY-MX-WXo"/>
                             <constraint firstItem="NAa-j9-DWR" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="kEg-Kx-c0r"/>

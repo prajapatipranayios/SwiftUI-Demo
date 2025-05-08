@@ -9,12 +9,36 @@ import Foundation
 import UIKit
 import AVFoundation
 
+class FullscreenVideoViewController: UIViewController {
+    var videoView: CustomVideoPlayerView?
+
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .allButUpsideDown
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .black
+
+        if let videoView = videoView {
+            videoView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(videoView)
+            NSLayoutConstraint.activate([
+                videoView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                videoView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                videoView.topAnchor.constraint(equalTo: view.topAnchor),
+                videoView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
+        }
+    }
+}
+
 class CustomVideoPlayerView: UIView {
 
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
     private var playerItem: AVPlayerItem?
-    
+
     private let playPauseButton = UIButton(type: .custom)
     private let slider = UISlider()
     private let currentTimeLabel = UILabel()
@@ -29,6 +53,8 @@ class CustomVideoPlayerView: UIView {
     private var isMuted = false
     private var isFullscreen = false
     private var timeObserver: Any?
+    private weak var originalSuperview: UIView?
+    private var originalConstraints: [NSLayoutConstraint] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -72,32 +98,27 @@ class CustomVideoPlayerView: UIView {
         playerLayer?.frame = bounds
         controlsContainerView.frame = bounds
         layoutBottomControls()
-        activityIndicator.center = center
+        activityIndicator.center = CGPoint(x: bounds.midX, y: bounds.midY)
     }
 
     private func setupUI() {
         backgroundColor = .black
 
-        // Container View
         addSubview(controlsContainerView)
         controlsContainerView.backgroundColor = UIColor(white: 0, alpha: 0.4)
 
-        // Activity Indicator
         activityIndicator.hidesWhenStopped = true
         activityIndicator.color = .white
         addSubview(activityIndicator)
 
-        // Play/Pause Button
         playPauseButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
         playPauseButton.tintColor = .white
         playPauseButton.addTarget(self, action: #selector(didTapPlayPause), for: .touchUpInside)
         controlsContainerView.addSubview(playPauseButton)
 
-        // Bottom Controls
         bottomControlsView.backgroundColor = UIColor(white: 0, alpha: 0.5)
         controlsContainerView.addSubview(bottomControlsView)
 
-        // Time Labels
         currentTimeLabel.font = .systemFont(ofSize: 12)
         currentTimeLabel.textColor = .white
         currentTimeLabel.text = "00:00"
@@ -108,17 +129,14 @@ class CustomVideoPlayerView: UIView {
         durationLabel.text = "--:--"
         bottomControlsView.addSubview(durationLabel)
 
-        // Slider
         slider.addTarget(self, action: #selector(sliderValueChanged), for: .valueChanged)
         bottomControlsView.addSubview(slider)
 
-        // Mute Button
         muteButton.setImage(UIImage(systemName: "speaker.wave.2.fill"), for: .normal)
         muteButton.tintColor = .white
         muteButton.addTarget(self, action: #selector(didTapMute), for: .touchUpInside)
         bottomControlsView.addSubview(muteButton)
 
-        // Fullscreen Button
         fullscreenButton.setImage(UIImage(systemName: "arrow.up.left.and.arrow.down.right"), for: .normal)
         fullscreenButton.tintColor = .white
         fullscreenButton.addTarget(self, action: #selector(didTapFullscreen), for: .touchUpInside)
@@ -206,17 +224,23 @@ class CustomVideoPlayerView: UIView {
         guard let parentVC = findParentViewController() else { return }
 
         if isFullscreen {
-            parentVC.dismiss(animated: true, completion: nil)
-            isFullscreen = false
+            parentVC.dismiss(animated: true) { [weak self] in
+                guard let self = self, let superview = self.originalSuperview else { return }
+                superview.addSubview(self)
+                NSLayoutConstraint.activate(self.originalConstraints)
+                self.translatesAutoresizingMaskIntoConstraints = false
+                self.setNeedsLayout()
+                self.layoutIfNeeded()
+                self.isFullscreen = false
+            }
         } else {
-            let fullscreenVC = UIViewController()
-            fullscreenVC.modalPresentationStyle = .fullScreen
-            fullscreenVC.view.backgroundColor = .black
+            originalSuperview = self.superview
+            originalConstraints = self.constraints
             self.removeFromSuperview()
-            fullscreenVC.view.addSubview(self)
-            self.frame = fullscreenVC.view.bounds
-            self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            parentVC.present(fullscreenVC, animated: true, completion: nil)
+
+            let fullscreenVC = FullscreenVideoViewController()
+            fullscreenVC.videoView = self
+            parentVC.present(fullscreenVC, animated: true)
             isFullscreen = true
         }
     }
