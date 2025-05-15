@@ -105,7 +105,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
-    // MARK: - UITableViewDelegate
+    // MARK: - UITableViewDelegates
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)

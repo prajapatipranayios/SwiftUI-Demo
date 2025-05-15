@@ -18,10 +18,23 @@ class VideoDemoVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let videoURL = URL(string: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4") {
+        /*if let videoURL = URL(string: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4") {
             viewVideoPlayer.configure(with: videoURL, shouldLoop: true)
-            viewVideoPlayer.play()
+            viewVideoPlayer.play()  
         }
+        //  */
+        let arrUrl: [String] = [
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
+        ]
+        
+        let urls = arrUrl.compactMap { URL(string: $0) }
+        
+        viewVideoPlayer.configure(with: urls, startAt: 0)
+        viewVideoPlayer.play()
     }
     
     private func setupVideoPlayer() {
@@ -44,6 +57,6 @@ class VideoDemoVC: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //videoPlayer.pause()
+        viewVideoPlayer.cleanUpPlayer()
     }
 }

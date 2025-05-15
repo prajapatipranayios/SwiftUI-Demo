@@ -20,7 +20,9 @@ class VideoPlayerView: UIView {
     
     public var isPlaying: Bool {
         return isVideoPlaying
-    }
+    }   //  */
+    
+    
     
     // MARK: - UI Components
     private let controlsContainerView: UIView = {
@@ -35,6 +37,24 @@ class VideoPlayerView: UIView {
         button.tintColor = .white
         button.imageView?.contentMode = .scaleAspectFit
         button.addTarget(self, action: #selector(handlePlayPause), for: .touchUpInside)
+        return button
+    }()
+    
+    private let previousButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "backward.fill"), for: .normal)
+        button.tintColor = .white
+        button.imageView?.contentMode = .scaleAspectFit
+        button.addTarget(self, action: #selector(handlePrevious), for: .touchUpInside)
+        return button
+    }()
+    
+    private let nextButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "forward.fill"), for: .normal)
+        button.tintColor = .white
+        button.imageView?.contentMode = .scaleAspectFit
+        button.addTarget(self, action: #selector(handleNext), for: .touchUpInside)
         return button
     }()
     
@@ -63,6 +83,14 @@ class VideoPlayerView: UIView {
         return slider
     }()
     
+    let buttonSize: CGFloat = 64
+    let spacing: CGFloat = 20
+    private var videoURLs: [URL] = []
+    private var currentIndex: Int = 0
+
+    
+        
+    
     // MARK: - Initializers
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -90,6 +118,8 @@ class VideoPlayerView: UIView {
     private func setupControls() {
         addSubview(controlsContainerView)
         controlsContainerView.addSubview(playPauseButton)
+        controlsContainerView.addSubview(previousButton)
+        controlsContainerView.addSubview(nextButton)
         controlsContainerView.addSubview(currentTimeLabel)
         controlsContainerView.addSubview(progressSlider)
         controlsContainerView.addSubview(durationLabel)
@@ -109,9 +139,25 @@ class VideoPlayerView: UIView {
         controlsContainerView.frame = bounds
         
         let buttonSize: CGFloat = 64
+        let spacing: CGFloat = 20
+
         playPauseButton.frame = CGRect(
             x: (bounds.width - buttonSize) / 2,
             y: (bounds.height - buttonSize) / 2,
+            width: buttonSize,
+            height: buttonSize
+        )
+
+        previousButton.frame = CGRect(
+            x: playPauseButton.frame.minX - spacing - buttonSize,
+            y: playPauseButton.frame.minY,
+            width: buttonSize,
+            height: buttonSize
+        )
+
+        nextButton.frame = CGRect(
+            x: playPauseButton.frame.maxX + spacing,
+            y: playPauseButton.frame.minY,
             width: buttonSize,
             height: buttonSize
         )
@@ -127,12 +173,28 @@ class VideoPlayerView: UIView {
     }
     
     // MARK: - Public Configuration
-    public func configure(with url: URL, shouldLoop: Bool = false) {
+    func configure(with urls: [URL], startAt index: Int = 0, shouldLoop: Bool = false) {
+        guard !urls.isEmpty else { return }
+        self.videoURLs = urls
         self.shouldLoop = shouldLoop
-        removePlayerObservers()
+        self.currentIndex = index
+        loadVideo(at: currentIndex)
+    }
+    
+    private func loadVideo(at index: Int) {
+        guard index >= 0 && index < videoURLs.count else { return }
         
+        player?.pause()
+        playerLayer?.player = nil
+        
+        let url = videoURLs[index]
         player = AVPlayer(url: url)
         playerLayer?.player = player
+        
+        isVideoPlaying = false
+        
+        playPauseButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
+
         addPeriodicTimeObserver()
         
         NotificationCenter.default.addObserver(
@@ -160,6 +222,30 @@ class VideoPlayerView: UIView {
         player?.seek(to: .zero)
         isVideoPlaying = false
         playPauseButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
+    }
+    
+    @objc private func handlePrevious() {
+        // Implement previous logic
+        guard currentIndex > 0 else { return }
+        currentIndex -= 1
+        loadVideo(at: currentIndex)
+        play()
+    }
+
+    @objc private func handleNext() {
+        // Implement next logic
+        guard currentIndex < videoURLs.count - 1 else { return }
+        currentIndex += 1
+        loadVideo(at: currentIndex)
+        play()
+    }
+    
+    @objc func cleanUpPlayer() {
+        pause()
+        player?.replaceCurrentItem(with: nil)
+        player = nil
+        playerLayer?.player = nil
+        removePeriodicTimeObserver()
     }
     
     // MARK: - Time Observers
