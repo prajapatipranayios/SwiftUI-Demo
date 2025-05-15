@@ -40,6 +40,10 @@ class ViewController: UIViewController {
         
         DemoItem(title: "Video With PIP",
                  imageName: "pip",
+                 viewControllerType: VideoPIPVC.self),
+        
+        DemoItem(title: "Image Slideshow",
+                 imageName: "pip",
                  viewControllerType: VideoPIPVC.self)
     ]
     
