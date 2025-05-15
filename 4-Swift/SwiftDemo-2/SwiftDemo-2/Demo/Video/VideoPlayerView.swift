@@ -58,6 +58,24 @@ class VideoPlayerView: UIView {
         return button
     }()
     
+    private let forwardButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "goforward.30"), for: .normal)
+        button.tintColor = .white
+        button.imageView?.contentMode = .scaleAspectFit
+        button.addTarget(self, action: #selector(handleForward), for: .touchUpInside)
+        return button
+    }()
+    
+    private let backwardButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "gobackward.30"), for: .normal)
+        button.tintColor = .white
+        button.imageView?.contentMode = .scaleAspectFit
+        button.addTarget(self, action: #selector(handleBackward), for: .touchUpInside)
+        return button
+    }()
+    
     private let currentTimeLabel: UILabel = {
         let label = UILabel()
         label.text = "00:00"
@@ -87,7 +105,8 @@ class VideoPlayerView: UIView {
     let spacing: CGFloat = 20
     private var videoURLs: [URL] = []
     private var currentIndex: Int = 0
-
+    private var hideControlsTimer: Timer?
+    
     
         
     
@@ -120,6 +139,8 @@ class VideoPlayerView: UIView {
         controlsContainerView.addSubview(playPauseButton)
         controlsContainerView.addSubview(previousButton)
         controlsContainerView.addSubview(nextButton)
+        controlsContainerView.addSubview(backwardButton)
+        controlsContainerView.addSubview(forwardButton)
         controlsContainerView.addSubview(currentTimeLabel)
         controlsContainerView.addSubview(progressSlider)
         controlsContainerView.addSubview(durationLabel)
@@ -140,21 +161,27 @@ class VideoPlayerView: UIView {
         
         let buttonSize: CGFloat = 64
         let spacing: CGFloat = 20
-
+        
+        let padding: CGFloat = 16
+        let labelWidth: CGFloat = 50
+        let buttonWidth: CGFloat = 30
+        let sliderHeight: CGFloat = 20
+        let yPosition = bounds.height - 40
+        
         playPauseButton.frame = CGRect(
             x: (bounds.width - buttonSize) / 2,
             y: (bounds.height - buttonSize) / 2,
             width: buttonSize,
             height: buttonSize
         )
-
+        
         previousButton.frame = CGRect(
             x: playPauseButton.frame.minX - spacing - buttonSize,
             y: playPauseButton.frame.minY,
             width: buttonSize,
             height: buttonSize
         )
-
+        
         nextButton.frame = CGRect(
             x: playPauseButton.frame.maxX + spacing,
             y: playPauseButton.frame.minY,
@@ -162,13 +189,32 @@ class VideoPlayerView: UIView {
             height: buttonSize
         )
         
-        currentTimeLabel.frame = CGRect(x: 16, y: bounds.height - 30, width: 50, height: 20)
-        durationLabel.frame = CGRect(x: bounds.width - 66, y: bounds.height - 30, width: 50, height: 20)
-        progressSlider.frame = CGRect(
+        currentTimeLabel.frame = CGRect(x: padding, y: yPosition, width: labelWidth, height: sliderHeight)
+        
+        backwardButton.frame = CGRect(
             x: currentTimeLabel.frame.maxX + 8,
-            y: bounds.height - 30,
-            width: durationLabel.frame.minX - currentTimeLabel.frame.maxX - 16,
-            height: 20
+            y: yPosition - 5,
+            width: buttonWidth,
+            height: buttonWidth
+        )
+        
+        durationLabel.frame = CGRect(x: bounds.width - labelWidth - padding, y: yPosition, width: labelWidth, height: sliderHeight)
+        
+        forwardButton.frame = CGRect(
+            x: durationLabel.frame.minX - buttonWidth - 8,
+            y: yPosition - 5,
+            width: buttonWidth,
+            height: buttonWidth
+        )
+        
+        let sliderX = backwardButton.frame.maxX + 8
+        let sliderWidth = forwardButton.frame.minX - sliderX - 8
+        
+        progressSlider.frame = CGRect(
+            x: sliderX,
+            y: yPosition,
+            width: sliderWidth,
+            height: sliderHeight
         )
     }
     
@@ -240,6 +286,21 @@ class VideoPlayerView: UIView {
         play()
     }
     
+    @objc private func handleForward() {
+        guard let duration = player?.currentItem?.duration else { return }
+        let currentTime = CMTimeGetSeconds(player?.currentTime() ?? .zero)
+        let newTime = min(currentTime + 30, CMTimeGetSeconds(duration))
+        let seekTime = CMTime(seconds: newTime, preferredTimescale: 600)
+        player?.seek(to: seekTime)
+    }
+
+    @objc private func handleBackward() {
+        let currentTime = CMTimeGetSeconds(player?.currentTime() ?? .zero)
+        let newTime = max(currentTime - 30, 0)
+        let seekTime = CMTime(seconds: newTime, preferredTimescale: 600)
+        player?.seek(to: seekTime)
+    }
+    
     @objc func cleanUpPlayer() {
         pause()
         player?.replaceCurrentItem(with: nil)
@@ -297,6 +358,41 @@ class VideoPlayerView: UIView {
             self.controlsContainerView.alpha = self.controlsContainerView.alpha == 0 ? 1 : 0
         }
     }
+    
+//    @objc private func handleTap() {
+//        let shouldShow = controlsContainerView.alpha == 0
+//        UIView.animate(withDuration: 0.3) {
+//            self.controlsContainerView.alpha = shouldShow ? 1 : 0
+//        }
+//        
+//        if shouldShow {
+//            startHideControlsTimer()
+//        } else {
+//            cancelHideControlsTimer()
+//        }
+//    }
+//    
+//    private func startHideControlsTimer() {
+//        cancelHideControlsTimer()
+//        hideControlsTimer = Timer.scheduledTimer(
+//            timeInterval: 5.0,
+//            target: self,
+//            selector: #selector(hideControls),
+//            userInfo: nil,
+//            repeats: false
+//        )
+//    }
+//
+//    private func cancelHideControlsTimer() {
+//        hideControlsTimer?.invalidate()
+//        hideControlsTimer = nil
+//    }
+//
+//    @objc private func hideControls() {
+//        UIView.animate(withDuration: 0.3) {
+//            self.controlsContainerView.alpha = 0
+//        }
+//    }
     
     @objc private func playerDidFinishPlaying() {
         if shouldLoop {
