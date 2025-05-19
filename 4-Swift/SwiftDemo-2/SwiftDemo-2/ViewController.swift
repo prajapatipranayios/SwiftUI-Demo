@@ -36,7 +36,7 @@ class ViewController: UIViewController {
         
         DemoItem(title: "Audio Demo",
                  imageName: "music.note",
-                 viewControllerType: AudioDemoVC.self),
+                 viewControllerType: AudioPlayerVC.self),
         
         DemoItem(title: "Video With PIP",
                  imageName: "pip",
