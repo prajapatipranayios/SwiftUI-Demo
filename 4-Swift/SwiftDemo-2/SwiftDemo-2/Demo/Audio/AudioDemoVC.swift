@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import AVFoundation
+import MediaPlayer
 
 
 // MARK: - Demo View Controllers
@@ -435,6 +436,57 @@ class AudioPlayerVC: UIViewController {
         updateAudioUI(for: index)
     }
     
+    private func setupNowPlaying(title: String, artist: String = "Unknown Artist", duration: TimeInterval) {
+        var nowPlayingInfo = [String: Any]()
+        nowPlayingInfo[MPMediaItemPropertyTitle] = title
+        nowPlayingInfo[MPMediaItemPropertyArtist] = artist
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = duration
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player?.currentTime().seconds ?? 0
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? currentRate : 0
+
+        // Optional: Add artwork
+        if let image = UIImage(named: "audio_thumbnail") {
+            let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+        }
+
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    
+    private func setupRemoteTransportControls() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+
+        commandCenter.playCommand.addTarget { [weak self] _ in
+            self?.player?.play()
+            self?.player?.rate = self?.currentRate ?? 1.0
+            self?.isPlaying = true
+            self?.updateNowPlayingPlaybackRate()
+            return .success
+        }
+
+        commandCenter.pauseCommand.addTarget { [weak self] _ in
+            self?.player?.pause()
+            self?.isPlaying = false
+            self?.updateNowPlayingPlaybackRate()
+            return .success
+        }
+
+        commandCenter.nextTrackCommand.addTarget { [weak self] _ in
+            self?.playNextAudio()
+            return .success
+        }
+
+        commandCenter.previousTrackCommand.addTarget { [weak self] _ in
+            self?.playPreviousAudio()
+            return .success
+        }
+    }
+    
+    private func updateNowPlayingPlaybackRate() {
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? currentRate : 0
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player?.currentTime().seconds ?? 0
+    }
+    
     private func updateAudioUI(for index: Int) {
         titleLabel.text = "Audio \(index + 1)"
         // descriptionLabel.text = ...
@@ -527,6 +579,7 @@ class AudioPlayerVC: UIViewController {
             durationLabel.text = formatTime(totalSeconds)
             progressSlider.value = Float(seconds / totalSeconds)
         }
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = seconds
     }
     
     private func formatTime(_ seconds: Double) -> String {
