@@ -40,7 +40,7 @@ class AudioPlayerVC: UIViewController {
     private var timeObserver: Any?
     private var isPlaying = false
     private var currentSpeedIndex = 0
-    private let speeds: [Float] = [1.0, 1.5, 2.0, 3.0]
+    private let trackSpeeds: [Float] = [1.0, 1.5, 2.0, 3.0]
     private var isPremiumUser = false // Toggle based on actual login state
     private var sleepTimer: Timer?
     private var audioURLs: [URL] {  // Your audio list
@@ -54,6 +54,7 @@ class AudioPlayerVC: UIViewController {
     }
     private var currentAudioIndex: Int = 0
     private var timeObserverToken: Any?
+    private var currentRate: Float = 1.0
     
     
     
@@ -131,31 +132,22 @@ class AudioPlayerVC: UIViewController {
         durationLabel.translatesAutoresizingMaskIntoConstraints = false
 
         // MARK: Playback Buttons
-        //playPauseButton.setTitle("▶️", for: .normal)    //play.fill
         playPauseButton.setSymbolImage("play.fill", tintColor: .systemBlue)
         playPauseButton.addTarget(self, action: #selector(togglePlayPause), for: .touchUpInside)
         setButtonSize(playPauseButton, width: 60, height: 60)
-
-        //skipForwardButton.setTitle("⏩10s", for: .normal)
-        //skipForwardButton.setImage(UIImage(systemName: "goforward.10"), for: .normal)
+        
         skipForwardButton.setSymbolImage("goforward.10", pointSize: 25, tintColor: .systemBlue)
         skipForwardButton.addTarget(self, action: #selector(skipForward), for: .touchUpInside)
         setButtonSize(skipForwardButton, width: 40, height: 40)
         
-        //skipBackwardButton.setTitle("⏪10s", for: .normal)
-        //skipBackwardButton.setImage(UIImage(systemName: "gobackward.10"), for: .normal)
         skipBackwardButton.setSymbolImage("gobackward.10", pointSize: 25, tintColor: .systemBlue)
         skipBackwardButton.addTarget(self, action: #selector(skipBackward), for: .touchUpInside)
         setButtonSize(skipBackwardButton, width: 40, height: 40)
         
-        //nextButton.setTitle("⏭", for: .normal)  //  forward.end.alt.fill
-        //nextButton.setImage(UIImage(systemName: "forward.end.alt.fill"), for: .normal)
         nextButton.setSymbolImage("forward.end.alt.fill", pointSize: 25, tintColor: .systemBlue)
         nextButton.addTarget(self, action: #selector(playNextAudio), for: .touchUpInside)
         setButtonSize(nextButton, width: 40, height: 40)
         
-        //previousButton.setTitle("⏮", for: .normal)  //  backward.end.alt.fill
-        //previousButton.setImage(UIImage(systemName: "backward.end.alt.fill"), for: .normal)
         previousButton.setSymbolImage("backward.end.alt.fill", pointSize: 25, tintColor: .systemBlue)
         previousButton.addTarget(self, action: #selector(playPreviousAudio), for: .touchUpInside)
         setButtonSize(previousButton, width: 40, height: 40)
@@ -371,21 +363,27 @@ class AudioPlayerVC: UIViewController {
     // MARK: - Actions
     @objc private func togglePlayPause() {
         guard let player = player else { return }
-        isPlaying.toggle()
+        
         if isPlaying {
-            player.play()
-            playPauseButton.setSymbolImage("pause.fill", tintColor: .systemBlue)
-        } else {
             player.pause()
             playPauseButton.setSymbolImage("play.fill", tintColor: .systemBlue)
+        } else {
+            player.play()
+            player.rate = currentRate
+            playPauseButton.setSymbolImage("pause.fill", tintColor: .systemBlue)
         }
+        isPlaying.toggle()
     }
     
     @objc private func changeSpeed() {
-        currentSpeedIndex = (currentSpeedIndex + 1) % speeds.count
-        let speed = speeds[currentSpeedIndex]
-        player?.rate = isPlaying ? speed : 0
-        speedButton.setTitle("\(speed)x", for: .normal)
+        currentSpeedIndex = (currentSpeedIndex + 1) % trackSpeeds.count
+        let speed = trackSpeeds[currentSpeedIndex]
+        currentRate = trackSpeeds[currentSpeedIndex]
+        speedButton.setTitle("\(currentRate)x", for: .normal)
+        
+        if isPlaying {
+            player?.rate = speed
+        }
     }
 
     @objc private func skipForward() {
@@ -431,7 +429,7 @@ class AudioPlayerVC: UIViewController {
         isPlaying = true
         
         // Update play button image
-        playPauseButton.setSymbolImage("pause.fill") // Using your global function
+        playPauseButton.setSymbolImage("pause.fill", tintColor: .systemBlue) // Using your global function
         
         // Optionally update UI: title, description, etc.
         updateAudioUI(for: index)
@@ -495,7 +493,7 @@ class AudioPlayerVC: UIViewController {
 
     private func addPeriodicTimeObserver() {
         guard let player = player else { return }
-
+        
         let interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
         timeObserverToken = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self = self else { return }
