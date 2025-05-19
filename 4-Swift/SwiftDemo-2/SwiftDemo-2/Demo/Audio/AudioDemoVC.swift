@@ -53,6 +53,8 @@ class AudioPlayerVC: UIViewController {
         return arrTemp.compactMap { URL(string: $0) }
     }
     private var currentAudioIndex: Int = 0
+    private var timeObserverToken: Any?
+    
     
     
     // MARK: - View Lifecycle
@@ -62,7 +64,7 @@ class AudioPlayerVC: UIViewController {
         //setupUI_SecondOption()
         setupPlayer()
     }
-
+    
     // MARK: - Setup UI
     private func setupUI() {
         view.backgroundColor = .white
@@ -359,9 +361,11 @@ class AudioPlayerVC: UIViewController {
     }
     
     private func setupPlayer() {
-        guard let url = URL(string: "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.wav") else { return }
-        player = AVPlayer(url: url)
-        addPeriodicTimeObserver()
+        //guard let url = URL(string: "https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.wav") else { return }
+        //player = AVPlayer(url: url)
+        //addPeriodicTimeObserver()
+        
+        self.loadAudio(at: currentAudioIndex)
     }
     
     // MARK: - Actions
@@ -411,13 +415,32 @@ class AudioPlayerVC: UIViewController {
     }
     
     private func loadAudio(at index: Int) {
-        let url = audioURLs[index]
+        guard index >= 0, index < audioURLs.count else { return }
+        
+        // Pause old player and remove observer
         player?.pause()
+        removePeriodicTimeObserver()
+        
+        // Set up new player
+        let url = audioURLs[index]
         player = AVPlayer(url: url)
+        
+        // Start observing and playing
+        addPeriodicTimeObserver()
         player?.play()
         isPlaying = true
-        playPauseButton.setTitle("⏸", for: .normal)
-        // Update UI elements like title, poster image, etc.
+        
+        // Update play button image
+        playPauseButton.setSymbolImage("pause.fill") // Using your global function
+        
+        // Optionally update UI: title, description, etc.
+        updateAudioUI(for: index)
+    }
+    
+    private func updateAudioUI(for index: Int) {
+        titleLabel.text = "Audio \(index + 1)"
+        // descriptionLabel.text = ...
+        // posterImageView.image = ...
     }
     
     @objc private func setSleepTimer() {
@@ -471,12 +494,23 @@ class AudioPlayerVC: UIViewController {
     }
 
     private func addPeriodicTimeObserver() {
-        let interval = CMTime(seconds: 1, preferredTimescale: 600)
-        timeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
-            self?.updateProgressUI()
+        guard let player = player else { return }
+
+        let interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        timeObserverToken = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
+            guard let self = self else { return }
+            let seconds = CMTimeGetSeconds(time)
+            self.updateProgress(seconds: seconds)
         }
     }
 
+    private func removePeriodicTimeObserver() {
+        if let token = timeObserverToken {
+            player?.removeTimeObserver(token)
+            timeObserverToken = nil
+        }
+    }
+    
     private func updateProgressUI() {
         guard let player = player, let duration = player.currentItem?.duration else { return }
         let currentTime = player.currentTime()
@@ -487,11 +521,29 @@ class AudioPlayerVC: UIViewController {
         let current = CMTimeGetSeconds(currentTime)
         progressSlider.value = Float(current / total)
     }
+    
+    private func updateProgress(seconds: Double) {
+        currentTimeLabel.text = formatTime(seconds)
+        if let duration = player?.currentItem?.duration {
+            let totalSeconds = CMTimeGetSeconds(duration)
+            durationLabel.text = formatTime(totalSeconds)
+            progressSlider.value = Float(seconds / totalSeconds)
+        }
+    }
+    
+    private func formatTime(_ seconds: Double) -> String {
+        guard !seconds.isNaN else { return "00:00" }
+        let minutes = Int(seconds) / 60
+        let remainingSeconds = Int(seconds) % 60
+        return String(format: "%02d:%02d", minutes, remainingSeconds)
+    }
 
     deinit {
-        if let observer = timeObserver {
-            player?.removeTimeObserver(observer)
-        }
+        //if let observer = timeObserver {
+        //    player?.removeTimeObserver(observer)
+        //}
+        
+        removePeriodicTimeObserver()
     }
 }
 
