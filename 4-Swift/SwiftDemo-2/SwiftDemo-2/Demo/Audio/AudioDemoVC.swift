@@ -56,6 +56,7 @@ class AudioPlayerVC: UIViewController {
     private var currentAudioIndex: Int = 0
     private var timeObserverToken: Any?
     private var currentRate: Float = 1.0
+    let sleepTimeDurations: [Int] = [1, 5, 15, 20, 30, 45, 60]
     
     
     
@@ -429,6 +430,12 @@ class AudioPlayerVC: UIViewController {
         player?.play()
         isPlaying = true
         
+        guard let tempPlayer = player, let duration = tempPlayer.currentItem?.duration else { return }
+        let currentTime = tempPlayer.currentTime()
+        currentTimeLabel.text = currentTime.positionalTime
+        durationLabel.text = duration.positionalTime
+        self.setupNowPlaying(title: "Audio - \(index)", duration: Double(duration.positionalTime) ?? 0.0)
+        
         // Update play button image
         playPauseButton.setSymbolImage("pause.fill", tintColor: .systemBlue) // Using your global function
         
@@ -505,9 +512,8 @@ class AudioPlayerVC: UIViewController {
                 print("Sleep timer cancelled.")
             }))
         }
-
-        let durations: [Int] = [15, 20, 30, 45, 60]
-        for duration in durations {
+        
+        for duration in sleepTimeDurations {
             alert.addAction(UIAlertAction(title: "\(duration) minutes", style: .default, handler: { [weak self] _ in
                 self?.startSleepTimer(minutes: duration)
             }))
@@ -529,7 +535,7 @@ class AudioPlayerVC: UIViewController {
         sleepTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(minutes * 60), repeats: false) { [weak self] _ in
             self?.player?.pause()
             self?.isPlaying = false
-            self?.playPauseButton.setTitle("▶️", for: .normal)
+            self?.playPauseButton.setSymbolImage("play.fill", tintColor: .systemBlue)
             print("Sleep timer completed. Audio paused.")
         }
 
