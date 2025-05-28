@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Poppins-Regular.otf">
+            <string>Poppins-Regular</string>
+        </array>
+        <array key="Poppins-SemiBold.otf">
+            <string>Poppins-SemiBold</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clipsSubviews="YES" contentMode="scaleToFill" id="iN0-l3-epB" customClass="ForumSecHeaderView" customModule="FoodFlocker" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="412" height="159"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S0T-7n-wbu">
+                    <rect key="frame" x="0.0" y="0.0" width="412" height="16"/>
+                    <color key="backgroundColor" red="0.96068984270000002" green="0.96085053679999999" blue="0.96066874270000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="16" id="q52-Ck-qQH"/>
+                    </constraints>
+                </view>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="UserPlaceholder" translatesAutoresizingMaskIntoConstraints="NO" id="BXo-he-QiT">
+                    <rect key="frame" x="16" y="32" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="3sL-9L-yIE"/>
+                        <constraint firstAttribute="width" secondItem="BXo-he-QiT" secondAttribute="height" multiplier="1:1" id="raS-Kl-Uc5"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Heena Doe" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mpl-LU-Xkk">
+                    <rect key="frame" x="78" y="40" width="318" height="20"/>
+                    <fontDescription key="fontDescription" name="Poppins-SemiBold" family="Poppins" pointSize="14"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Feb 22, 2020 at 1:50 PM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EiV-an-5Qe">
+                    <rect key="frame" x="78" y="60" width="318" height="14"/>
+                    <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="10"/>
+                    <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3in-Ue-06Y">
+                    <rect key="frame" x="16" y="90" width="380" height="53"/>
+                    <string key="text">Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text?</string>
+                    <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="14"/>
+                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="BXo-he-QiT" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="16" id="2zS-CY-jHe"/>
+                <constraint firstAttribute="trailing" secondItem="mpl-LU-Xkk" secondAttribute="trailing" constant="16" id="Aw6-cR-1dN"/>
+                <constraint firstItem="mpl-LU-Xkk" firstAttribute="top" secondItem="BXo-he-QiT" secondAttribute="top" constant="8" id="Dg7-2y-9DV"/>
+                <constraint firstItem="mpl-LU-Xkk" firstAttribute="leading" secondItem="BXo-he-QiT" secondAttribute="trailing" constant="12" id="HN0-OD-zLs"/>
+                <constraint firstItem="S0T-7n-wbu" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="Izg-O9-tWo"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="3in-Ue-06Y" secondAttribute="bottom" constant="16" id="P5b-ha-Prg"/>
+                <constraint firstItem="EiV-an-5Qe" firstAttribute="trailing" secondItem="mpl-LU-Xkk" secondAttribute="trailing" id="Uer-3f-DV5"/>
+                <constraint firstItem="EiV-an-5Qe" firstAttribute="top" secondItem="mpl-LU-Xkk" secondAttribute="bottom" id="Uvp-aO-6pX"/>
+                <constraint firstItem="3in-Ue-06Y" firstAttribute="trailing" secondItem="EiV-an-5Qe" secondAttribute="trailing" id="Vod-E2-r7M"/>
+                <constraint firstItem="S0T-7n-wbu" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="aoH-Qz-GxM"/>
+                <constraint firstItem="3in-Ue-06Y" firstAttribute="top" secondItem="BXo-he-QiT" secondAttribute="bottom" constant="8" id="dEv-Yc-V8d"/>
+                <constraint firstItem="BXo-he-QiT" firstAttribute="top" secondItem="S0T-7n-wbu" secondAttribute="bottom" constant="16" id="dGm-l3-8PB"/>
+                <constraint firstItem="S0T-7n-wbu" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="ewD-8e-4MH"/>
+                <constraint firstItem="EiV-an-5Qe" firstAttribute="leading" secondItem="mpl-LU-Xkk" secondAttribute="leading" id="gDj-Yr-Mto"/>
+                <constraint firstItem="3in-Ue-06Y" firstAttribute="leading" secondItem="BXo-he-QiT" secondAttribute="leading" id="s8B-zL-Aw9"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="ivUser" destination="BXo-he-QiT" id="0i6-Cr-pPo"/>
+                <outlet property="lblDateTime" destination="EiV-an-5Qe" id="Yax-vp-0oh"/>
+                <outlet property="lblQuestion" destination="3in-Ue-06Y" id="aQR-ap-TvP"/>
+                <outlet property="lblUserName" destination="mpl-LU-Xkk" id="CPF-Bv-Pqs"/>
+            </connections>
+            <point key="canvasLocation" x="130.43478260869566" y="112.83482142857142"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="UserPlaceholder" width="83.5" height="83.5"/>
+    </resources>
+</document>

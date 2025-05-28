@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Poppins-Regular.otf">
+            <string>Poppins-Regular</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AddCostSheetTVCell" rowHeight="56" id="KGk-i7-Jjw" customClass="AddCostSheetTVCell" customModule="FoodFlocker" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="300" height="56"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="300" height="56"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0UZ-wS-p1s">
+                        <rect key="frame" x="0.0" y="0.0" width="300" height="56"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Guf-MH-bpi">
+                                <rect key="frame" x="0.0" y="8" width="300" height="40"/>
+                                <subviews>
+                                    <view tag="1" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JUh-R0-7ma">
+                                        <rect key="frame" x="0.0" y="0.0" width="146" height="40"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                    </view>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Ingredient" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Oe3-6N-FbF" customClass="FFTextField" customModule="FoodFlocker" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="0.0" width="110" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="Pgy-2r-hME"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="16"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="KGk-i7-Jjw" id="aHI-dB-u5R"/>
+                                        </connections>
+                                    </textField>
+                                    <view tag="2" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1dW-Vo-bMv">
+                                        <rect key="frame" x="154" y="0.0" width="146" height="40"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                    </view>
+                                    <textField opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Amount" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tzt-Kb-fkX" customClass="FFTextField" customModule="FoodFlocker" customModuleProvider="target">
+                                        <rect key="frame" x="174" y="0.0" width="110" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="DgR-BF-GTt"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="16"/>
+                                        <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="KGk-i7-Jjw" id="Rdm-Fl-HAz"/>
+                                        </connections>
+                                    </textField>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="JUh-R0-7ma" firstAttribute="top" secondItem="Guf-MH-bpi" secondAttribute="top" id="06x-Vt-cqn"/>
+                                    <constraint firstItem="1dW-Vo-bMv" firstAttribute="leading" secondItem="JUh-R0-7ma" secondAttribute="trailing" constant="8" id="8W4-59-i7y"/>
+                                    <constraint firstItem="Oe3-6N-FbF" firstAttribute="bottom" secondItem="JUh-R0-7ma" secondAttribute="bottom" id="DaN-Tq-agB"/>
+                                    <constraint firstItem="tzt-Kb-fkX" firstAttribute="leading" secondItem="1dW-Vo-bMv" secondAttribute="leading" constant="20" id="GJG-hw-AAz"/>
+                                    <constraint firstItem="1dW-Vo-bMv" firstAttribute="centerY" secondItem="JUh-R0-7ma" secondAttribute="centerY" id="Suj-cq-k9F"/>
+                                    <constraint firstItem="tzt-Kb-fkX" firstAttribute="bottom" secondItem="1dW-Vo-bMv" secondAttribute="bottom" id="aBL-Nk-pxI"/>
+                                    <constraint firstItem="Oe3-6N-FbF" firstAttribute="top" secondItem="JUh-R0-7ma" secondAttribute="top" id="bwV-Hi-R6b"/>
+                                    <constraint firstItem="JUh-R0-7ma" firstAttribute="leading" secondItem="Guf-MH-bpi" secondAttribute="leading" id="cib-IB-HKf"/>
+                                    <constraint firstItem="Oe3-6N-FbF" firstAttribute="leading" secondItem="JUh-R0-7ma" secondAttribute="leading" constant="20" id="dNA-uO-dUh"/>
+                                    <constraint firstAttribute="trailing" secondItem="1dW-Vo-bMv" secondAttribute="trailing" id="h6V-UL-eo4"/>
+                                    <constraint firstItem="tzt-Kb-fkX" firstAttribute="top" secondItem="1dW-Vo-bMv" secondAttribute="top" id="jX0-BR-fLo"/>
+                                    <constraint firstAttribute="bottom" secondItem="Oe3-6N-FbF" secondAttribute="bottom" id="lma-JO-feD"/>
+                                    <constraint firstItem="Oe3-6N-FbF" firstAttribute="trailing" secondItem="JUh-R0-7ma" secondAttribute="trailing" constant="-16" id="n0j-x0-F32"/>
+                                    <constraint firstItem="tzt-Kb-fkX" firstAttribute="width" secondItem="Oe3-6N-FbF" secondAttribute="width" id="p5E-J5-iau"/>
+                                    <constraint firstItem="tzt-Kb-fkX" firstAttribute="trailing" secondItem="1dW-Vo-bMv" secondAttribute="trailing" constant="-16" id="tbK-56-34z"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="Guf-MH-bpi" firstAttribute="leading" secondItem="0UZ-wS-p1s" secondAttribute="leading" id="0n3-rb-Vba"/>
+                            <constraint firstItem="Guf-MH-bpi" firstAttribute="top" secondItem="0UZ-wS-p1s" secondAttribute="top" constant="8" id="PuB-5U-YpX"/>
+                            <constraint firstAttribute="trailing" secondItem="Guf-MH-bpi" secondAttribute="trailing" id="VNv-Ir-h5U"/>
+                            <constraint firstAttribute="bottom" secondItem="Guf-MH-bpi" secondAttribute="bottom" constant="8" id="jSd-8l-Fos"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="0UZ-wS-p1s" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="2Eh-Jz-esh"/>
+                    <constraint firstAttribute="bottom" secondItem="0UZ-wS-p1s" secondAttribute="bottom" id="5gg-dC-ZzC"/>
+                    <constraint firstItem="0UZ-wS-p1s" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="HE6-le-q1q"/>
+                    <constraint firstAttribute="trailing" secondItem="0UZ-wS-p1s" secondAttribute="trailing" id="rxP-XP-m4e"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outletCollection property="viewBack" destination="JUh-R0-7ma" collectionClass="NSMutableArray" id="tdX-OY-6Co"/>
+                <outletCollection property="viewBack" destination="1dW-Vo-bMv" collectionClass="NSMutableArray" id="gBE-J2-P7j"/>
+                <outletCollection property="textFields" destination="Oe3-6N-FbF" collectionClass="NSMutableArray" id="dEj-pM-hKC"/>
+                <outletCollection property="textFields" destination="tzt-Kb-fkX" collectionClass="NSMutableArray" id="RAH-T7-jWu"/>
+            </connections>
+            <point key="canvasLocation" x="-72.463768115942031" y="69.642857142857139"/>
+        </tableViewCell>
+    </objects>
+</document>

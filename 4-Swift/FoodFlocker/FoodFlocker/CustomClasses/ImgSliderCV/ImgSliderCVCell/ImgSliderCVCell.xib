@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ImgSliderCVCell" id="gTV-IL-0wX" customClass="ImgSliderCVCell" customModule="FoodFlocker" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="270" height="174"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="270" height="174"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView multipleTouchEnabled="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lbn-Rb-HoF">
+                        <rect key="frame" x="0.0" y="0.0" width="270" height="174"/>
+                    </imageView>
+                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="o8A-52-x3t">
+                        <rect key="frame" x="0.0" y="0.0" width="270" height="174"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="kCG-o6-0rw"/>
+                    </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mea-6u-aap">
+                        <rect key="frame" x="0.0" y="0.0" width="270" height="174"/>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="sRGB"/>
+                        <state key="normal" image="VideoIndicator"/>
+                    </button>
+                </subviews>
+            </view>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="o8A-52-x3t" firstAttribute="leading" secondItem="lbn-Rb-HoF" secondAttribute="leading" id="7Sz-7S-XMn"/>
+                <constraint firstItem="o8A-52-x3t" firstAttribute="top" secondItem="lbn-Rb-HoF" secondAttribute="top" id="EQv-j1-hxP"/>
+                <constraint firstAttribute="trailing" secondItem="Mea-6u-aap" secondAttribute="trailing" id="Gsk-KW-GBQ"/>
+                <constraint firstItem="Mea-6u-aap" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="OFf-hb-ODF"/>
+                <constraint firstItem="lbn-Rb-HoF" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="QL8-AA-Qa3"/>
+                <constraint firstAttribute="trailing" secondItem="lbn-Rb-HoF" secondAttribute="trailing" id="WV1-Un-jrV"/>
+                <constraint firstItem="o8A-52-x3t" firstAttribute="bottom" secondItem="lbn-Rb-HoF" secondAttribute="bottom" id="dF4-qe-nOp"/>
+                <constraint firstItem="o8A-52-x3t" firstAttribute="trailing" secondItem="lbn-Rb-HoF" secondAttribute="trailing" id="f3l-2A-wdN"/>
+                <constraint firstItem="lbn-Rb-HoF" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="jU4-hq-ITD"/>
+                <constraint firstAttribute="bottom" secondItem="Mea-6u-aap" secondAttribute="bottom" id="pDb-vL-Snd"/>
+                <constraint firstItem="Mea-6u-aap" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="wfH-8n-40z"/>
+                <constraint firstAttribute="bottom" secondItem="lbn-Rb-HoF" secondAttribute="bottom" id="y0K-0X-Til"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <size key="customSize" width="270" height="174"/>
+            <connections>
+                <outlet property="btnPlay" destination="Mea-6u-aap" id="UIC-YZ-CPY"/>
+                <outlet property="ivProduct" destination="lbn-Rb-HoF" id="cRy-2g-1mF"/>
+                <outlet property="viewAlpha" destination="o8A-52-x3t" id="FSI-ZI-cRT"/>
+            </connections>
+            <point key="canvasLocation" x="135" y="114"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="VideoIndicator" width="22" height="22"/>
+    </resources>
+</document>

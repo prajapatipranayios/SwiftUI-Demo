@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Poppins-Regular.otf">
+            <string>Poppins-Regular</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ForumTVCell" rowHeight="228" id="KGk-i7-Jjw" customClass="ForumTVCell" customModule="FoodFlocker" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="228"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="228"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="UserPlaceholder" translatesAutoresizingMaskIntoConstraints="NO" id="X6X-Jj-bU6">
+                        <rect key="frame" x="32" y="16" width="50" height="50"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="X6X-Jj-bU6" secondAttribute="height" multiplier="1:1" id="CCg-kU-Vcw"/>
+                            <constraint firstAttribute="height" constant="50" id="k9E-P9-bcf"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="Heena Doe" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rcA-2z-ox4">
+                        <rect key="frame" x="94" y="24" width="210" height="16.5"/>
+                        <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="14"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2m" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EPN-Rm-6gZ">
+                        <rect key="frame" x="94" y="40.5" width="210" height="179.5"/>
+                        <fontDescription key="fontDescription" name="Poppins-Regular" family="Poppins" pointSize="10"/>
+                        <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="urX-Pb-ner">
+                        <rect key="frame" x="16" y="16" width="288" height="40"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Reply..." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="G7D-oX-afi">
+                                <rect key="frame" x="16" y="0.0" width="256" height="40"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="KGk-i7-Jjw" id="iZt-fr-0vF"/>
+                                </connections>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" red="0.96068984270000002" green="0.96085053679999999" blue="0.96066874270000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="G7D-oX-afi" firstAttribute="top" secondItem="urX-Pb-ner" secondAttribute="top" id="Gwj-JN-p5L"/>
+                            <constraint firstItem="G7D-oX-afi" firstAttribute="leading" secondItem="urX-Pb-ner" secondAttribute="leading" constant="16" id="KFH-fC-vOA"/>
+                            <constraint firstAttribute="bottom" secondItem="G7D-oX-afi" secondAttribute="bottom" id="hsw-Ec-0Ls"/>
+                            <constraint firstAttribute="trailing" secondItem="G7D-oX-afi" secondAttribute="trailing" constant="16" id="imC-9o-GKN"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="rcA-2z-ox4" firstAttribute="leading" secondItem="X6X-Jj-bU6" secondAttribute="trailing" constant="12" id="4Dw-5S-xuz"/>
+                    <constraint firstItem="EPN-Rm-6gZ" firstAttribute="leading" secondItem="rcA-2z-ox4" secondAttribute="leading" id="9Av-wC-atD"/>
+                    <constraint firstAttribute="bottom" secondItem="EPN-Rm-6gZ" secondAttribute="bottom" constant="8" id="Egf-pF-7MR"/>
+                    <constraint firstAttribute="trailing" secondItem="rcA-2z-ox4" secondAttribute="trailing" constant="16" id="Fa3-MZ-9qB"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="X6X-Jj-bU6" secondAttribute="bottom" constant="8" id="I2d-2a-gnX"/>
+                    <constraint firstItem="urX-Pb-ner" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="16" id="Lph-ls-cxj"/>
+                    <constraint firstItem="X6X-Jj-bU6" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="32" id="NeP-f1-Hmd"/>
+                    <constraint firstAttribute="trailing" secondItem="urX-Pb-ner" secondAttribute="trailing" constant="16" id="VL1-U4-1e6"/>
+                    <constraint firstItem="urX-Pb-ner" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="YjA-4v-2c3"/>
+                    <constraint firstItem="EPN-Rm-6gZ" firstAttribute="trailing" secondItem="rcA-2z-ox4" secondAttribute="trailing" id="cZA-l0-r3s"/>
+                    <constraint firstItem="X6X-Jj-bU6" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="16" id="gBZ-tP-Oe1"/>
+                    <constraint firstItem="EPN-Rm-6gZ" firstAttribute="top" secondItem="rcA-2z-ox4" secondAttribute="bottom" id="qF1-S9-rJX"/>
+                    <constraint firstItem="rcA-2z-ox4" firstAttribute="top" secondItem="X6X-Jj-bU6" secondAttribute="top" constant="8" id="s9k-Ea-CSk"/>
+                    <constraint firstItem="urX-Pb-ner" firstAttribute="bottom" secondItem="X6X-Jj-bU6" secondAttribute="bottom" constant="-10" id="vZL-Ud-rD2"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="ivUser" destination="X6X-Jj-bU6" id="7QL-x3-CmP"/>
+                <outlet property="lblComment" destination="rcA-2z-ox4" id="2wa-Y3-IJk"/>
+                <outlet property="lblDuration" destination="EPN-Rm-6gZ" id="mcd-Ae-SZK"/>
+                <outlet property="tfReply" destination="G7D-oX-afi" id="tI7-vc-8RN"/>
+                <outlet property="viewReply" destination="urX-Pb-ner" id="dS8-x0-VvE"/>
+            </connections>
+            <point key="canvasLocation" x="131.8840579710145" y="186.16071428571428"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="UserPlaceholder" width="83.5" height="83.5"/>
+    </resources>
+</document>

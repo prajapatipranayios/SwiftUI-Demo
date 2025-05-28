@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="MarkerPopUp" customModule="FoodFlocker" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="post_image" translatesAutoresizingMaskIntoConstraints="NO" id="XsQ-Zz-3tb">
+                    <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="XsQ-Zz-3tb" secondAttribute="height" multiplier="1:1" id="n1V-B0-CfL"/>
+                    </constraints>
+                </imageView>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ofa-S5-7Fa">
+                    <rect key="frame" x="3" y="2" width="54" height="54"/>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="XsQ-Zz-3tb" secondAttribute="trailing" id="7H5-oT-Il3"/>
+                <constraint firstItem="XsQ-Zz-3tb" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="Aaj-mr-aOd"/>
+                <constraint firstItem="Ofa-S5-7Fa" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="2" id="FYj-Ij-5OA"/>
+                <constraint firstItem="Ofa-S5-7Fa" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="3" id="JCl-Xb-UrV"/>
+                <constraint firstItem="XsQ-Zz-3tb" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="eiq-cN-A07"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Ofa-S5-7Fa" secondAttribute="trailing" constant="3" id="gMN-Ss-bW7"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="XsQ-Zz-3tb" secondAttribute="bottom" id="hBR-oL-vjw"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="Ofa-S5-7Fa" secondAttribute="bottom" constant="4" id="tZx-gw-teN"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="imgMarker" destination="Ofa-S5-7Fa" id="80R-IJ-sVk"/>
+            </connections>
+            <point key="canvasLocation" x="-211.19999999999999" y="-219.49025487256372"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="post_image" width="93.5" height="93.5"/>
+    </resources>
+</document>
