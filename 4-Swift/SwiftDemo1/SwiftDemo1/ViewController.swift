@@ -501,3 +501,136 @@ extension ViewController: SideMenuDelegate {
         //dismissMenu() // Close the side menu
     }
 }
+
+
+import UIKit
+
+class DropdownTableViewController: UIViewController {
+
+    @IBOutlet weak var tableView: UITableView!
+
+    let data = ["Select Fruit", "Select Color", "Select Animal"]
+    let dropdownOptions = [
+        ["Apple", "Banana", "Orange"],
+        ["Red", "Green", "Blue"],
+        ["Dog", "Cat", "Elephant"]
+    ]
+
+    var selectedIndexPath: IndexPath?
+    var dropdownTableView: UITableView?
+    var dropdownData: [String] = []
+    var dropdownAnchorCellFrame: CGRect?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+//        tableView.delegate = self
+//        tableView.dataSource = self
+    }
+
+    func showDropdown(below cell: UITableViewCell, at indexPath: IndexPath) {
+        // Remove existing dropdown if any
+        dropdownTableView?.removeFromSuperview()
+
+        // Prepare data
+        dropdownData = dropdownOptions[indexPath.row]
+        
+        // Create dropdown table
+        let dropdown = UITableView()
+        dropdown.layer.borderWidth = 1
+        dropdown.layer.borderColor = UIColor.lightGray.cgColor
+//        dropdown.delegate = self
+//        dropdown.dataSource = self
+        dropdown.tag = 999
+        dropdown.rowHeight = 44
+        dropdown.isScrollEnabled = true
+        dropdown.register(UITableViewCell.self, forCellReuseIdentifier: "DropdownCell")
+
+        // Get cell frame relative to view
+        if let cellRect = tableView.rectForRow(at: indexPath) as CGRect?,
+           let cellSuperview = tableView.superview {
+            let convertedRect = tableView.convert(cellRect, to: cellSuperview)
+            dropdownAnchorCellFrame = convertedRect
+
+            // Set frame
+            dropdown.frame = CGRect(x: convertedRect.origin.x + 16,
+                                    y: convertedRect.maxY,
+                                    width: tableView.frame.width - 32,
+                                    height: CGFloat(dropdownData.count) * 44)
+            view.addSubview(dropdown)
+            dropdownTableView = dropdown
+        }
+
+        selectedIndexPath = indexPath
+    }
+
+    func hideDropdown() {
+        dropdownTableView?.removeFromSuperview()
+        dropdownTableView = nil
+        selectedIndexPath = nil
+    }
+}
+
+//extension DropdownTableViewController: UITableViewDelegate, UITableViewDataSource {
+//
+//    // Main table
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        return data.count
+//    }
+//
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "MainCell") ??
+//                   UITableViewCell(style: .subtitle, reuseIdentifier: "MainCell")
+//
+//        cell.textLabel?.text = data[indexPath.row]
+//        cell.detailTextLabel?.text = "Tap to select"
+//        cell.accessoryType = .disclosureIndicator
+//        return cell
+//    }
+//
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        // If tapping the same row, hide dropdown
+//        if selectedIndexPath == indexPath {
+//            hideDropdown()
+//        } else {
+//            if let cell = tableView.cellForRow(at: indexPath) {
+//                showDropdown(below: cell, at: indexPath)
+//            }
+//        }
+//    }
+//
+//    // Dropdown table
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        return tableView.tag == 999 ? 1 : 1
+//    }
+//
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        return tableView.tag == 999 ? dropdownData.count : data.count
+//    }
+//
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//
+//        if tableView.tag == 999 {
+//            let cell = tableView.dequeueReusableCell(withIdentifier: "DropdownCell", for: indexPath)
+//            cell.textLabel?.text = dropdownData[indexPath.row]
+//            return cell
+//        } else {
+//            return self.tableView(tableView, cellForRowAt: indexPath)
+//        }
+//    }
+//
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        if tableView.tag == 999 {
+//            // Dropdown item selected
+//            let selectedValue = dropdownData[indexPath.row]
+//            if let selectedIndex = selectedIndexPath,
+//               let cell = self.tableView.cellForRow(at: selectedIndex) {
+//                cell.detailTextLabel?.text = selectedValue
+//            }
+//            hideDropdown()
+//        } else {
+//            self.tableView(tableView, didSelectRowAt: indexPath)
+//        }
+//    }
+//}
