@@ -1,9 +1,0 @@
-.DS_Store
-/.build
-/Packages
-/*.xcodeproj
-.swiftpm/
-xcuserdata/
-xcshareddata/
-Package.resolved
-.claude/
