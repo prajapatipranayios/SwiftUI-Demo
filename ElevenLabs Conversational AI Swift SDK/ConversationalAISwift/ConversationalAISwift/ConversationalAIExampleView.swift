@@ -58,10 +58,25 @@ struct ConversationalAIExampleView: View {
         }
     }
     
+    private func configureAudioSession() {
+        let session = AVAudioSession.sharedInstance()
+        do {
+            try session.setCategory(.playAndRecord,
+                                    mode: .voiceChat,
+                                    options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP])
+            try session.setActive(true)
+            print("🎵 Audio session configured successfully")
+        } catch {
+            print("⚠️ Failed to configure audio session: \(error)")
+        }
+    }
+    
     //var strUserProfile: String = ""
     var tempAgent = ObjAgent()   // blank object
     
     private func beginConversation(agent: Agent) {
+        self.configureAudioSession()
+        
         if status == .connected {
             conversation?.endSession()
             conversation = nil
@@ -88,13 +103,28 @@ struct ConversationalAIExampleView: View {
                         status = newStatus
                     }
                     callbacks.onModeChange = { newMode in
-                        mode = newMode
+                        DispatchQueue.main.async {
+                            print("🔄 Mode changed: \(newMode)")
+                            mode = newMode
+                        }
                     }
                     callbacks.onVolumeUpdate = { newVolume in
                         audioLevel = newVolume
                     }
                     
                     conversation = try await ElevenLabsSDK.Conversation.startSession(config: config, callbacks: callbacks)
+                    
+                    // 👇 Force audio routing once session is active
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0) {
+                        let session = AVAudioSession.sharedInstance()
+                        do {
+                            try session.overrideOutputAudioPort(.speaker)  // force speaker
+                            try session.setActive(true)
+                            print("🔊 Audio routed to speaker")
+                        } catch {
+                            print("⚠️ Failed to route audio: \(error)")
+                        }
+                    }
                 } catch {
                     print("Error starting conversation: \(error)")
                 }
@@ -142,7 +172,7 @@ struct ConversationalAIExampleView: View {
                     //OrbView(mode: mode, audioLevel: audioLevel)
                     //    .padding(.bottom, 20)
                     ZStack {
-                        RippleBackground()
+                        RippleBackground(status: status)
                             .frame(width: 350, height: 350)
                         
                         if let url = URL(string: self.tempAgent.imagePath ?? "") { // your URL string
@@ -195,34 +225,35 @@ struct ConversationalAIExampleView: View {
                                 .shadow(radius: 5)
                         }
                     }
-
                     //Spacer()
+                    // 📌 Agent Name
                     Text(self.tempAgent.name ?? "")
                         .font(.headline)
                         .foregroundColor(.white)
-                        //.padding(.horizontal, 12)// Extra padding for background
-                        //.padding(.vertical, 6)
-                        //.background(Color.blue)           // 👈 Background color
-                        //.cornerRadius(8)
                         .padding(.top, 0)
                     // 📌 Connection Status
                     Text("Status: \(statusText)")
-                        .font(.system(size: 10))
+                        .font(.system(size: 13))
                         .foregroundColor(
                             status == .connected ? .green : .gray
                         )
-                        //.padding(.horizontal, 12)// Extra padding for background
-                        //.padding(.vertical, 6)
-                        //.background(Color.blue)           // 👈 Background color
-                        //.cornerRadius(8)
                         .padding(.top, 0)
-                    
                     // 📌 Mode Status
                     if status == .connected {
-                        Text("\(modeText)")
-                            .font(.subheadline)
-                            .foregroundColor(.white)
-                            .padding(.top, 4)
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(mode == .speaking ? Color.green : Color.gray) // Dot color
+                                .frame(width: 7, height: 7)                      // Dot size
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.white, lineWidth: 1)          // White border
+                                )
+                            
+                            Text(modeText)
+                                .font(.system(size: 13))
+                                .foregroundColor(.white)
+                        }
+                        .padding(.top, 4)
                     }
                     
                     Spacer()
@@ -395,15 +426,20 @@ struct ConvAIExampleView_Previews: PreviewProvider {
 
 // MARK: - SwiftUI Wrapper
 struct RippleBackground: UIViewRepresentable {
+    let status: ElevenLabsSDK.Status   // 👈 pass status from parent
+    
     func makeUIView(context: Context) -> RippleBackgroundView {
         let view = RippleBackgroundView()
-        DispatchQueue.main.async {
-            view.start()
-        }
         return view
     }
     
-    func updateUIView(_ uiView: RippleBackgroundView, context: Context) {}
+    func updateUIView(_ uiView: RippleBackgroundView, context: Context) {
+        if status == .connected || status == .connecting {
+            uiView.start()
+        } else {
+            uiView.stop()
+        }
+    }
 }
 
 // MARK: - UIKit Ripple View
