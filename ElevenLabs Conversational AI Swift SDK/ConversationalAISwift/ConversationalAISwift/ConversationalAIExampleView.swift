@@ -6,19 +6,6 @@ import SDWebImageSwiftUI
 import ImageIO
 import UIKit
 
-// MARK: - Orb View
-struct OrbView: View {
-    let mode: ElevenLabsSDK.Mode
-    let audioLevel: Float
-    
-    var body: some View {
-        ZStack {
-            GIFView(name: "voice")
-                .frame(width: 80, height: 80)
-                .scaleEffect(0.9 + CGFloat(audioLevel * 0.1)) // pulsing effect
-        }
-    }
-}
 
 // MARK: - Conversational AI Example View
 struct ConversationalAIExampleView: View {
@@ -93,7 +80,7 @@ struct ConversationalAIExampleView: View {
                     
                     print("Lang changed or not code >>>>>>>>> \(selectedLang?.languageCode ?? "en")")
                     
-//                    let config = ElevenLabsSDK.SessionConfig(agentId: agent.id, overrides: overrides)
+                    //                    let config = ElevenLabsSDK.SessionConfig(agentId: agent.id, overrides: overrides)
                     let config = ElevenLabsSDK.SessionConfig(agentId: agent.id)
                     var callbacks = ElevenLabsSDK.Callbacks()
                     
@@ -170,218 +157,25 @@ struct ConversationalAIExampleView: View {
     
     @State private var selectedLang: AgentLang? = nil
     //https://i.pinimg.com/736x/71/c6/53/71c653c58ad23ecf35e95a9ace954254.jpg
-    let agentLanguages: [AgentLang] = [
-            AgentLang(id: 1, userID: nil, agentID: nil,
-                      languageCode: "en", langFlagImage: "flag.checkered", firstMessage: nil,
-                      voiceID: nil, modelID: nil, firstMessageTranslation: nil,
-                      langNameIFlutter5120: nil, createdAt: nil, updatedAt: nil,
-                      langName: "English"),
-            AgentLang(id: 2, userID: nil, agentID: nil,
-                      languageCode: "hi", langFlagImage: "flag.square", firstMessage: nil,
-                      voiceID: nil, modelID: nil, firstMessageTranslation: nil,
-                      langNameIFlutter5120: nil, createdAt: nil, updatedAt: nil,
-                      langName: "Hindi"),
-            AgentLang(id: 3, userID: nil, agentID: nil,
-                      languageCode: "it", langFlagImage: "flag.checkered.circle.fill", firstMessage: nil,
-                      voiceID: nil, modelID: nil, firstMessageTranslation: nil,
-                      langNameIFlutter5120: nil, createdAt: nil, updatedAt: nil,
-                      langName: "Italian")
-        ]
-    
     
     // MARK: - Body
     var body: some View {
         ZStack {
-            if let url = URL(string: self.tempAgent.imagePath ?? "") {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .ignoresSafeArea()
-                            .overlay(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Color.black.opacity(0.7), Color.blue]),
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                    .ignoresSafeArea()
-                                )
-                    case .failure(_):
-                        Image("defaultUser")
-                            .resizable()
-                            .scaledToFill()
-                            .ignoresSafeArea()
-                            .overlay(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Color.black.opacity(0.7), Color.blue]),
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                    .ignoresSafeArea()
-                                )
-                    @unknown default:
-                        Image("defaultUser")
-                            .resizable()
-                            .scaledToFill()
-                            .ignoresSafeArea()
-                            .overlay(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Color.black.opacity(0.7), Color.blue]),
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                    .ignoresSafeArea()
-                                )
-                    }
-                }
-            } else {
-                Image("defaultUser")
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
-                    .overlay(
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.black.opacity(0.7), Color.blue]),
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                            .ignoresSafeArea()
-                        )
-            }
+            self.backgroundView
             
-//            Image("bgMain") // from Assets
-//                .resizable()
-//                .scaledToFill()
-//                .ignoresSafeArea() // makes it full screen
-            
-            GeometryReader { geometry in
-                VStack {
+            ScrollView {
+                VStack(spacing: 20) {
                     Spacer()
-                    Picker(selection: $selectedLang) {
-                        ForEach(self.tempAgent.agentLang, id: \.id) { lang in
-                            HStack {
-                                if let flag = lang.langFlagImage,
-                                   let url = URL(string: flag) {
-                                    AsyncImage(url: url) { phase in
-                                        switch phase {
-                                        case .empty:
-                                            ProgressView()
-                                                .frame(width: 24, height: 24)
-                                        case .success(let image):
-                                            image.resizable()
-                                                .scaledToFill()
-                                                .frame(width: 24, height: 24)
-                                                .clipShape(Circle())
-                                        case .failure(_):
-                                            Image(systemName: "flag")
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 24, height: 24)
-                                                .clipShape(Circle())
-                                        @unknown default:
-                                            EmptyView()
-                                        }
-                                    }
-                                }
-                                Text(lang.langName ?? "Unknown")
-                                    .foregroundColor(.white)
-                            }
-                            .tag(lang as AgentLang?)
-                        }
-                    } label: {
-                        HStack {
-                            if let flag = selectedLang?.langFlagImage {
-                                Image(flag)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 20, height: 20)
-                                    .clipShape(Circle())
-                            }
-                            Text(selectedLang?.langName ?? "Select Language")
-                                .foregroundColor(.white)
-                        }
-                        .padding(8)
-                        .background(Color.black)
-                        .cornerRadius(8)
-                    }
-                    .pickerStyle(MenuPickerStyle()) // 👈 makes it dropdown
-                    .tint(.white)
-                    .background(Color.black.opacity(0.17))
-                    .cornerRadius(10)
-                    .onAppear {
-                        if selectedLang == nil {
-                            selectedLang = self.agentLanguages.first // 👈 Default selection
-                        }
-                    }
-                    .disabled(status == .connected) // 👈 disable dropdown if connected
-                    
+                    self.languagePicker
                     //Spacer()
-                    //OrbView(mode: mode, audioLevel: audioLevel)
-                    //    .padding(.bottom, 20)
-                    ZStack {
-                        RippleBackground(status: status)
-                            .frame(width: 350, height: 350)
-                        
-                        if let url = URL(string: self.tempAgent.imagePath ?? "") { // your URL string
-                            AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .empty:
-                                    ProgressView() // loading state
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 170, height: 170)
-                                        .clipShape(Circle())
-                                        .overlay(
-                                            Circle().stroke(Color.white, lineWidth: 0)
-                                        )
-                                        .shadow(radius: 5)
-                                case .failure(_):
-                                    Image("defaultUser")
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 170, height: 170)
-                                        .clipShape(Circle())
-                                        .overlay(
-                                            Circle().stroke(Color.white, lineWidth: 0)
-                                        )
-                                        .shadow(radius: 5)
-                                @unknown default:
-                                    Image("defaultUser")
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 170, height: 170)
-                                        .clipShape(Circle())
-                                        .overlay(
-                                            Circle().stroke(Color.white, lineWidth: 0)
-                                        )
-                                        .shadow(radius: 5)
-                                }
-                            }
-                        } else {
-                            // Fallback if URL string is nil/invalid
-                            Image("defaultUser")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 170, height: 170)
-                                .clipShape(Circle())
-                                .overlay(
-                                    Circle().stroke(Color.white, lineWidth: 0)
-                                )
-                                .shadow(radius: 5)
-                        }
-                    }
+                    self.avatarWithRipple
                     //Spacer()
                     // 📌 Agent Name
                     Text(self.tempAgent.name ?? "")
                         .font(.headline)
                         .foregroundColor(.white)
                         .padding(.top, 0)
+                    
                     // 📌 Connection Status
                     Text("Status: \(statusText)")
                         .font(.system(size: 13))
@@ -389,6 +183,7 @@ struct ConversationalAIExampleView: View {
                             status == .connected ? .green : .gray
                         )
                         .padding(.top, 0)
+                    
                     // 📌 Mode Status
                     if status == .connected {
                         HStack(spacing: 6) {
@@ -428,30 +223,176 @@ struct ConversationalAIExampleView: View {
                     }
                     .padding(.bottom, 40)
                 }
-                .frame(width: geometry.size.width, height: geometry.size.height)
+                .padding(.horizontal, 20)
             }
         }
     }
+     /// */
+    
+//    var body: some View {
+//        ZStack {
+//            backgroundView
+//            GeometryReader { geometry in
+//                contentView
+//                    .frame(width: geometry.size.width, height: geometry.size.height)
+//            }
+//        }
+//    }
+    
+    // MARK: - Background
+    private var backgroundView: some View {
+        AnyView(
+            Group {
+                if let url = URL(string: tempAgent.imagePath ?? "") {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                        case .success(let image):
+                            image.resizable()
+                                .scaledToFill()
+                                .ignoresSafeArea()
+                                .overlay(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [Color.black.opacity(0.7), Color.blue]),
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                    .ignoresSafeArea()
+                                )
+                        case .failure(_):
+                            defaultUserImage
+                        @unknown default:
+                            defaultUserImage
+                        }
+                    }
+                } else {
+                    defaultUserImage
+                }
+            }
+        )
+    }
 
+    private var defaultUserImage: some View {
+        AnyView(
+            Image("defaultUser")
+                .resizable()
+                .scaledToFill()
+                .ignoresSafeArea()
+                .overlay(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.white.opacity(0.3), Color.blue, Color.blue.opacity(0.5)]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .ignoresSafeArea()
+                )
+        )
+    }
+    
+    // MARK: - Language Picker
+    private var languagePicker: some View {
+        if !(tempAgent.agentLang?.isEmpty ?? true) {
+            Picker(selection: $selectedLang) {
+                ForEach(tempAgent.agentLang ?? [], id: \.id) { lang in
+                    HStack {
+                        if let flag = lang.langFlagImage,
+                           let url = URL(string: flag) {
+                            AsyncImage(url: url) { imagePhase in
+                                switch imagePhase {
+                                case .success(let image):
+                                    image.resizable()
+                                        .frame(width: 20, height: 20)
+                                        .clipShape(Circle())
+                                default:
+                                    Image(systemName: "flag")
+                                        .resizable()
+                                        .frame(width: 20, height: 20)
+                                }
+                            }
+                        }
+                        Text(lang.langName ?? "Unknown")
+                            .foregroundColor(.white)
+                    }
+                    .tag(lang as AgentLang?)
+                }
+            } label: {
+                HStack {
+                    if let flag = selectedLang?.langFlagImage {
+                        Image(flag)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 20, height: 20)
+                            .clipShape(Circle())
+                    }
+                    Text(selectedLang?.langName ?? "Select Language")
+                        .foregroundColor(.white)
+                }
+                .padding(8)
+                .background(Color.black.opacity(0.5))
+                .cornerRadius(8)
+            }
+            .pickerStyle(MenuPickerStyle())
+            .onAppear {
+                if selectedLang == nil {
+                    selectedLang = tempAgent.agentLang?.first
+                }
+            }
+            .disabled(status == .connected) as! EmptyView
+        } else {
+            EmptyView()
+        }
+    }
+    
+    // MARK: - Avatar with Ripple
+    private var avatarWithRipple: some View {
+        ZStack {
+            RippleBackground(status: status)
+                .frame(width: 350, height: 350)
+            
+            if let url = URL(string: tempAgent.imagePath ?? "") {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView().frame(width: 170, height: 170)
+                    case .success(let image):
+                        image.resizable()
+                            .scaledToFill()
+                            .frame(width: 170, height: 170)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                    case .failure(_):
+                        Image("defaultUser")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 170, height: 170)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                    @unknown default:
+                        Image("defaultUser")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 170, height: 170)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                    }
+                }
+            } else {
+                Image("defaultUser")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 170, height: 170)
+                    .clipShape(Circle())
+                    .shadow(radius: 5)
+            }
+        }
+    }
 }
 
 // MARK: - Call Button
 struct CallButton: View {
     let connectionStatus: ElevenLabsSDK.Status
     let action: () -> Void
-    
-//    private var buttonIcon: String {
-//        switch connectionStatus {
-//        case .connected:
-//            return "phone.down.fill"
-//        case .connecting:
-//            return "phone.arrow.up.right.fill"
-//        case .disconnecting:
-//            return "phone.arrow.down.left.fill"
-//        default:
-//            return "phone.fill"
-//        }
-//    }
     
     private var buttonImg: String {
         switch connectionStatus {
