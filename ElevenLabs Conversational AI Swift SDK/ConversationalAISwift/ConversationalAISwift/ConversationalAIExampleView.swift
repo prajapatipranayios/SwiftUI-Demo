@@ -58,7 +58,8 @@ struct ConversationalAIExampleView: View {
         }
     }
     
-    var strUserProfile: String = ""
+    //var strUserProfile: String = ""
+    var tempAgent = ObjAgent()   // blank object
     
     private func beginConversation(agent: Agent) {
         if status == .connected {
@@ -130,7 +131,7 @@ struct ConversationalAIExampleView: View {
     var body: some View {
         ZStack {
             // 📌 Background Image
-            Image("yourBackgroundImage") // from Assets
+            Image("bgMain") // from Assets
                 .resizable()
                 .scaledToFill()
                 .ignoresSafeArea() // makes it full screen
@@ -144,7 +145,7 @@ struct ConversationalAIExampleView: View {
                         RippleBackground()
                             .frame(width: 350, height: 350)
                         
-                        if let url = URL(string: strUserProfile) { // your URL string
+                        if let url = URL(string: self.tempAgent.imagePath ?? "") { // your URL string
                             AsyncImage(url: url) { phase in
                                 switch phase {
                                 case .empty:
@@ -195,16 +196,32 @@ struct ConversationalAIExampleView: View {
                         }
                     }
 
-                    Spacer()
+                    //Spacer()
+                    Text(self.tempAgent.name ?? "")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        //.padding(.horizontal, 12)// Extra padding for background
+                        //.padding(.vertical, 6)
+                        //.background(Color.blue)           // 👈 Background color
+                        //.cornerRadius(8)
+                        .padding(.top, 0)
                     // 📌 Connection Status
                     Text("Status: \(statusText)")
-                        .font(.headline)
-                        .padding(.top, 40)
+                        .font(.system(size: 10))
+                        .foregroundColor(
+                            status == .connected ? .green : .gray
+                        )
+                        //.padding(.horizontal, 12)// Extra padding for background
+                        //.padding(.vertical, 6)
+                        //.background(Color.blue)           // 👈 Background color
+                        //.cornerRadius(8)
+                        .padding(.top, 0)
                     
                     // 📌 Mode Status
                     if status == .connected {
                         Text("\(modeText)")
                             .font(.subheadline)
+                            .foregroundColor(.white)
                             .padding(.top, 4)
                     }
                     
@@ -424,7 +441,7 @@ class RippleBackgroundView: UIView {
             ovalIn: bounds.insetBy(dx: bounds.width/3.5, dy: bounds.height/3.5)
         ).cgPath
         rippleLayer.fillColor = UIColor.clear.cgColor
-        rippleLayer.strokeColor = UIColor.gray.cgColor
+        rippleLayer.strokeColor = UIColor.blue.cgColor
         rippleLayer.lineWidth = 19.0
         rippleLayer.opacity = 0
         replicator.addSublayer(rippleLayer)
@@ -449,5 +466,102 @@ class RippleBackgroundView: UIView {
     func stop() {
         replicator?.removeFromSuperlayer()
         isAnimating = false
+    }
+}
+
+
+
+
+
+
+// MARK: - Welcome
+struct ObjAgent: Codable, Identifiable {
+    var id: Int?
+    var userID: Int?
+    var name: String?
+    var role: String?
+    var image: String?
+    var agentID: String?
+    var defaultLanguage: String?
+    var langFlagImage: String?
+    var langName: String?
+    var firstMessage: String?
+    var systemPrompt: String?
+    var isExternalKnowledge: Int?
+    var voiceID: String?
+    var duration: Int?
+    var noOfLanguages: Int?
+    var isActive: Int?
+    var createdAt: String?
+    var updatedAt: String?
+    var imagePath: String?
+    var agentLang: [AgentLang]?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case userID = "userId"
+        case name, role, image
+        case agentID = "agentId"
+        case defaultLanguage, langFlagImage, langName, firstMessage, systemPrompt, isExternalKnowledge
+        case voiceID = "voiceId"
+        case duration, noOfLanguages, isActive
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case imagePath
+        case agentLang = "agent_lang"
+    }
+    
+    // ✅ Empty initializer
+    init() {
+        self.id = 0
+        self.userID = 0
+        self.name = "Test Agent"
+        self.role = ""
+        self.image = ""
+        self.agentID = ""
+        self.defaultLanguage = ""
+        self.langFlagImage = ""
+        self.langName = ""
+        self.firstMessage = ""
+        self.systemPrompt = ""
+        self.isExternalKnowledge = 0
+        self.voiceID = ""
+        self.duration = 0
+        self.noOfLanguages = 0
+        self.isActive = 0
+        self.createdAt = ""
+        self.updatedAt = ""
+        self.imagePath = "https://cdn.growy.app/agents/second.png"
+        self.agentLang = []
+    }
+}
+
+// MARK: - AgentLang
+struct AgentLang: Codable, Identifiable {
+    var id, userID: Int?
+    var agentID: Int?
+    var languageCode: String?
+    var langFlagImage: String?
+    var firstMessage: String?
+    var voiceID: String?
+    var modelID: String?
+    var firstMessageTranslation: String?
+    var langNameIFlutter5120: String?
+    var createdAt: String?
+    var updatedAt: String?
+    var langName: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case userID = "userId"
+        case agentID = "agentId"
+        case languageCode, langFlagImage, firstMessage
+        case voiceID = "voiceId"
+        case modelID = "modelId"
+        case firstMessageTranslation
+        case langNameIFlutter5120 = "langName I/flutter ( 5120): "
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case langName
     }
 }
