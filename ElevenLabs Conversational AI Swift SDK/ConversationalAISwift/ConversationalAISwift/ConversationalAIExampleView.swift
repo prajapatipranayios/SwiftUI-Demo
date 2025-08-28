@@ -84,6 +84,16 @@ struct ConversationalAIExampleView: View {
         else {
             Task {
                 do {
+                    let overrides = ElevenLabsSDK.ConversationConfigOverride(
+                        agent: ElevenLabsSDK.AgentConfig(
+                            prompt: ElevenLabsSDK.AgentPrompt(prompt: "You are a helpful assistant"),
+                            language: ElevenLabsSDK.Language(rawValue: "\(selectedLang?.languageCode ?? "en")".uppercased())
+                        )
+                    )
+                    
+                    print("Lang changed or not code >>>>>>>>> \(selectedLang?.languageCode ?? "en")")
+                    
+//                    let config = ElevenLabsSDK.SessionConfig(agentId: agent.id, overrides: overrides)
                     let config = ElevenLabsSDK.SessionConfig(agentId: agent.id)
                     var callbacks = ElevenLabsSDK.Callbacks()
                     
@@ -138,7 +148,8 @@ struct ConversationalAIExampleView: View {
             audioEngine.inputNode.removeTap(onBus: 0)
             audioEngine.stop()
             print("🎙️ Mic is now OFF")
-        } else {
+        }
+        else {
             let inputNode = audioEngine.inputNode
             let recordingFormat = inputNode.outputFormat(forBus: 0)
             
@@ -157,6 +168,27 @@ struct ConversationalAIExampleView: View {
         isMicEnabled.toggle()
     }
     
+    @State private var selectedLang: AgentLang? = nil
+    //https://i.pinimg.com/736x/71/c6/53/71c653c58ad23ecf35e95a9ace954254.jpg
+    let agentLanguages: [AgentLang] = [
+            AgentLang(id: 1, userID: nil, agentID: nil,
+                      languageCode: "en", langFlagImage: "flag.checkered", firstMessage: nil,
+                      voiceID: nil, modelID: nil, firstMessageTranslation: nil,
+                      langNameIFlutter5120: nil, createdAt: nil, updatedAt: nil,
+                      langName: "English"),
+            AgentLang(id: 2, userID: nil, agentID: nil,
+                      languageCode: "hi", langFlagImage: "flag.square", firstMessage: nil,
+                      voiceID: nil, modelID: nil, firstMessageTranslation: nil,
+                      langNameIFlutter5120: nil, createdAt: nil, updatedAt: nil,
+                      langName: "Hindi"),
+            AgentLang(id: 3, userID: nil, agentID: nil,
+                      languageCode: "it", langFlagImage: "flag.checkered.circle.fill", firstMessage: nil,
+                      voiceID: nil, modelID: nil, firstMessageTranslation: nil,
+                      langNameIFlutter5120: nil, createdAt: nil, updatedAt: nil,
+                      langName: "Italian")
+        ]
+    
+    
     // MARK: - Body
     var body: some View {
         ZStack {
@@ -168,6 +200,94 @@ struct ConversationalAIExampleView: View {
             
             GeometryReader { geometry in
                 VStack {
+                    Spacer()
+//                    Picker("Select Language", selection: $selectedLang) {
+//                        ForEach(self.agentLanguages, id: \.id) { lang in
+//                            HStack {
+//                                if let flag = lang.langFlagImage,
+//                                   let url = URL(string: flag) {
+//                                    AsyncImage(url: url) { phase in
+//                                        switch phase {
+//                                        case .empty:
+//                                            ProgressView()
+//                                                .frame(width: 24, height: 24)
+//                                        case .success(let image):
+//                                            image.resizable()
+//                                                .scaledToFill()
+//                                                .frame(width: 24, height: 24)
+//                                                .clipShape(Circle())
+//                                        case .failure(_):
+//                                            Image(systemName: "flag")
+//                                                .resizable()
+//                                                .scaledToFit()
+//                                                .frame(width: 24, height: 24)
+//                                                .clipShape(Circle())
+//                                        @unknown default:
+//                                            EmptyView()
+//                                        }
+//                                    }
+//                                }
+//                                Text(lang.langName ?? "Unknown")
+//                                    .foregroundColor(.white)
+//                            }
+//                            .tag(lang.languageCode ?? "")
+//                        }
+//                    }
+//                    .pickerStyle(MenuPickerStyle()) // 👈 Dropdown style
+//                    .padding(.top, 16)
+//                    .padding(.horizontal, 20)
+//                    .background(Color.black.opacity(0.3))
+//                    .cornerRadius(12)
+//                    
+//                    // Just to debug
+//                    if let selectedLang {
+//                        Text("Selected: \(selectedLang.langName ?? "")")
+//                            .foregroundColor(.white)
+//                    }
+                    
+                    Picker(selection: $selectedLang) {
+                        ForEach(agentLanguages, id: \.id) { lang in
+                            HStack {
+                                if let flag = lang.langFlagImage {
+                                    Image(systemName: flag)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 20, height: 20)
+                                        .clipShape(Circle())
+                                        .tint(Color.black)
+                                }
+                                Text(lang.langName ?? "Unknown")
+                            }
+                            .tag(lang as AgentLang?)
+                        }
+                    } label: {
+                        HStack {
+                            if let flag = selectedLang?.langFlagImage {
+                                Image(flag)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 20, height: 20)
+                                    .clipShape(Circle())
+                            }
+                            Text(selectedLang?.langName ?? "Select Language")
+                                .foregroundColor(.white)
+                                //.padding(.horizontal, 16)
+                        }
+                        .padding(8)
+                        .background(Color.black) // 👈 works
+                        .cornerRadius(8)
+                    }
+                    .pickerStyle(MenuPickerStyle()) // 👈 makes it dropdown
+                    .tint(.white)
+                    .background(Color.black.opacity(0.17))
+                    .cornerRadius(10)
+                    .onAppear {
+                        if selectedLang == nil {
+                            selectedLang = self.agentLanguages.first // 👈 Default selection
+                        }
+                    }
+                    .disabled(status == .connected) // 👈 disable dropdown if connected
+                    
                     Spacer()
                     //OrbView(mode: mode, audioLevel: audioLevel)
                     //    .padding(.bottom, 20)
@@ -445,7 +565,7 @@ struct RippleBackground: UIViewRepresentable {
 // MARK: - UIKit Ripple View
 class RippleBackgroundView: UIView {
     
-    private let rippleCount = 3
+    private let rippleCount = 4
     private let rippleDuration: CFTimeInterval = 3
     private var isAnimating = false
     private var replicator: CAReplicatorLayer?
@@ -477,7 +597,7 @@ class RippleBackgroundView: UIView {
             ovalIn: bounds.insetBy(dx: bounds.width/3.5, dy: bounds.height/3.5)
         ).cgPath
         rippleLayer.fillColor = UIColor.clear.cgColor
-        rippleLayer.strokeColor = UIColor.blue.cgColor
+        rippleLayer.strokeColor = Color.white.opacity(0.11).cgColor
         rippleLayer.lineWidth = 19.0
         rippleLayer.opacity = 0
         replicator.addSublayer(rippleLayer)
@@ -488,7 +608,7 @@ class RippleBackgroundView: UIView {
         scale.toValue = 1.99
         
         let opacity = CABasicAnimation(keyPath: "opacity")
-        opacity.fromValue = 0.5
+        opacity.fromValue = 0.9
         opacity.toValue = 0.0
         
         let group = CAAnimationGroup()
@@ -573,8 +693,9 @@ struct ObjAgent: Codable, Identifiable {
 }
 
 // MARK: - AgentLang
-struct AgentLang: Codable, Identifiable {
-    var id, userID: Int?
+struct AgentLang: Codable, Identifiable, Hashable {
+    var id: Int?
+    var userID: Int?
     var agentID: Int?
     var languageCode: String?
     var langFlagImage: String?
