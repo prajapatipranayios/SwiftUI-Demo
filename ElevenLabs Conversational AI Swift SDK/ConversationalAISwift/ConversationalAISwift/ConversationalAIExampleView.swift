@@ -231,12 +231,12 @@ struct ConversationalAIExampleView: View {
                 HStack(spacing: 10) {
                     
                     // Mic Button -> Only show when connected
-                    if status == .connected {
-                        AudioButton(
-                            isMicEnabled: isMicEnabled,
-                            action: toggleMic
-                        )
-                    }
+//                    if status == .connected {
+//                        AudioButton(
+//                            isMicEnabled: isMicEnabled,
+//                            action: toggleMic
+//                        )
+//                    }
                     
                     // Call Button -> Always visible
                     CallButton(
@@ -349,7 +349,6 @@ struct ConversationalAIExampleView: View {
         .cornerRadius(8)
         .frame(width: UIScreen.main.bounds.width)
     }
-
     
     // MARK: - Avatar with Ripple
     private var avatarWithRipple: some View {
@@ -511,13 +510,14 @@ struct AudioButton: View {
                 .frame(width: 60, height: 60)
                 .shadow(radius: 5)
                 .overlay(
-                    Image(isMicEnabled ? "unmute" : "unmute")
+                    Image(isMicEnabled ? "mute" : "mute")
                         .resizable() // for asset images
                         .scaledToFit()
                         //.font(.system(size: 24, weight: .medium))
                         //.foregroundColor(.white)
                 )
         }
+        .tint(.clear)
         .padding(.bottom, 20)
     }
 }
@@ -744,20 +744,6 @@ struct ObjAgent: Codable, Identifiable {
         self.imagePath = "https://cdn.growy.app/agents/second.png"
         self.agentLang = [
             AgentLang(
-                id: 2,
-                userID: 10680,
-                agentID: 2,
-                languageCode: "it",
-                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/it.svg",
-                firstMessage: "",
-                voiceID: "iP95p4xoKVk53GoZ742B",
-                modelID: "",
-                firstMessageTranslation: "",
-                createdAt: "2025-08-26T13:36:37.000000Z",
-                updatedAt: "2025-08-27T13:31:14.000000Z",
-                langName: "Italian"
-            ),
-            AgentLang(
                 id: 3,
                 userID: 10680,
                 agentID: 2,
@@ -770,6 +756,20 @@ struct ObjAgent: Codable, Identifiable {
                 createdAt: "2025-08-26T13:36:37.000000Z",
                 updatedAt: "2025-08-27T13:31:13.000000Z",
                 langName: "Hindi"
+            ),
+            AgentLang(
+                id: 2,
+                userID: 10680,
+                agentID: 2,
+                languageCode: "it",
+                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/it.svg",
+                firstMessage: "",
+                voiceID: "iP95p4xoKVk53GoZ742B",
+                modelID: "",
+                firstMessageTranslation: "",
+                createdAt: "2025-08-26T13:36:37.000000Z",
+                updatedAt: "2025-08-27T13:31:14.000000Z",
+                langName: "Italian"
             )]
     }
 }
