@@ -15,6 +15,25 @@ struct ConversationalAIExampleView: View {
     @State private var mode: ElevenLabsSDK.Mode = .listening
     @State private var status: ElevenLabsSDK.Status = .disconnected
     @State private var isMicEnabled: Bool = true   // mic state
+    @State private var chatMessages: [ChatMessage] = [
+//        ChatMessage(role: "assistant", text: "Hello! How can I help you today?"),
+//        ChatMessage(role: "user", text: "Hi! I want to know more about SwiftUI."),
+//        ChatMessage(role: "assistant", text: "Sure! SwiftUI is Apple's declarative UI framework."),
+//        ChatMessage(role: "user", text: "Hi! I want to know more about SwiftUI."),
+//        ChatMessage(role: "assistant", text: "Sure! SwiftUI is Apple's declarative UI framework."),
+//        ChatMessage(role: "user", text: "Hi! I want to know more about SwiftUI."),
+//        ChatMessage(role: "assistant", text: "Sure! SwiftUI is Apple's declarative UI framework.")
+    ]
+    
+    struct ChatMessage: Identifiable, Equatable {
+        let id = UUID()
+        let role: String   // "user" or "assistant"
+        let text: String
+
+        static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
+            return lhs.id == rhs.id && lhs.role == rhs.role && lhs.text == rhs.text
+        }
+    }
     
     let agents = [
         Agent(
@@ -92,6 +111,10 @@ struct ConversationalAIExampleView: View {
                     }
                     callbacks.onMessage = { message, role in
                         print("Message: \(role) >>> \(message)")
+                        DispatchQueue.main.async {
+                            let newMessage = ChatMessage(role: "\(role)", text: message)
+                            chatMessages.append(newMessage)
+                        }
                     }
                     callbacks.onError = { errorMessage, _ in
                         print("Error: \(errorMessage)")
@@ -163,81 +186,74 @@ struct ConversationalAIExampleView: View {
         ZStack {
             self.backgroundView
             
-            ScrollView {
-                VStack(spacing: 20) {
-                    Spacer()
-                    self.languagePicker
-                    //Spacer()
-                    self.avatarWithRipple
-                    //Spacer()
-                    // 📌 Agent Name
-                    Text(self.tempAgent.name ?? "")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.top, 0)
-                    
-                    // 📌 Connection Status
-                    Text("Status: \(statusText)")
-                        .font(.system(size: 13))
-                        .foregroundColor(
-                            status == .connected ? .green : .gray
-                        )
-                        .padding(.top, 0)
-                    
-                    // 📌 Mode Status
-                    if status == .connected {
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(mode == .speaking ? Color.green : Color.gray) // Dot color
-                                .frame(width: 7, height: 7)                      // Dot size
-                                .overlay(
-                                    Circle()
-                                        .stroke(Color.white, lineWidth: 1)          // White border
-                                )
-                            
-                            Text(modeText)
-                                .font(.system(size: 13))
-                                .foregroundColor(.white)
-                        }
-                        .padding(.top, 4)
-                    }
-                    
-                    Spacer()
-                    
-                    // Buttons
-                    HStack(spacing: 40) {
-                        
-                        // Mic Button -> Only show when connected
-                        if status == .connected {
-                            AudioButton(
-                                isMicEnabled: isMicEnabled,
-                                action: toggleMic
+            VStack(spacing: 20) {
+                
+                self.languagePicker
+                
+                self.avatarWithRipple
+                
+                // 📌 Agent Name
+                Text(self.tempAgent.name ?? "")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(.top, 0)
+                
+                // 📌 Connection Status
+                Text("Status: \(statusText)")
+                    .font(.system(size: 13))
+                    .foregroundColor(
+                        status == .connected ? .green : .gray
+                    )
+                    .padding(.top, 0)
+                
+                // 📌 Mode Status
+                if status == .connected {
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(mode == .speaking ? Color.green : Color.gray) // Dot color
+                            .frame(width: 7, height: 7)                      // Dot size
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white, lineWidth: 1)          // White border
                             )
-                        }
                         
-                        // Call Button -> Always visible
-                        CallButton(
-                            connectionStatus: status,
-                            action: { beginConversation(agent: agents[currentAgentIndex]) }
+                        Text(modeText)
+                            .font(.system(size: 13))
+                            .foregroundColor(.white)
+                    }
+                    .padding(.top, 4)
+                }
+                
+                // Buttons
+                HStack(spacing: 40) {
+                    
+                    // Mic Button -> Only show when connected
+                    if status == .connected {
+                        AudioButton(
+                            isMicEnabled: isMicEnabled,
+                            action: toggleMic
                         )
                     }
-                    .padding(.bottom, 40)
+                    
+                    // Call Button -> Always visible
+                    CallButton(
+                        connectionStatus: status,
+                        action: {
+                            if status == .disconnected {
+                                self.chatMessages.removeAll()
+                            }
+                            beginConversation(agent: agents[currentAgentIndex])
+                        }
+                    )
                 }
-                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
+                if status == .connected {
+                    communicationLog
+                }
             }
+            .padding(.horizontal, 20)
         }
     }
-     /// */
-    
-//    var body: some View {
-//        ZStack {
-//            backgroundView
-//            GeometryReader { geometry in
-//                contentView
-//                    .frame(width: geometry.size.width, height: geometry.size.height)
-//            }
-//        }
-//    }
     
     // MARK: - Background
     private var backgroundView: some View {
@@ -252,9 +268,13 @@ struct ConversationalAIExampleView: View {
                             image.resizable()
                                 .scaledToFill()
                                 .ignoresSafeArea()
+                                .blur(radius: 10) // <-- Apply blur here
                                 .overlay(
                                     LinearGradient(
-                                        gradient: Gradient(colors: [Color.black.opacity(0.7), Color.blue]),
+                                        gradient: Gradient(colors: [
+                                            Color(hex: "AA3789FF"),
+                                            Color(hex: "AA051A37")
+                                        ]),
                                         startPoint: .top,
                                         endPoint: .bottom
                                     )
@@ -273,15 +293,20 @@ struct ConversationalAIExampleView: View {
         )
     }
 
+    // MARK: - Default image with Gradient
     private var defaultUserImage: some View {
         AnyView(
             Image("defaultUser")
                 .resizable()
                 .scaledToFill()
                 .ignoresSafeArea()
+                .blur(radius: 10) // <-- Apply blur here
                 .overlay(
                     LinearGradient(
-                        gradient: Gradient(colors: [Color.white.opacity(0.3), Color.blue, Color.blue.opacity(0.5)]),
+                        gradient: Gradient(colors: [
+                            Color(hex: "AA3789FF"),
+                            Color(hex: "AA051A37")
+                        ]),
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -348,7 +373,7 @@ struct ConversationalAIExampleView: View {
     private var avatarWithRipple: some View {
         ZStack {
             RippleBackground(status: status)
-                .frame(width: 350, height: 350)
+                .frame(width: 300, height: 300)
             
             if let url = URL(string: tempAgent.imagePath ?? "") {
                 AsyncImage(url: url) { phase in
@@ -358,26 +383,27 @@ struct ConversationalAIExampleView: View {
                     case .success(let image):
                         image.resizable()
                             .scaledToFill()
-                            .frame(width: 170, height: 170)
+                            .frame(width: 150, height: 150)
                             .clipShape(Circle())
                             .shadow(radius: 5)
                     case .failure(_):
                         Image("defaultUser")
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 170, height: 170)
+                            .frame(width: 150, height: 150)
                             .clipShape(Circle())
                             .shadow(radius: 5)
                     @unknown default:
                         Image("defaultUser")
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 170, height: 170)
+                            .frame(width: 150, height: 150)
                             .clipShape(Circle())
                             .shadow(radius: 5)
                     }
                 }
-            } else {
+            }
+            else {
                 Image("defaultUser")
                     .resizable()
                     .scaledToFill()
@@ -387,6 +413,51 @@ struct ConversationalAIExampleView: View {
             }
         }
     }
+    
+    // MARK: - Communication Log
+    private var communicationLog: some View {
+        VStack {
+            // Constrain to available width & vertical only
+            ScrollView(.vertical, showsIndicators: true) {
+                LazyVStack(alignment: .leading, spacing: 10) {
+                    ForEach(chatMessages) { msg in
+                        VStack(alignment: .top, spacing: 3) {
+                            // Role pill
+                            Text(msg.role.lowercased() == "user" ? "\(self.tempAgent.name ?? "") :" : "AI Response :")
+                                .font(.caption2).bold()
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 1)
+                                .background((msg.role.lowercased() == "user" ? Color.blue : Color.green).opacity(0.3))
+                                .foregroundColor(
+                                    msg.role.lowercased() == "user" ? .red : .blue
+                                )
+                            
+                            // Bubble (wrap text, do NOT expand past width)
+                            Text(msg.text.isEmpty ? " " : msg.text)
+                                .font(.system(size: 13))
+                                .foregroundColor(.white)
+                                .padding(10)
+                                .fixedSize(horizontal: false, vertical: true) // wrap lines
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    
+                }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .frame(maxWidth: .infinity)   // keep stack within reader width
+            }
+            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 4) // <-- width lock
+            .background(Color.black.opacity(0.1))
+            .cornerRadius(12)
+            .clipped()                        // prevent any horizontal overflow
+        }
+        .frame(height: UIScreen.main.bounds.height / 4) // give GeometryReader a height
+    }
+
+
+
 }
 
 // MARK: - Call Button
@@ -505,6 +576,24 @@ extension UIImage {
             }
         }
         return UIImage.animatedImage(with: images, duration: duration)
+    }
+}
+
+// MARK: - Hex to Color
+extension Color {
+    init(hex: String) {
+        let scanner = Scanner(string: hex)
+        scanner.currentIndex = hex.startIndex
+
+        var rgba: UInt64 = 0
+        scanner.scanHexInt64(&rgba)
+
+        let a = Double((rgba & 0xFF000000) >> 24) / 255
+        let r = Double((rgba & 0x00FF0000) >> 16) / 255
+        let g = Double((rgba & 0x0000FF00) >> 8) / 255
+        let b = Double(rgba & 0x000000FF) / 255
+
+        self.init(red: r, green: g, blue: b, opacity: a)
     }
 }
 
