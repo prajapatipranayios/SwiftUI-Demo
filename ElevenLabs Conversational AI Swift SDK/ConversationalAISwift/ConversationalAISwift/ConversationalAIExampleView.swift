@@ -9,7 +9,6 @@ import UIKit
 
 // MARK: - Conversational AI Example View
 struct ConversationalAIExampleView: View {
-    @State private var currentAgentIndex = 0
     @State private var conversation: ElevenLabsSDK.Conversation?
     @State private var audioLevel: Float = 0.0
     @State private var mode: ElevenLabsSDK.Mode = .listening
@@ -27,13 +26,19 @@ struct ConversationalAIExampleView: View {
         }
     }
     
-    let agents = [
-        Agent(
-            id: "agent_0501k361qpr1frkbqbe82v9rafym",
-            name: "Matilda",
-            description: "Math tutor"
-        )
-    ]
+//    let agents = [
+//        Agent(
+//            id: "agent_0501k361qpr1frkbqbe82v9rafym",
+//            name: "Matilda",
+//            description: "Math tutor"
+//        )
+//    ]
+    
+    let agents = Agent(
+        id: "agent_0501k361qpr1frkbqbe82v9rafym",
+        name: "Matilda",
+        description: "Math tutor"
+    )
     
     private let audioEngine = AVAudioEngine()
     
@@ -91,7 +96,7 @@ struct ConversationalAIExampleView: View {
                     
                     print("Lang changed or not code >>>>>>>>> \(selectedLang?.languageCode ?? "en")")
                     
-                    //                    let config = ElevenLabsSDK.SessionConfig(agentId: agent.id, overrides: overrides)
+                    //let config = ElevenLabsSDK.SessionConfig(agentId: self.tempAgent.agentID ?? "", overrides: overrides)
                     let config = ElevenLabsSDK.SessionConfig(agentId: agent.id)
                     var callbacks = ElevenLabsSDK.Callbacks()
                     
@@ -234,7 +239,7 @@ struct ConversationalAIExampleView: View {
                             if status == .disconnected {
                                 self.chatMessages.removeAll()
                             }
-                            beginConversation(agent: agents[currentAgentIndex])
+                            beginConversation(agent: agents)
                         }
                     )
                 }
@@ -737,7 +742,7 @@ struct ObjAgent: Codable, Identifiable {
         self.name = "Test Agent"
         self.role = ""
         self.image = ""
-        self.agentID = ""
+        self.agentID = "agent_1901k3k9k4a3egv98f017dgsqc68"
         self.defaultLanguage = ""
         self.langFlagImage = ""
         self.langName = ""
@@ -751,7 +756,35 @@ struct ObjAgent: Codable, Identifiable {
         self.createdAt = ""
         self.updatedAt = ""
         self.imagePath = "https://cdn.growy.app/agents/second.png"
-        self.agentLang = []
+        self.agentLang = [
+            AgentLang(
+                id: 2,
+                userID: 10680,
+                agentID: 2,
+                languageCode: "it",
+                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/it.svg",
+                firstMessage: "",
+                voiceID: "iP95p4xoKVk53GoZ742B",
+                modelID: "",
+                firstMessageTranslation: "",
+                createdAt: "2025-08-26T13:36:37.000000Z",
+                updatedAt: "2025-08-27T13:31:14.000000Z",
+                langName: "Italian"
+            ),
+            AgentLang(
+                id: 3,
+                userID: 10680,
+                agentID: 2,
+                languageCode: "hi",
+                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/in.svg",
+                firstMessage: "",
+                voiceID: "iP95p4xoKVk53GoZ742B",
+                modelID: "",
+                firstMessageTranslation: "",
+                createdAt: "2025-08-26T13:36:37.000000Z",
+                updatedAt: "2025-08-27T13:31:13.000000Z",
+                langName: "Hindi"
+            )]
     }
 }
 
@@ -766,7 +799,6 @@ struct AgentLang: Codable, Identifiable, Hashable {
     var voiceID: String?
     var modelID: String?
     var firstMessageTranslation: String?
-    var langNameIFlutter5120: String?
     var createdAt: String?
     var updatedAt: String?
     var langName: String?
@@ -779,7 +811,6 @@ struct AgentLang: Codable, Identifiable, Hashable {
         case voiceID = "voiceId"
         case modelID = "modelId"
         case firstMessageTranslation
-        case langNameIFlutter5120 = "langName I/flutter ( 5120): "
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case langName
