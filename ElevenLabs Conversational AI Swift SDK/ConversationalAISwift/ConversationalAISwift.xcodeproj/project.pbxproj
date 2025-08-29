@@ -15,9 +15,22 @@
 		BF5D8A6B2CDA213E00E1EEE4 /* ConversationalAISwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ConversationalAISwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		123EA9E02E61BD7200408A08 /* Exceptions for "ConversationalAISwift" folder in "ConversationalAISwift" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = BF5D8A6A2CDA213E00E1EEE4 /* ConversationalAISwift */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BF5D8A6D2CDA213E00E1EEE4 /* ConversationalAISwift */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				123EA9E02E61BD7200408A08 /* Exceptions for "ConversationalAISwift" folder in "ConversationalAISwift" target */,
+			);
 			path = ConversationalAISwift;
 			sourceTree = "<group>";
 		};
@@ -268,6 +281,7 @@
 				DEVELOPMENT_TEAM = 27B9XTLYR7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ConversationalAISwift/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "ElevenLabs ConvAI";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Elevenlabs needs access to the microphone.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -302,6 +316,7 @@
 				DEVELOPMENT_TEAM = 27B9XTLYR7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ConversationalAISwift/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "ElevenLabs ConvAI";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Elevenlabs needs access to the microphone.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

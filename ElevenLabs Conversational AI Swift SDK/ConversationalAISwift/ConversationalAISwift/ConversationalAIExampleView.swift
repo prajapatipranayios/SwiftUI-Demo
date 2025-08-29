@@ -15,15 +15,7 @@ struct ConversationalAIExampleView: View {
     @State private var mode: ElevenLabsSDK.Mode = .listening
     @State private var status: ElevenLabsSDK.Status = .disconnected
     @State private var isMicEnabled: Bool = true   // mic state
-    @State private var chatMessages: [ChatMessage] = [
-//        ChatMessage(role: "assistant", text: "Hello! How can I help you today?"),
-//        ChatMessage(role: "user", text: "Hi! I want to know more about SwiftUI."),
-//        ChatMessage(role: "assistant", text: "Sure! SwiftUI is Apple's declarative UI framework."),
-//        ChatMessage(role: "user", text: "Hi! I want to know more about SwiftUI."),
-//        ChatMessage(role: "assistant", text: "Sure! SwiftUI is Apple's declarative UI framework."),
-//        ChatMessage(role: "user", text: "Hi! I want to know more about SwiftUI."),
-//        ChatMessage(role: "assistant", text: "Sure! SwiftUI is Apple's declarative UI framework.")
-    ]
+    @State private var chatMessages: [ChatMessage] = []
     
     struct ChatMessage: Identifiable, Equatable {
         let id = UUID()
@@ -247,9 +239,8 @@ struct ConversationalAIExampleView: View {
                     )
                 }
                 .padding(.bottom, 10)
-                if status == .connected {
-                    communicationLog
-                }
+                
+                communicationLog
             }
             .padding(.horizontal, 20)
         }
@@ -417,45 +408,55 @@ struct ConversationalAIExampleView: View {
     // MARK: - Communication Log
     private var communicationLog: some View {
         VStack {
-            // Constrain to available width & vertical only
-            ScrollView(.vertical, showsIndicators: true) {
-                LazyVStack(alignment: .leading, spacing: 10) {
-                    ForEach(chatMessages) { msg in
-                        HStack(alignment: .top, spacing: 8) {
-                            // Role pill
-                            VStack(alignment: .leading) {
-                                Text(msg.role.lowercased() == "user" ? "\(self.tempAgent.name ?? "") :" : "AI Response :")
-                                    .font(.system(size: 13).bold())
-                                    .padding(.horizontal, 3)
-                                    .padding(.vertical, 1)
-                                    .foregroundColor(
-                                        msg.role.lowercased() == "user" ? .red : .blue
-                                    )
-                                    .cornerRadius(6)
-                                
-                                // Bubble (wrap text, do NOT expand past width)
-                                Text(msg.text.isEmpty ? " " : msg.text)
-                                    .font(.system(size: 13))
-                                    .foregroundColor(.white)
-                                    .padding(1)
-                                    .fixedSize(horizontal: false, vertical: true) // wrap lines
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+            ScrollViewReader { proxy in
+                ScrollView(.vertical, showsIndicators: true) {
+                    LazyVStack(alignment: .leading, spacing: 10) {
+                        ForEach(chatMessages) { msg in
+                            HStack(alignment: .top, spacing: 8) {
+                                VStack(alignment: .leading) {
+                                    Text(msg.role.lowercased() == "user" ? "\(self.tempAgent.name ?? "") :" : "AI Response :")
+                                        .font(.system(size: 13).bold())
+                                        .padding(.horizontal, 3)
+                                        .padding(.vertical, 1)
+                                        .foregroundColor(
+                                            msg.role.lowercased() == "user" ? .red : .blue
+                                        )
+                                        .cornerRadius(6)
+                                    
+                                    Text(msg.text.isEmpty ? " " : msg.text)
+                                        .font(.system(size: 13))
+                                        .foregroundColor(.white)
+                                        .padding(1)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .id(msg.id) // ✅ give each message an id for scrolling
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .frame(maxWidth: .infinity)
+                }
+                .frame(width: UIScreen.main.bounds.width,
+                       height: UIScreen.main.bounds.height / 4)
+                .background(Color.black.opacity(0.1))
+                .cornerRadius(12)
+                .clipped()
+                // 🔑 auto scroll when chatMessages changes
+                .onChange(of: chatMessages.count) {
+                    if let lastID = chatMessages.last?.id {
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            proxy.scrollTo(lastID, anchor: .bottom)
+                        }
                     }
                 }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .frame(maxWidth: .infinity)   // keep stack within reader width
             }
-            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 4) // <-- width lock
-            .background(Color.black.opacity(0.1))
-            .cornerRadius(12)
-            .clipped()                        // prevent any horizontal overflow
         }
-        .frame(height: UIScreen.main.bounds.height / 4) // give GeometryReader a height
+        .frame(height: UIScreen.main.bounds.height / 4)
     }
+
 
 
 
