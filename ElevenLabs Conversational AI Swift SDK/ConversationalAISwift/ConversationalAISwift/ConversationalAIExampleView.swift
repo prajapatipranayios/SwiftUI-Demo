@@ -87,19 +87,25 @@ struct ConversationalAIExampleView: View {
         else {
             Task {
                 do {
+                    
+                    let langCode = (selectedLang?.languageCode ?? "en").lowercased()
+
+                    guard let lang = ElevenLabsSDK.Language(rawValue: langCode) else {
+                        print("⚠️ Invalid language code, falling back to English")
+                        return
+                    }
+                    
                     let overrides = ElevenLabsSDK.ConversationConfigOverride(
                         agent: ElevenLabsSDK.AgentConfig(
                             prompt: ElevenLabsSDK.AgentPrompt(prompt: "You are a helpful assistant"),
-                            language: ElevenLabsSDK.Language(rawValue: "\(selectedLang?.languageCode ?? "en")".uppercased())
+                            language: lang
                         )
                     )
                     
-                    print("Lang changed or not code >>>>>>>>> \(selectedLang?.languageCode ?? "en")")
+                    let config = ElevenLabsSDK.SessionConfig(agentId: self.tempAgent.agentID ?? "", overrides: overrides)
+                    //let config = ElevenLabsSDK.SessionConfig(agentId: agent.id)
                     
-                    //let config = ElevenLabsSDK.SessionConfig(agentId: self.tempAgent.agentID ?? "", overrides: overrides)
-                    let config = ElevenLabsSDK.SessionConfig(agentId: agent.id)
                     var callbacks = ElevenLabsSDK.Callbacks()
-                    
                     callbacks.onConnect = { _ in
                         status = .connected
                     }
@@ -311,27 +317,13 @@ struct ConversationalAIExampleView: View {
         )
     }
     
-    // MARK: - Language Picker
+    // Simple & safe version
     private var languagePicker: some View {
-        if !(tempAgent.agentLang?.isEmpty ?? true) {
+        Group {
             Picker(selection: $selectedLang) {
                 ForEach(tempAgent.agentLang ?? [], id: \.id) { lang in
                     HStack {
-                        if let flag = lang.langFlagImage,
-                           let url = URL(string: flag) {
-                            AsyncImage(url: url) { imagePhase in
-                                switch imagePhase {
-                                case .success(let image):
-                                    image.resizable()
-                                        .frame(width: 20, height: 20)
-                                        .clipShape(Circle())
-                                default:
-                                    Image(systemName: "flag")
-                                        .resizable()
-                                        .frame(width: 20, height: 20)
-                                }
-                            }
-                        }
+                        // ... your flag + text ...
                         Text(lang.langName ?? "Unknown")
                             .foregroundColor(.white)
                     }
@@ -339,31 +331,25 @@ struct ConversationalAIExampleView: View {
                 }
             } label: {
                 HStack {
-                    if let flag = selectedLang?.langFlagImage {
-                        Image(flag)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 20, height: 20)
-                            .clipShape(Circle())
-                    }
                     Text(selectedLang?.langName ?? "Select Language")
                         .foregroundColor(.white)
                 }
-                .padding(8)
+                .padding(0)
                 .background(Color.black.opacity(0.5))
                 .cornerRadius(8)
             }
-            .pickerStyle(MenuPickerStyle())
+            .tint(Color.white)
+            .pickerStyle(.menu)
+            .disabled(status == .connected)
             .onAppear {
-                if selectedLang == nil {
-                    selectedLang = tempAgent.agentLang?.first
-                }
+                if selectedLang == nil { selectedLang = tempAgent.agentLang?.first }
             }
-            .disabled(status == .connected) as! EmptyView
-        } else {
-            EmptyView()
         }
+        .background(Color.black.opacity(0.5))
+        .cornerRadius(8)
+        .frame(width: UIScreen.main.bounds.width)
     }
+
     
     // MARK: - Avatar with Ripple
     private var avatarWithRipple: some View {
@@ -742,7 +728,7 @@ struct ObjAgent: Codable, Identifiable {
         self.name = "Test Agent"
         self.role = ""
         self.image = ""
-        self.agentID = "agent_1901k3k9k4a3egv98f017dgsqc68"
+        self.agentID = "agent_1901k3k9k4a3egv98f017dgsqc68" //"agent_1901k3k9k4a3egv98f017dgsqc68"
         self.defaultLanguage = ""
         self.langFlagImage = ""
         self.langName = ""
