@@ -421,28 +421,29 @@ struct ConversationalAIExampleView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 LazyVStack(alignment: .leading, spacing: 10) {
                     ForEach(chatMessages) { msg in
-                        VStack(alignment: .top, spacing: 3) {
+                        HStack(alignment: .top, spacing: 8) {
                             // Role pill
-                            Text(msg.role.lowercased() == "user" ? "\(self.tempAgent.name ?? "") :" : "AI Response :")
-                                .font(.caption2).bold()
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 1)
-                                .background((msg.role.lowercased() == "user" ? Color.blue : Color.green).opacity(0.3))
-                                .foregroundColor(
-                                    msg.role.lowercased() == "user" ? .red : .blue
-                                )
-                            
-                            // Bubble (wrap text, do NOT expand past width)
-                            Text(msg.text.isEmpty ? " " : msg.text)
-                                .font(.system(size: 13))
-                                .foregroundColor(.white)
-                                .padding(10)
-                                .fixedSize(horizontal: false, vertical: true) // wrap lines
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                            VStack(alignment: .leading) {
+                                Text(msg.role.lowercased() == "user" ? "\(self.tempAgent.name ?? "") :" : "AI Response :")
+                                    .font(.system(size: 13).bold())
+                                    .padding(.horizontal, 3)
+                                    .padding(.vertical, 1)
+                                    .foregroundColor(
+                                        msg.role.lowercased() == "user" ? .red : .blue
+                                    )
+                                    .cornerRadius(6)
+                                
+                                // Bubble (wrap text, do NOT expand past width)
+                                Text(msg.text.isEmpty ? " " : msg.text)
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.white)
+                                    .padding(1)
+                                    .fixedSize(horizontal: false, vertical: true) // wrap lines
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    
                 }
                 .padding(.vertical, 8)
                 .padding(.horizontal, 12)
