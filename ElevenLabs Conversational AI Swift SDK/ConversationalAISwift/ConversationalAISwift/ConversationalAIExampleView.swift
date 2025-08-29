@@ -189,7 +189,7 @@ struct ConversationalAIExampleView: View {
         ZStack {
             self.backgroundView
             
-            VStack(spacing: 20) {
+            VStack(spacing: 5) {
                 
                 self.languagePicker
                 
@@ -224,11 +224,11 @@ struct ConversationalAIExampleView: View {
                             .font(.system(size: 13))
                             .foregroundColor(.white)
                     }
-                    .padding(.top, 4)
+                    .padding(.bottom, 5)
                 }
                 
                 // Buttons
-                HStack(spacing: 40) {
+                HStack(spacing: 10) {
                     
                     // Mic Button -> Only show when connected
                     if status == .connected {
@@ -249,7 +249,7 @@ struct ConversationalAIExampleView: View {
                         }
                     )
                 }
-                .padding(.bottom, 10)
+                .padding(.bottom, 5)
                 
                 communicationLog
             }
@@ -495,7 +495,7 @@ struct CallButton: View {
                         //.foregroundColor(.white)
                 )
         }
-        .padding(.bottom, 40)
+        .padding(.bottom, 20)
     }
 }
 
@@ -518,7 +518,7 @@ struct AudioButton: View {
                         //.foregroundColor(.white)
                 )
         }
-        .padding(.bottom, 40)
+        .padding(.bottom, 20)
     }
 }
 
