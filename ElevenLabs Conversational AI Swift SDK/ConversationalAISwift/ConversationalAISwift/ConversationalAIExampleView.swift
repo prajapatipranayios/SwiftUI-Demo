@@ -70,6 +70,25 @@ struct ConversationalAIExampleView: View {
         self.configureAudioSession()
         
         if status == .connected {
+            var strConversationID: String = ""
+            if let convID = conversation?.getId() {
+                print("✅ Active Conversation ID: \(convID)")
+                strConversationID = convID
+            }
+            
+            APIService.shared.sendRequest(
+                urlString: "\(baseUrl)agent/create-conversations",
+                method: .post,
+                body: ["conversationId": strConversationID]
+            ) { result in
+                switch result {
+                case .success(let response):
+                    print("✅ POST Response:", response)
+                case .failure(let error):
+                    print("❌ Error:", error.localizedDescription)
+                }
+            }
+            
             conversation?.endSession()
             conversation = nil
         }
@@ -86,7 +105,7 @@ struct ConversationalAIExampleView: View {
                     
                     let overrides = ElevenLabsSDK.ConversationConfigOverride(
                         agent: ElevenLabsSDK.AgentConfig(
-                            prompt: ElevenLabsSDK.AgentPrompt(prompt: "You are a helpful assistant"),
+                            prompt: ElevenLabsSDK.AgentPrompt(prompt: ""),
                             language: lang
                         )
                     )
@@ -97,6 +116,8 @@ struct ConversationalAIExampleView: View {
                     var callbacks = ElevenLabsSDK.Callbacks()
                     callbacks.onConnect = { _ in
                         status = .connected
+                        
+                        print("Conversation ID >>>>>>>>> \(conversation?.getId())")
                     }
                     callbacks.onDisconnect = {
                         status = .disconnected
@@ -156,7 +177,7 @@ struct ConversationalAIExampleView: View {
             let recordingFormat = inputNode.outputFormat(forBus: 0)
             
             inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
-                // 👉 Send mic audio to ElevenLabs if supported
+                // 👉 Send mic audio to ElevenLabsSDK if supported
                 // conversation?.sendAudio(buffer)
             }
             
@@ -308,6 +329,45 @@ struct ConversationalAIExampleView: View {
         )
     }
     
+    // Simple & safe version
+    private var languagePicker: some View {
+        Group {
+            Picker(selection: $selectedLang) {
+                ForEach(agent.agentLang ?? [], id: \.id) { lang in
+                    HStack {
+                        // ... your flag + text ...
+                        langFlagImage(lang.langFlagImage ?? "") // ✅ load per-lang flag
+                        Text(lang.langName ?? "Unknown")
+                            .font(.custom("Rubik-Regular", size: 13)) // ✅ Bold
+                            .foregroundColor(.white)
+                    }
+                    .tag(lang as AgentLang?)
+                }
+            } label: {
+                HStack {
+                    defaultUserImage
+                    Text(selectedLang?.langName ?? "Select Language")
+                        .font(.custom("Rubik-Regular", size: 13)) // ✅ Bold
+                        .foregroundColor(.white)
+                }
+                .padding(0)
+                .background(Color.black.opacity(0.5))
+                .cornerRadius(8)
+            }
+            //.tint(Color.white)
+            .foregroundStyle(status == .connected ? Color.gray : Color.white)
+            .tint(status == .connected ? Color.gray : Color.white)
+            .pickerStyle(.menu)
+            .disabled(status == .connected)
+            .onAppear {
+                if selectedLang == nil { selectedLang = agent.agentLang?.first }
+            }
+        }
+        .background(Color.black.opacity(0.3))
+        .cornerRadius(8)
+        .frame(width: UIScreen.main.bounds.width)
+    }
+    
     // MARK: - Default image for flag
     private func langFlagImage(_ urlString: String?) -> some View {
         Group {
@@ -350,43 +410,6 @@ struct ConversationalAIExampleView: View {
                 .tint(.black)
         )
         .padding(.trailing, 8)
-    }
-    
-    // Simple & safe version
-    private var languagePicker: some View {
-        Group {
-            Picker(selection: $selectedLang) {
-                ForEach(agent.agentLang ?? [], id: \.id) { lang in
-                    HStack {
-                        // ... your flag + text ...
-                        langFlagImage(lang.langFlagImage ?? "") // ✅ load per-lang flag
-                        Text(lang.langName ?? "Unknown")
-                            .font(.custom("Rubik-Regular", size: 13)) // ✅ Bold
-                            .foregroundColor(.white)
-                    }
-                    .tag(lang as AgentLang?)
-                }
-            } label: {
-                HStack {
-                    defaultUserImage
-                    Text(selectedLang?.langName ?? "Select Language")
-                        .font(.custom("Rubik-Regular", size: 13)) // ✅ Bold
-                        .foregroundColor(.white)
-                }
-                .padding(0)
-                .background(Color.black.opacity(0.5))
-                .cornerRadius(8)
-            }
-            .tint(Color.white)
-            .pickerStyle(.menu)
-            .disabled(status == .connected)
-            .onAppear {
-                if selectedLang == nil { selectedLang = agent.agentLang?.first }
-            }
-        }
-        .background(Color.black.opacity(0.5))
-        .cornerRadius(8)
-        .frame(width: UIScreen.main.bounds.width)
     }
     
     // MARK: - Avatar with Ripple
@@ -894,19 +917,6 @@ struct APIService {
         }.resume()
     }
 }
-
-//APIService.shared.request(
-//    urlString: "https://yourapi.com/endpoint",
-//    method: .post,
-//    body: ["myString": "Hello API"]
-//) { result in
-//    switch result {
-//    case .success(let response):
-//        print("✅ POST Response:", response)
-//    case .failure(let error):
-//        print("❌ Error:", error.localizedDescription)
-//    }
-//}
 
 //APIService.shared.request(
 //    urlString: "https://yourapi.com/endpoint",
