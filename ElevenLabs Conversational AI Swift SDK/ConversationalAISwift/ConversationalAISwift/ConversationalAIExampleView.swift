@@ -6,10 +6,6 @@ import SDWebImageSwiftUI
 import ImageIO
 import UIKit
 
-import SVGKitSwift
-import SVGKit
-
-
 // MARK: - Conversational AI Example View
 struct ConversationalAIExampleView: View {
     @State private var conversation: ElevenLabsSDK.Conversation?
@@ -28,20 +24,6 @@ struct ConversationalAIExampleView: View {
             return lhs.id == rhs.id && lhs.role == rhs.role && lhs.text == rhs.text
         }
     }
-    
-//    let agents = [
-//        Agent(
-//            id: "agent_0501k361qpr1frkbqbe82v9rafym",
-//            name: "Matilda",
-//            description: "Math tutor"
-//        )
-//    ]
-    
-//    var agents = ObjAgent(
-//        id: "agent_0501k361qpr1frkbqbe82v9rafym",
-//        name: "Matilda",
-//        description: "Math tutor"
-//    )
     
     var agent : ObjAgent
     var userId: String
@@ -189,7 +171,6 @@ struct ConversationalAIExampleView: View {
     }
     
     @State private var selectedLang: AgentLang? = nil
-    //https://i.pinimg.com/736x/71/c6/53/71c653c58ad23ecf35e95a9ace954254.jpg
     
     // MARK: - Body
     var body: some View {
@@ -507,9 +488,6 @@ struct ConversationalAIExampleView: View {
         .frame(height: UIScreen.main.bounds.height / 4)
     }
 
-
-
-
 }
 
 
@@ -591,13 +569,6 @@ struct AudioButton: View {
     }
 }
 
-// MARK: - Agent model
-struct Agent {
-    let id: String
-    let name: String
-    let description: String
-}
-
 // MARK: - GIFView
 struct GIFView: UIViewRepresentable {
     let name: String
@@ -665,18 +636,15 @@ struct RippleBackground: UIViewRepresentable {
     
     func makeUIView(context: Context) -> RippleBackgroundView {
         let view = RippleBackgroundView()
-        DispatchQueue.main.async {
-            view.start()
-        }
         return view
     }
     
     func updateUIView(_ uiView: RippleBackgroundView, context: Context) {
-//        if status == .connected || status == .connecting {
-//            uiView.start()
-//        } else {
-//            uiView.stop()
-//        }
+        if status == .connected || status == .connecting {
+            uiView.start()
+        } else {
+            uiView.stop()
+        }
     }
 }
 
