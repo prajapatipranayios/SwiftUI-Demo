@@ -6,6 +6,9 @@ import SDWebImageSwiftUI
 import ImageIO
 import UIKit
 
+import SVGKitSwift
+import SVGKit
+
 
 // MARK: - Conversational AI Example View
 struct ConversationalAIExampleView: View {
@@ -189,7 +192,7 @@ struct ConversationalAIExampleView: View {
         ZStack {
             self.backgroundView
             
-            VStack(spacing: 5) {
+            VStack(spacing: 0) {
                 
                 self.languagePicker
                 
@@ -197,17 +200,19 @@ struct ConversationalAIExampleView: View {
                 
                 // 📌 Agent Name
                 Text(self.tempAgent.name ?? "")
-                    .font(.headline)
+                    //.font(.headline)
+                    .font(.custom("Rubik-Bold", size: 20)) // ✅ Bold
                     .foregroundColor(.white)
                     .padding(.top, 0)
                 
                 // 📌 Connection Status
                 Text("Status: \(statusText)")
-                    .font(.system(size: 13))
+                    //.font(.system(size: 13))
+                    .font(.custom("Rubik-Regular", size: 13)) // ✅ Regular
                     .foregroundColor(
                         status == .connected ? .green : .gray
                     )
-                    .padding(.top, 0)
+                    .padding(.bottom, 10)
                 
                 // 📌 Mode Status
                 if status == .connected {
@@ -221,14 +226,15 @@ struct ConversationalAIExampleView: View {
                             )
                         
                         Text(modeText)
-                            .font(.system(size: 13))
+                            //.font(.system(size: 13))
+                            .font(.custom("Rubik-Regular", size: 13)) // ✅ Regular
                             .foregroundColor(.white)
                     }
                     .padding(.bottom, 5)
                 }
                 
                 // Buttons
-                HStack(spacing: 10) {
+                HStack(spacing: 0) {
                     
                     // Mic Button -> Only show when connected
 //                    if status == .connected {
@@ -294,7 +300,7 @@ struct ConversationalAIExampleView: View {
             }
         )
     }
-
+    
     // MARK: - Default image with Gradient
     private var defaultUserImage: some View {
         AnyView(
@@ -317,6 +323,50 @@ struct ConversationalAIExampleView: View {
         )
     }
     
+    // MARK: - Default image for flag
+    private func langFlagImage(_ urlString: String?) -> some View {
+        Group {
+            if let url = URL(string: urlString ?? "") {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(width: 24, height: 24)
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 24, height: 24)
+                            .clipShape(Circle())
+                            .clipped()
+                    case .failure(_):
+                        defaultFlagImage
+                    @unknown default:
+                        defaultFlagImage
+                    }
+                }
+            } else {
+                defaultFlagImage
+            }
+        }
+        .frame(width: 24, height: 24)   // ✅ guarantee final box
+        .padding(.trailing, 8)
+    }
+    
+    // MARK: - Default image with Gradient
+    private var defaultFlagImage: some View {
+        AnyView(
+            Image(systemName: "flag")
+                .resizable()
+                .scaledToFit()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+                .clipped()
+                .tint(.black)
+        )
+        .padding(.trailing, 8)
+    }
+    
     // Simple & safe version
     private var languagePicker: some View {
         Group {
@@ -324,14 +374,18 @@ struct ConversationalAIExampleView: View {
                 ForEach(tempAgent.agentLang ?? [], id: \.id) { lang in
                     HStack {
                         // ... your flag + text ...
+                        langFlagImage(lang.langFlagImage ?? "") // ✅ load per-lang flag
                         Text(lang.langName ?? "Unknown")
+                            .font(.custom("Rubik-Regular", size: 13)) // ✅ Bold
                             .foregroundColor(.white)
                     }
                     .tag(lang as AgentLang?)
                 }
             } label: {
                 HStack {
+                    defaultUserImage
                     Text(selectedLang?.langName ?? "Select Language")
+                        .font(.custom("Rubik-Regular", size: 13)) // ✅ Bold
                         .foregroundColor(.white)
                 }
                 .padding(0)
@@ -405,7 +459,8 @@ struct ConversationalAIExampleView: View {
                             HStack(alignment: .top, spacing: 8) {
                                 VStack(alignment: .leading) {
                                     Text(msg.role.lowercased() == "user" ? "\(self.tempAgent.name ?? "") :" : "AI Response :")
-                                        .font(.system(size: 13).bold())
+                                        //.font(.system(size: 13).bold())
+                                        .font(.custom("Rubik-Bold", size: 13)) // ✅ Bold
                                         .padding(.horizontal, 3)
                                         .padding(.vertical, 1)
                                         .foregroundColor(
@@ -414,7 +469,8 @@ struct ConversationalAIExampleView: View {
                                         .cornerRadius(6)
                                     
                                     Text(msg.text.isEmpty ? " " : msg.text)
-                                        .font(.system(size: 13))
+                                        //.font(.system(size: 13))
+                                        .font(.custom("Rubik-Regular", size: 13)) // ✅ Regular
                                         .foregroundColor(.white)
                                         .padding(1)
                                         .fixedSize(horizontal: false, vertical: true)
@@ -431,7 +487,7 @@ struct ConversationalAIExampleView: View {
                 }
                 .frame(width: UIScreen.main.bounds.width,
                        height: UIScreen.main.bounds.height / 4)
-                .background(Color.black.opacity(0.1))
+                .background(chatMessages.isEmpty ? .clear : Color.black.opacity(0.1) )
                 .cornerRadius(12)
                 .clipped()
                 // 🔑 auto scroll when chatMessages changes
@@ -494,7 +550,7 @@ struct CallButton: View {
                         //.foregroundColor(.white)
                 )
         }
-        .padding(.bottom, 20)
+        .padding(.bottom, 10)
     }
 }
 
@@ -518,7 +574,7 @@ struct AudioButton: View {
                 )
         }
         .tint(.clear)
-        .padding(.bottom, 20)
+        .padding(.bottom, 10)
     }
 }
 
@@ -604,15 +660,18 @@ struct RippleBackground: UIViewRepresentable {
     
     func makeUIView(context: Context) -> RippleBackgroundView {
         let view = RippleBackgroundView()
+        DispatchQueue.main.async {
+            view.start()
+        }
         return view
     }
     
     func updateUIView(_ uiView: RippleBackgroundView, context: Context) {
-        if status == .connected || status == .connecting {
-            uiView.start()
-        } else {
-            uiView.stop()
-        }
+//        if status == .connected || status == .connecting {
+//            uiView.start()
+//        } else {
+//            uiView.stop()
+//        }
     }
 }
 
@@ -651,7 +710,7 @@ class RippleBackgroundView: UIView {
             ovalIn: bounds.insetBy(dx: bounds.width/3.5, dy: bounds.height/3.5)
         ).cgPath
         rippleLayer.fillColor = UIColor.clear.cgColor
-        rippleLayer.strokeColor = Color.white.opacity(0.11).cgColor
+        rippleLayer.strokeColor = Color.white.opacity(0.31).cgColor
         rippleLayer.lineWidth = 19.0
         rippleLayer.opacity = 0
         replicator.addSublayer(rippleLayer)
@@ -725,7 +784,7 @@ struct ObjAgent: Codable, Identifiable {
     init() {
         self.id = 0
         self.userID = 0
-        self.name = "Test Agent"
+        self.name = "Darrell Steward"
         self.role = ""
         self.image = ""
         self.agentID = "agent_1901k3k9k4a3egv98f017dgsqc68" //"agent_1901k3k9k4a3egv98f017dgsqc68"
