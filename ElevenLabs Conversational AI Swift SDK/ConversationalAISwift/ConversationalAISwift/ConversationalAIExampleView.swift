@@ -37,11 +37,15 @@ struct ConversationalAIExampleView: View {
 //        )
 //    ]
     
-    let agents = Agent(
-        id: "agent_0501k361qpr1frkbqbe82v9rafym",
-        name: "Matilda",
-        description: "Math tutor"
-    )
+//    var agents = ObjAgent(
+//        id: "agent_0501k361qpr1frkbqbe82v9rafym",
+//        name: "Matilda",
+//        description: "Math tutor"
+//    )
+    
+    var agent : ObjAgent
+    var userId: String
+    var baseUrl: String
     
     private let audioEngine = AVAudioEngine()
     
@@ -78,9 +82,9 @@ struct ConversationalAIExampleView: View {
     }
     
     //var strUserProfile: String = ""
-    var tempAgent = ObjAgent()   // blank object
+    //var tempAgent = ObjAgent()   // blank object
     
-    private func beginConversation(agent: Agent) {
+    private func beginConversation(agent: ObjAgent) {
         self.configureAudioSession()
         
         if status == .connected {
@@ -105,7 +109,7 @@ struct ConversationalAIExampleView: View {
                         )
                     )
                     
-                    let config = ElevenLabsSDK.SessionConfig(agentId: self.tempAgent.agentID ?? "", overrides: overrides)
+                    let config = ElevenLabsSDK.SessionConfig(agentId: agent.agentID ?? "", overrides: overrides)
                     //let config = ElevenLabsSDK.SessionConfig(agentId: agent.id)
                     
                     var callbacks = ElevenLabsSDK.Callbacks()
@@ -199,7 +203,7 @@ struct ConversationalAIExampleView: View {
                 self.avatarWithRipple
                 
                 // 📌 Agent Name
-                Text(self.tempAgent.name ?? "")
+                Text(self.agent.name ?? "")
                     //.font(.headline)
                     .font(.custom("Rubik-Bold", size: 20)) // ✅ Bold
                     .foregroundColor(.white)
@@ -251,7 +255,7 @@ struct ConversationalAIExampleView: View {
                             if status == .disconnected {
                                 self.chatMessages.removeAll()
                             }
-                            beginConversation(agent: agents)
+                            beginConversation(agent: agent)
                         }
                     )
                 }
@@ -267,7 +271,7 @@ struct ConversationalAIExampleView: View {
     private var backgroundView: some View {
         AnyView(
             Group {
-                if let url = URL(string: tempAgent.imagePath ?? "") {
+                if let url = URL(string: agent.imagePath ?? "") {
                     AsyncImage(url: url) { phase in
                         switch phase {
                         case .empty:
@@ -371,7 +375,7 @@ struct ConversationalAIExampleView: View {
     private var languagePicker: some View {
         Group {
             Picker(selection: $selectedLang) {
-                ForEach(tempAgent.agentLang ?? [], id: \.id) { lang in
+                ForEach(agent.agentLang ?? [], id: \.id) { lang in
                     HStack {
                         // ... your flag + text ...
                         langFlagImage(lang.langFlagImage ?? "") // ✅ load per-lang flag
@@ -396,7 +400,7 @@ struct ConversationalAIExampleView: View {
             .pickerStyle(.menu)
             .disabled(status == .connected)
             .onAppear {
-                if selectedLang == nil { selectedLang = tempAgent.agentLang?.first }
+                if selectedLang == nil { selectedLang = agent.agentLang?.first }
             }
         }
         .background(Color.black.opacity(0.5))
@@ -410,7 +414,7 @@ struct ConversationalAIExampleView: View {
             RippleBackground(status: status)
                 .frame(width: 300, height: 300)
             
-            if let url = URL(string: tempAgent.imagePath ?? "") {
+            if let url = URL(string: agent.imagePath ?? "") {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
@@ -458,7 +462,7 @@ struct ConversationalAIExampleView: View {
                         ForEach(chatMessages) { msg in
                             HStack(alignment: .top, spacing: 8) {
                                 VStack(alignment: .leading) {
-                                    Text(msg.role.lowercased() == "user" ? "\(self.tempAgent.name ?? "") :" : "AI Response :")
+                                    Text(msg.role.lowercased() == "user" ? "\(self.agent.name ?? "") :" : "AI Response :")
                                         //.font(.system(size: 13).bold())
                                         .font(.custom("Rubik-Bold", size: 13)) // ✅ Bold
                                         .padding(.horizontal, 3)
@@ -507,6 +511,15 @@ struct ConversationalAIExampleView: View {
 
 
 }
+
+
+// MARK: - Preview
+struct ConvAIExampleView_Previews: PreviewProvider {
+    static var previews: some View {
+        ConversationalAIExampleView(agent: ObjAgent(), userId: "123", baseUrl: "Test Url")
+    }
+}
+
 
 // MARK: - Call Button
 struct CallButton: View {
@@ -645,14 +658,6 @@ extension Color {
         self.init(red: r, green: g, blue: b, opacity: a)
     }
 }
-
-// MARK: - Preview
-struct ConvAIExampleView_Previews: PreviewProvider {
-    static var previews: some View {
-        ConversationalAIExampleView()
-    }
-}
-
 
 // MARK: - SwiftUI Wrapper
 struct RippleBackground: UIViewRepresentable {
@@ -861,3 +866,102 @@ struct AgentLang: Codable, Identifiable, Hashable {
         case langName
     }
 }
+
+
+
+enum HTTPMethod: String {
+    case get     = "GET"
+    case post    = "POST"
+    case put     = "PUT"
+    case delete  = "DELETE"
+    case patch   = "PATCH"
+    case head    = "HEAD"
+    case options = "OPTIONS"
+    case trace   = "TRACE"
+    case connect = "CONNECT"
+}
+
+struct APIService {
+    
+    static let shared = APIService()
+    
+    /// Generic API request with dynamic HTTP method
+    func sendRequest(
+        urlString: String,
+        method: HTTPMethod,
+        body: [String: Any]? = nil,
+        completion: @escaping (Result<Data, Error>) -> Void
+    ) {
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue   // ✅ use enum
+
+        // Only attach body for POST/PUT/PATCH/DELETE (not GET/HEAD/OPTIONS)
+        switch method {
+        case .post, .put, .patch, .delete:
+            if let body = body {
+                request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            }
+        default:
+            break
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data", code: 0)))
+                return
+            }
+
+            completion(.success(data))
+        }.resume()
+    }
+}
+
+//APIService.shared.request(
+//    urlString: "https://yourapi.com/endpoint",
+//    method: .post,
+//    body: ["myString": "Hello API"]
+//) { result in
+//    switch result {
+//    case .success(let response):
+//        print("✅ POST Response:", response)
+//    case .failure(let error):
+//        print("❌ Error:", error.localizedDescription)
+//    }
+//}
+
+//APIService.shared.request(
+//    urlString: "https://yourapi.com/endpoint",
+//    method: .get
+//) { result in
+//    switch result {
+//    case .success(let response):
+//        print("✅ GET Response:", response)
+//    case .failure(let error):
+//        print("❌ Error:", error.localizedDescription)
+//    }
+//}
+
+//APIService.shared.request(
+//    urlString: "https://yourapi.com/update",
+//    method: .put,
+//    body: ["id": 123, "value": "Updated"]
+//) { result in
+//    switch result {
+//    case .success(let response):
+//        print("✅ PUT Response:", response)
+//    case .failure(let error):
+//        print("❌ Error:", error.localizedDescription)
+//    }
+//}
+

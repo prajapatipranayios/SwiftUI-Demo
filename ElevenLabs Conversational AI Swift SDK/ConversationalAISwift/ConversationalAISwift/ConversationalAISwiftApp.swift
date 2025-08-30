@@ -4,7 +4,11 @@ import SwiftUI
 struct ConversationalAISwiftApp: App {
     var body: some Scene {
         WindowGroup {
-            ConversationalAIExampleView()
+            ConversationalAIExampleView(
+                agent: ObjAgent(),                 // or your decoded agent
+                userId: "123",                     // supply actual userId
+                baseUrl: "https://api.example.com" // supply your URL
+            )
         }
     }
 }
