@@ -15,6 +15,8 @@ struct ConversationalAIExampleView: View {
     @State private var isMicEnabled: Bool = true   // mic state
     @State private var chatMessages: [ChatMessage] = []
     
+    @Environment(\.dismiss) private var dismiss  // ✅ for iOS 15+
+    
     struct ChatMessage: Identifiable, Equatable {
         let id = UUID()
         let role: String   // "user" or "assistant"
@@ -25,7 +27,7 @@ struct ConversationalAIExampleView: View {
         }
     }
     
-    var agent : ObjAgent
+    var agent : ObjAgent?
     var userId: String
     var baseUrl: String
     
@@ -205,15 +207,27 @@ struct ConversationalAIExampleView: View {
                 self.avatarWithRipple
                 
                 // 📌 Agent Name
-                Text(self.agent.name ?? "")
-                    //.font(.headline)
-                    .font(.custom("Rubik-Bold", size: 20)) // ✅ Bold
-                    .foregroundColor(.white)
-                    .padding(.top, 0)
+//                Text(self.agent.name ?? "")
+//                //.font(.headline)
+//                    .font(.custom("Rubik-Bold", size: 20)) // ✅ Bold
+//                    .foregroundColor(.white)
+//                    .padding(.top, 0)
+                
+                if let tempAgent = self.agent {
+                    Text(tempAgent.name ?? "Agent")
+                        .font(.custom("Rubik-Bold", size: 20)) // ✅ Bold
+                        .foregroundColor(.white)
+                        .padding(.top, 0)
+                } else {
+                    Text("Loading failed")
+                        .font(.custom("Rubik-Bold", size: 20))
+                        .foregroundColor(.red)
+                        .padding(.top, 0)
+                }
                 
                 // 📌 Connection Status
                 Text("Status: \(statusText)")
-                    //.font(.system(size: 13))
+                //.font(.system(size: 13))
                     .font(.custom("Rubik-Regular", size: 13)) // ✅ Regular
                     .foregroundColor(
                         status == .connected ? .green : .gray
@@ -232,7 +246,7 @@ struct ConversationalAIExampleView: View {
                             )
                         
                         Text(modeText)
-                            //.font(.system(size: 13))
+                        //.font(.system(size: 13))
                             .font(.custom("Rubik-Regular", size: 13)) // ✅ Regular
                             .foregroundColor(.white)
                     }
@@ -243,12 +257,12 @@ struct ConversationalAIExampleView: View {
                 HStack(spacing: 0) {
                     
                     // Mic Button -> Only show when connected
-//                    if status == .connected {
-//                        AudioButton(
-//                            isMicEnabled: isMicEnabled,
-//                            action: toggleMic
-//                        )
-//                    }
+                    //                    if status == .connected {
+                    //                        AudioButton(
+                    //                            isMicEnabled: isMicEnabled,
+                    //                            action: toggleMic
+                    //                        )
+                    //                    }
                     
                     // Call Button -> Always visible
                     CallButton(
@@ -257,7 +271,7 @@ struct ConversationalAIExampleView: View {
                             if status == .disconnected {
                                 self.chatMessages.removeAll()
                             }
-                            beginConversation(agent: agent)
+                            beginConversation(agent: agent!)
                         }
                     )
                 }
@@ -266,6 +280,45 @@ struct ConversationalAIExampleView: View {
                 communicationLog
             }
             .padding(.horizontal, 20)
+            
+            // Custom back button
+            .overlay(alignment: .topLeading) {
+                VStack {
+                    HStack {
+                        Button(action: {
+                            print("Back button click. >>>>>>>>>>>")
+                            //dismiss()
+                            if let vc = self.getHostingController() {
+                                vc.navigationController?.popViewController(animated: true)
+                            }
+                        }) {
+                            RoundedRectangle(cornerRadius: 12)
+                                //.fill(isMicEnabled ? Color.green : Color.gray)
+                                .frame(width: 45, height: 45)
+                                .shadow(radius: 5)
+                                .overlay(
+                                    Image(systemName: "chevron.left")
+                                        .foregroundColor(.white)
+                                        .scaledToFit()
+                                )
+                                .tint(Color.black.opacity(0.3))
+                                //.background(Color.black.opacity(0.4))
+                        }
+                        .padding(.leading, 16)
+                        .padding(.top, 0)
+                        .disabled(status == .connected)
+                        .opacity(status == .connected ? 0.4 : 1.0)
+                        
+                        Spacer()
+                    }
+                    Spacer()
+                }
+                .padding(.leading, 16)
+                .padding(.top, 0)
+                .zIndex(999)
+                .ignoresSafeArea()
+            }
+            
         }
     }
     
@@ -273,7 +326,7 @@ struct ConversationalAIExampleView: View {
     private var backgroundView: some View {
         AnyView(
             Group {
-                if let url = URL(string: agent.imagePath ?? "") {
+                if let url = URL(string: agent?.imagePath ?? "") {
                     AsyncImage(url: url) { phase in
                         switch phase {
                         case .empty:
@@ -282,7 +335,7 @@ struct ConversationalAIExampleView: View {
                             image.resizable()
                                 .scaledToFill()
                                 .ignoresSafeArea()
-                                .blur(radius: 10) // <-- Apply blur here
+                                .blur(radius: 10)
                                 .overlay(
                                     LinearGradient(
                                         gradient: Gradient(colors: [
@@ -333,7 +386,7 @@ struct ConversationalAIExampleView: View {
     private var languagePicker: some View {
         Group {
             Picker(selection: $selectedLang) {
-                ForEach(agent.agentLang ?? [], id: \.id) { lang in
+                ForEach(agent?.agentLang ?? [], id: \.id) { lang in
                     HStack {
                         // ... your flag + text ...
                         langFlagImage(lang.langFlagImage ?? "") // ✅ load per-lang flag
@@ -345,13 +398,13 @@ struct ConversationalAIExampleView: View {
                 }
             } label: {
                 HStack {
-                    defaultUserImage
+                    langFlagImage(selectedLang?.langFlagImage ?? "")
                     Text(selectedLang?.langName ?? "Select Language")
                         .font(.custom("Rubik-Regular", size: 13)) // ✅ Bold
                         .foregroundColor(.white)
                 }
                 .padding(0)
-                .background(Color.black.opacity(0.5))
+                .background(Color.black.opacity(0.2))
                 .cornerRadius(8)
             }
             //.tint(Color.white)
@@ -360,7 +413,7 @@ struct ConversationalAIExampleView: View {
             .pickerStyle(.menu)
             .disabled(status == .connected)
             .onAppear {
-                if selectedLang == nil { selectedLang = agent.agentLang?.first }
+                if selectedLang == nil { selectedLang = agent?.agentLang?.first }
             }
         }
         .background(Color.black.opacity(0.3))
@@ -418,7 +471,7 @@ struct ConversationalAIExampleView: View {
             RippleBackground(status: status)
                 .frame(width: 300, height: 300)
             
-            if let url = URL(string: agent.imagePath ?? "") {
+            if let url = URL(string: agent?.imagePath ?? "") {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
@@ -466,7 +519,7 @@ struct ConversationalAIExampleView: View {
                         ForEach(chatMessages) { msg in
                             HStack(alignment: .top, spacing: 8) {
                                 VStack(alignment: .leading) {
-                                    Text(msg.role.lowercased() == "user" ? "\(self.agent.name ?? "") :" : "AI Response :")
+                                    Text(msg.role.lowercased() == "user" ? "\(self.agent?.name ?? "") :" : "AI Response :")
                                         //.font(.system(size: 13).bold())
                                         .font(.custom("Rubik-Bold", size: 13)) // ✅ Bold
                                         .padding(.horizontal, 3)
@@ -734,7 +787,31 @@ class RippleBackgroundView: UIView {
     }
 }
 
+// Helper to access UIViewController
+extension View {
+    func getHostingController() -> UIViewController? {
+        return UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }?.rootViewController?
+            .topMostViewController()
+    }
+}
 
+extension UIViewController {
+    func topMostViewController() -> UIViewController {
+        if let presented = self.presentedViewController {
+            return presented.topMostViewController()
+        }
+        if let nav = self as? UINavigationController {
+            return nav.visibleViewController?.topMostViewController() ?? nav
+        }
+        if let tab = self as? UITabBarController {
+            return tab.selectedViewController?.topMostViewController() ?? tab
+        }
+        return self
+    }
+}
 
 
 
