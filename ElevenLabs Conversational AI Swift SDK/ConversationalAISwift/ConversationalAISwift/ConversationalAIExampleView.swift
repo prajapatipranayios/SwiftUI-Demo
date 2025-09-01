@@ -113,7 +113,7 @@ struct ConversationalAIExampleView: View {
                         )
                     )
                     
-                    let config = ElevenLabsSDK.SessionConfig(agentId: agent.agentID ?? "", userId: userId, overrides: overrides)
+                    let config = ElevenLabsSDK.SessionConfig(agentId: agent.agentID ?? "", userId: "\(userId)", overrides: overrides)
                     //let config = ElevenLabsSDK.SessionConfig(agentId: agent.id)
                     
                     var callbacks = ElevenLabsSDK.Callbacks()
@@ -199,120 +199,88 @@ struct ConversationalAIExampleView: View {
     // MARK: - Body
     var body: some View {
         ZStack {
-            self.backgroundView
-            
+            // 1) Background only ignores safe area
+            backgroundView
+                .ignoresSafeArea()
+
+            // 2) Main content fills the screen and stays inside safe area
             VStack(spacing: 0) {
-                
-                self.languagePicker
-                
-                self.avatarWithRipple
-                
-                // 📌 Agent Name
-                if let tempAgent = self.agent {
+                languagePicker
+                avatarWithRipple
+
+                if let tempAgent = agent {
                     Text(tempAgent.name ?? "Agent")
-                        .font(.custom("Rubik-Bold", size: 20)) // ✅ Bold
+                        .font(.custom("Rubik-Bold", size: 20))
                         .foregroundColor(.white)
-                        .padding(.top, 0)
                 } else {
                     Text("Loading failed")
                         .font(.custom("Rubik-Bold", size: 20))
                         .foregroundColor(.red)
-                        .padding(.top, 0)
                 }
-                
-                // 📌 Connection Status
+
                 Text("Status: \(statusText)")
-                    .font(.custom("Rubik-Regular", size: 13)) // ✅ Regular
-                    .foregroundColor(
-                        status == .connected ? .green : .gray
-                    )
+                    .font(.custom("Rubik-Regular", size: 13))
+                    .foregroundColor(status == .connected ? .green : .gray)
                     .padding(.bottom, 10)
-                
-                // 📌 Mode Status
+
                 if status == .connected {
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(mode == .speaking ? Color.green : Color.gray) // Dot color
-                            .frame(width: 7, height: 7)                      // Dot size
-                            .overlay(
-                                Circle()
-                                    .stroke(Color.white, lineWidth: 1)          // White border
-                            )
-                        
+                            .fill(mode == .speaking ? Color.green : Color.gray)
+                            .frame(width: 7, height: 7)
+                            .overlay(Circle().stroke(.white, lineWidth: 1))
                         Text(modeText)
-                        //.font(.system(size: 13))
-                            .font(.custom("Rubik-Regular", size: 13)) // ✅ Regular
+                            .font(.custom("Rubik-Regular", size: 13))
                             .foregroundColor(.white)
                     }
                     .padding(.bottom, 5)
                 }
-                
-                // Buttons
+
                 HStack(spacing: 0) {
-                    
-                    // Mic Button -> Only show when connected
-                    //                    if status == .connected {
-                    //                        AudioButton(
-                    //                            isMicEnabled: isMicEnabled,
-                    //                            action: toggleMic
-                    //                        )
-                    //                    }
-                    
-                    // Call Button -> Always visible
                     CallButton(
                         connectionStatus: status,
                         action: {
-                            if status == .disconnected {
-                                self.chatMessages.removeAll()
-                            }
+                            if status == .disconnected { chatMessages.removeAll() }
                             beginConversation(agent: agent!)
                         }
                     )
                 }
                 .padding(.bottom, 5)
-                
+
+                // 3) CHAT LOG: expands to fill remaining space
                 communicationLog
+                    .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
             }
             .padding(.horizontal, 20)
-            .ignoresSafeArea()
-            // Custom back button
-            .overlay(alignment: .topLeading) {
-                VStack {
-                    HStack {
-                        Button(action: {
-                            print("Back button click. >>>>>>>>>>>")
-                            //dismiss()
-                            if let vc = self.getHostingController() {
-                                vc.navigationController?.popViewController(animated: true)
-                            }
-                        }) {
-                            RoundedRectangle(cornerRadius: 12)
-                                //.fill(isMicEnabled ? Color.green : Color.gray)
-                                .frame(width: 45, height: 45)
-                                .shadow(radius: 5)
-                                .overlay(
-                                    Image(systemName: "chevron.left")
-                                        .foregroundColor(.white)
-                                        .scaledToFit()
-                                )
-                                .tint(Color.black.opacity(0.3))
-                                //.background(Color.black.opacity(0.4))
-                        }
-                        .padding(.leading, 16)
-                        .padding(.top, 0)
-                        .disabled(status == .connected)
-                        .opacity(status == .connected ? 0.4 : 1.0)
-                        
-                        Spacer()
+            // Ensure the VStack itself is allowed to fill the screen
+            .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
+            //.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        }
+        // 4) BACK BUTTON: safe and always tappable; sits above content
+        .safeAreaInset(edge: .top) {
+            HStack {
+                Button(action: {
+                    print("Back button press...")
+                    if let vc = getHostingController() {
+                        vc.navigationController?.popViewController(animated: true)
                     }
-                    Spacer()
+                }) {
+                    RoundedRectangle(cornerRadius: 12)
+                        .frame(width: 40, height: 40)
+                        .shadow(radius: 5)
+                        .overlay(Image(systemName: "chevron.left")
+                            .foregroundColor(.white)
+                            .scaledToFit())
+                        .tint(Color.black.opacity(0.3))
                 }
-                .padding(.leading, 8)
-                .padding(.top, 0)
-                .zIndex(999)
-                .ignoresSafeArea()
+                .disabled(status == .connected)
+                .opacity(status == .connected ? 0.4 : 1.0)
+
+                Spacer()
             }
-            
+            .padding(.horizontal, 16)
+            .padding(.top, 8) // small offset below the status bar
+            .background(Color.clear)
         }
     }
     
@@ -519,56 +487,45 @@ struct ConversationalAIExampleView: View {
     
     // MARK: - Communication Log
     private var communicationLog: some View {
-        VStack {
-            ScrollViewReader { proxy in
-                ScrollView(.vertical, showsIndicators: true) {
-                    LazyVStack(alignment: .leading, spacing: 10) {
-                        ForEach(chatMessages) { msg in
-                            HStack(alignment: .top, spacing: 8) {
-                                VStack(alignment: .leading) {
-                                    Text(msg.role.lowercased() == "user" ? "Me :" : "\(self.agent?.name ?? "") :")
-                                        //.font(.system(size: 13).bold())
-                                        .font(.custom("Rubik-Bold", size: 13)) // ✅ Bold
-                                        .padding(.horizontal, 3)
-                                        .padding(.vertical, 1)
-                                        .foregroundColor(
-                                            msg.role.lowercased() == "user" ? .red : .blue
-                                        )
-                                        .cornerRadius(6)
-                                    
-                                    Text(msg.text.isEmpty ? " " : msg.text)
-                                        //.font(.system(size: 13))
-                                        .font(.custom("Rubik-Regular", size: 13)) // ✅ Regular
-                                        .foregroundColor(.white)
-                                        .padding(1)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
+        ScrollViewReader { proxy in
+            ScrollView(.vertical, showsIndicators: true) {
+                LazyVStack(alignment: .leading, spacing: 10) {
+                    ForEach(chatMessages) { msg in
+                        HStack(alignment: .top, spacing: 8) {
+                            VStack(alignment: .leading) {
+                                Text(msg.role.lowercased() == "user" ? "Me :" : "\(agent?.name ?? "") :")
+                                    .font(.custom("Rubik-Bold", size: 13))
+                                    .padding(.horizontal, 3)
+                                    .padding(.vertical, 1)
+                                    .foregroundColor(msg.role.lowercased() == "user" ? .red : .blue)
+
+                                Text(msg.text.isEmpty ? " " : msg.text)
+                                    .font(.custom("Rubik-Regular", size: 13))
+                                    .foregroundColor(.white)
+                                    .padding(1)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .id(msg.id) // ✅ give each message an id for scrolling
                         }
+                        .frame(maxWidth: UIScreen.main.bounds.width, alignment: .leading)
+                        .id(msg.id)
                     }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 12)
-                    .frame(maxWidth: .infinity)
                 }
-                .frame(width: UIScreen.main.bounds.width,
-                       height: UIScreen.main.bounds.height / 4)
-                .background(chatMessages.isEmpty ? .clear : Color.black.opacity(0.1) )
-                .cornerRadius(12)
-                .clipped()
-                // 🔑 auto scroll when chatMessages changes
-                .onChange(of: chatMessages.count) {
-                    if let lastID = chatMessages.last?.id {
-                        withAnimation(.easeOut(duration: 0.3)) {
-                            proxy.scrollTo(lastID, anchor: .bottom)
-                        }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .frame(maxWidth: UIScreen.main.bounds.width)
+            }
+            .background(chatMessages.isEmpty ? Color.clear : Color.black.opacity(0.1))
+            .cornerRadius(12)
+            .clipped()
+            .onChange(of: chatMessages.count) {
+                if let lastID = chatMessages.last?.id {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        proxy.scrollTo(lastID, anchor: .bottom)
                     }
                 }
             }
         }
-        .frame(height: UIScreen.main.bounds.height / 4)
     }
 
 }
