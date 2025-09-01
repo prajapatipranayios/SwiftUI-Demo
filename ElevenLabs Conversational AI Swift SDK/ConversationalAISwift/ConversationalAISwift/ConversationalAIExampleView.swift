@@ -5,6 +5,7 @@ import _Concurrency
 import SDWebImageSwiftUI
 import ImageIO
 import UIKit
+import SVGKit
 
 // MARK: - Conversational AI Example View
 struct ConversationalAIExampleView: View {
@@ -112,7 +113,7 @@ struct ConversationalAIExampleView: View {
                         )
                     )
                     
-                    let config = ElevenLabsSDK.SessionConfig(agentId: agent.agentID ?? "", overrides: overrides)
+                    let config = ElevenLabsSDK.SessionConfig(agentId: agent.agentID ?? "", userId: userId, overrides: overrides)
                     //let config = ElevenLabsSDK.SessionConfig(agentId: agent.id)
                     
                     var callbacks = ElevenLabsSDK.Callbacks()
@@ -207,12 +208,6 @@ struct ConversationalAIExampleView: View {
                 self.avatarWithRipple
                 
                 // 📌 Agent Name
-//                Text(self.agent.name ?? "")
-//                //.font(.headline)
-//                    .font(.custom("Rubik-Bold", size: 20)) // ✅ Bold
-//                    .foregroundColor(.white)
-//                    .padding(.top, 0)
-                
                 if let tempAgent = self.agent {
                     Text(tempAgent.name ?? "Agent")
                         .font(.custom("Rubik-Bold", size: 20)) // ✅ Bold
@@ -227,7 +222,6 @@ struct ConversationalAIExampleView: View {
                 
                 // 📌 Connection Status
                 Text("Status: \(statusText)")
-                //.font(.system(size: 13))
                     .font(.custom("Rubik-Regular", size: 13)) // ✅ Regular
                     .foregroundColor(
                         status == .connected ? .green : .gray
@@ -313,7 +307,7 @@ struct ConversationalAIExampleView: View {
                     }
                     Spacer()
                 }
-                .padding(.leading, 16)
+                .padding(.leading, 8)
                 .padding(.top, 0)
                 .zIndex(999)
                 .ignoresSafeArea()
@@ -387,21 +381,25 @@ struct ConversationalAIExampleView: View {
         Group {
             Picker(selection: $selectedLang) {
                 ForEach(agent?.agentLang ?? [], id: \.id) { lang in
-                    HStack {
+                    HStack(spacing: 8) {
                         // ... your flag + text ...
-                        langFlagImage(lang.langFlagImage ?? "") // ✅ load per-lang flag
+                        langFlagImage(lang.langFlagImage ?? "")
+                            .clipShape(Circle())
                         Text(lang.langName ?? "Unknown")
-                            .font(.custom("Rubik-Regular", size: 13)) // ✅ Bold
+                            .font(.custom("Rubik-Regular", size: 13))
                             .foregroundColor(.white)
+                            .padding(.leading, 8)
                     }
                     .tag(lang as AgentLang?)
                 }
             } label: {
                 HStack {
                     langFlagImage(selectedLang?.langFlagImage ?? "")
+                        .clipShape(Circle())
                     Text(selectedLang?.langName ?? "Select Language")
-                        .font(.custom("Rubik-Regular", size: 13)) // ✅ Bold
-                        .foregroundColor(.white)
+                        .font(.custom("Rubik-Regular", size: 13))
+                        //.foregroundColor(.white)
+                        .foregroundColor(status == .connected ? .black : .black) // 👈
                 }
                 .padding(0)
                 .background(Color.black.opacity(0.2))
@@ -411,7 +409,7 @@ struct ConversationalAIExampleView: View {
             .foregroundStyle(status == .connected ? Color.gray : Color.white)
             .tint(status == .connected ? Color.gray : Color.white)
             .pickerStyle(.menu)
-            .disabled(status == .connected)
+            .allowsHitTesting(!(status == .connected))
             .onAppear {
                 if selectedLang == nil { selectedLang = agent?.agentLang?.first }
             }
@@ -423,31 +421,41 @@ struct ConversationalAIExampleView: View {
     
     // MARK: - Default image for flag
     private func langFlagImage(_ urlString: String?) -> some View {
-        Group {
-            if let url = URL(string: urlString ?? "") {
+        let size: CGFloat = 24
+
+        return Group {
+            if let s = urlString,
+                let url = URL(string: s),
+                s.lowercased().hasSuffix(".svg")
+            {
+                SVGImageView(urlString: urlString, size: size)
+            }
+            else if let s = urlString, let url = URL(string: s) {
+                // your original raster flow
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
-                        ProgressView()
-                            .frame(width: 24, height: 24)
+                        ProgressView().frame(width: size, height: size)
                     case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 24, height: 24)
+                        image.resizable()
+                            .scaledToFill()
+                            .frame(width: size, height: size)
                             .clipShape(Circle())
                             .clipped()
-                    case .failure(_):
+                    case .failure:
                         defaultFlagImage
                     @unknown default:
                         defaultFlagImage
                     }
                 }
-            } else {
+            }
+            else {
                 defaultFlagImage
             }
         }
-        .frame(width: 24, height: 24)   // ✅ guarantee final box
+        .clipShape(Circle())
+        .clipped()
+        .frame(width: size, height: size)
         .padding(.trailing, 8)
     }
     
@@ -519,7 +527,7 @@ struct ConversationalAIExampleView: View {
                         ForEach(chatMessages) { msg in
                             HStack(alignment: .top, spacing: 8) {
                                 VStack(alignment: .leading) {
-                                    Text(msg.role.lowercased() == "user" ? "\(self.agent?.name ?? "") :" : "AI Response :")
+                                    Text(msg.role.lowercased() == "user" ? "Me :" : "\(self.agent?.name ?? "") :")
                                         //.font(.system(size: 13).bold())
                                         .font(.custom("Rubik-Bold", size: 13)) // ✅ Bold
                                         .padding(.horizontal, 3)
@@ -571,6 +579,53 @@ struct ConversationalAIExampleView: View {
 struct ConvAIExampleView_Previews: PreviewProvider {
     static var previews: some View {
         ConversationalAIExampleView(agent: ObjAgent(), userId: "123", baseUrl: "Test Url")
+    }
+}
+
+// MARK: - Load SVG image from url
+struct SVGImageView: View {
+    let urlString: String?
+    let size: CGFloat
+    
+    @State private var uiImage: UIImage? = nil
+    
+    var body: some View {
+        Group {
+            if let img = uiImage {
+                Image(uiImage: img)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: size, height: size)
+                    .clipShape(Circle())       // makes it circular
+                    .contentShape(Circle())    // touch shape is circular
+            } else {
+                ProgressView()
+                    .frame(width: size, height: size)
+                    .clipShape(Circle())
+                    .contentShape(Circle())
+            }
+        }
+        .frame(width: size, height: size)
+        .clipShape(Circle())   // ensures the container is circular
+        .contentShape(Circle())    // touch shape is circular
+        .clipped()
+        .clipped(antialiased: true)
+        .onAppear {
+            loadSVG()
+        }
+    }
+    
+    private func loadSVG() {
+        guard let urlString, let url = URL(string: urlString) else { return }
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data else { return }
+            if let svgImage = SVGKImage(data: data) {
+                svgImage.size = CGSize(width: size, height: size) // important!
+                DispatchQueue.main.async {
+                    self.uiImage = svgImage.uiImage
+                }
+            }
+        }.resume()
     }
 }
 
@@ -860,7 +915,8 @@ struct ObjAgent: Codable, Identifiable {
         self.name = "Darrell Steward"
         self.role = ""
         self.image = ""
-        self.agentID = "agent_1901k3k9k4a3egv98f017dgsqc68" //"agent_1901k3k9k4a3egv98f017dgsqc68"
+        //self.agentID = "agent_1901k3k9k4a3egv98f017dgsqc68"
+        self.agentID = "agent_5301k3zshq6neaxsyrxemxd9k5ch"
         self.defaultLanguage = ""
         self.langFlagImage = ""
         self.langName = ""
@@ -994,29 +1050,3 @@ struct APIService {
         }.resume()
     }
 }
-
-//APIService.shared.request(
-//    urlString: "https://yourapi.com/endpoint",
-//    method: .get
-//) { result in
-//    switch result {
-//    case .success(let response):
-//        print("✅ GET Response:", response)
-//    case .failure(let error):
-//        print("❌ Error:", error.localizedDescription)
-//    }
-//}
-
-//APIService.shared.request(
-//    urlString: "https://yourapi.com/update",
-//    method: .put,
-//    body: ["id": 123, "value": "Updated"]
-//) { result in
-//    switch result {
-//    case .success(let response):
-//        print("✅ PUT Response:", response)
-//    case .failure(let error):
-//        print("❌ Error:", error.localizedDescription)
-//    }
-//}
-

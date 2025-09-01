@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		122222802E5C353400B9D418 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1222227F2E5C353400B9D418 /* SDWebImageSwiftUI */; };
+		125019182E6579DA005BA4BE /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = 125019172E6579DA005BA4BE /* SVGKit */; };
+		1250191A2E6579DA005BA4BE /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 125019192E6579DA005BA4BE /* SVGKitSwift */; };
 		12DF6EFC2E62FD9D0039962C /* ElevenLabsSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 12DF6EFB2E62FD9D0039962C /* ElevenLabsSDK */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +43,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1250191A2E6579DA005BA4BE /* SVGKitSwift in Frameworks */,
+				125019182E6579DA005BA4BE /* SVGKit in Frameworks */,
 				12DF6EFC2E62FD9D0039962C /* ElevenLabsSDK in Frameworks */,
 				122222802E5C353400B9D418 /* SDWebImageSwiftUI in Frameworks */,
 			);
@@ -87,6 +91,8 @@
 			packageProductDependencies = (
 				1222227F2E5C353400B9D418 /* SDWebImageSwiftUI */,
 				12DF6EFB2E62FD9D0039962C /* ElevenLabsSDK */,
+				125019172E6579DA005BA4BE /* SVGKit */,
+				125019192E6579DA005BA4BE /* SVGKitSwift */,
 			);
 			productName = ConversationalAISwift;
 			productReference = BF5D8A6B2CDA213E00E1EEE4 /* ConversationalAISwift.app */;
@@ -119,6 +125,7 @@
 			packageReferences = (
 				1222227E2E5C353400B9D418 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				12DF6EFA2E62FD9D0039962C /* XCRemoteSwiftPackageReference "elevenlabs-swift-sdk" */,
+				125019162E6579DA005BA4BE /* XCRemoteSwiftPackageReference "SVGKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BF5D8A6C2CDA213E00E1EEE4 /* Products */;
@@ -372,6 +379,14 @@
 				minimumVersion = 3.1.3;
 			};
 		};
+		125019162E6579DA005BA4BE /* XCRemoteSwiftPackageReference "SVGKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SVGKit/SVGKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		12DF6EFA2E62FD9D0039962C /* XCRemoteSwiftPackageReference "elevenlabs-swift-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/elevenlabs/elevenlabs-swift-sdk";
@@ -387,6 +402,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1222227E2E5C353400B9D418 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		125019172E6579DA005BA4BE /* SVGKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 125019162E6579DA005BA4BE /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKit;
+		};
+		125019192E6579DA005BA4BE /* SVGKitSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 125019162E6579DA005BA4BE /* XCRemoteSwiftPackageReference "SVGKit" */;
+			productName = SVGKitSwift;
 		};
 		12DF6EFB2E62FD9D0039962C /* ElevenLabsSDK */ = {
 			isa = XCSwiftPackageProductDependency;
