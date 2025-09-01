@@ -274,7 +274,7 @@ struct ConversationalAIExampleView: View {
                 communicationLog
             }
             .padding(.horizontal, 20)
-            
+            .ignoresSafeArea()
             // Custom back button
             .overlay(alignment: .topLeading) {
                 VStack {
@@ -381,27 +381,26 @@ struct ConversationalAIExampleView: View {
         Group {
             Picker(selection: $selectedLang) {
                 ForEach(agent?.agentLang ?? [], id: \.id) { lang in
-                    HStack(spacing: 8) {
+                    HStack {
                         // ... your flag + text ...
                         langFlagImage(lang.langFlagImage ?? "")
                             .clipShape(Circle())
-                        Text(lang.langName ?? "Unknown")
+                        Text("   \(lang.langName ?? "Unknown")")
                             .font(.custom("Rubik-Regular", size: 13))
                             .foregroundColor(.white)
-                            .padding(.leading, 8)
                     }
                     .tag(lang as AgentLang?)
                 }
             } label: {
-                HStack {
+                HStack(spacing: 8) {
                     langFlagImage(selectedLang?.langFlagImage ?? "")
                         .clipShape(Circle())
-                    Text(selectedLang?.langName ?? "Select Language")
+                    Text("   \(selectedLang?.langName ?? "Select Language")")
                         .font(.custom("Rubik-Regular", size: 13))
-                        //.foregroundColor(.white)
-                        .foregroundColor(status == .connected ? .black : .black) // 👈
+                        .foregroundColor(status == .connected ? .black : .black)
+                        .padding(.leading, 8)
                 }
-                .padding(0)
+                .padding(8)
                 .background(Color.black.opacity(0.2))
                 .cornerRadius(8)
             }
