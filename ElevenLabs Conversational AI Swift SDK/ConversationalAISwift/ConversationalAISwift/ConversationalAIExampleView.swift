@@ -742,7 +742,7 @@ struct RippleBackground: UIViewRepresentable {
 // MARK: - UIKit Ripple View
 class RippleBackgroundView: UIView {
     
-    private let rippleCount = 4
+    private let rippleCount = 3
     private let rippleDuration: CFTimeInterval = 3
     private var isAnimating = false
     private var replicator: CAReplicatorLayer?
@@ -775,7 +775,7 @@ class RippleBackgroundView: UIView {
         ).cgPath
         rippleLayer.fillColor = UIColor.clear.cgColor
         rippleLayer.strokeColor = Color.white.opacity(0.31).cgColor
-        rippleLayer.lineWidth = 19.0
+        rippleLayer.lineWidth = 25.0
         rippleLayer.opacity = 0
         replicator.addSublayer(rippleLayer)
         
