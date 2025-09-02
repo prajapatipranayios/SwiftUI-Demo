@@ -134,22 +134,25 @@ struct ConversationalAIExampleView: View {
     }
     
     // MARK: - Conversation lifecycle
-    private func startConversation() async {
+    private mutating func startConversation() async {
         // Pick language (fall back to English)
         let langCode = (agent?.defaultLanguage ?? "en").lowercased()
         
         // Build the config
-        let config = ConversationConfig(
-            agent: AgentConfig(
-                prompt: AgentPrompt(prompt: agent?.systemPrompt ?? ""),
-                language: Language(rawValue: langCode) ?? .en
-            )
-        )
+//        let config = ConversationConfig(
+//            agent: AgentConfig(
+//                prompt: AgentPrompt(prompt: agent?.systemPrompt ?? ""),
+//                language: Language(rawValue: langCode) ?? .en
+//            )
+//        )
+        
+        print("Lang >>>>>> \(langCode)")
+        let agentOverrides = AgentOverrides(language: Language(rawValue: langCode))
         
         do {
             conversation = try await ElevenLabs.startConversation(
                 agentId: agent?.agentID ?? "",
-                config: config
+                config: ConversationConfig(agentOverrides: agentOverrides)
             )
             setupObservers()
             connectionStatus = "Connected"
@@ -159,7 +162,7 @@ struct ConversationalAIExampleView: View {
         }
     }
     
-    private func endConversation() async {
+    private mutating func endConversation() async {
         await conversation?.endConversation()
         conversation = nil
         cancellables.removeAll()
@@ -169,21 +172,21 @@ struct ConversationalAIExampleView: View {
         try? await conversation?.toggleMute()
     }
     
-    private func sendTestMessage() async {
-        try? await conversation?.sendMessage("Hello from the app!")
-    }
+//    private func sendTestMessage() async {
+//        try? await conversation?.sendMessage("Hello from the app!")
+//    }
     
     // MARK: - Observers
     //private func setupObservers(_ conv: Conversation) {
-    private func setupObservers() {
-        conversation.$messages
+    private mutating func setupObservers() {
+        conversation?.$messages
             .receive(on: RunLoop.main)
             .sink { msgs in
                 self.arrMessages = msgs
             }
             .store(in: &cancellables)
         
-        conversation.$state
+        conversation?.$state
             .receive(on: RunLoop.main)
             .sink { state in
                 switch state {
@@ -197,14 +200,14 @@ struct ConversationalAIExampleView: View {
             }
             .store(in: &cancellables)
         
-        conversation.$isMuted
+        conversation?.$isMuted
             .receive(on: RunLoop.main)
             .sink { muted in
                 self.isMuted = muted
             }
             .store(in: &cancellables)
         
-        conversation.$agentState
+        conversation?.$agentState
             .receive(on: RunLoop.main)
             .sink { state in
                 self.agentState = state
@@ -294,7 +297,7 @@ struct ConversationalAIExampleView: View {
                         .clipShape(Circle())
                     Text("   \(selectedLang?.langName ?? "Select Language")")
                         .font(.custom("Rubik-Regular", size: 13))
-                        .foregroundColor(status == .connected ? .black : .black)
+                        .foregroundColor(isConnected ? .black : .black)
                         .padding(.leading, 8)
                 }
                 .padding(8)
@@ -419,18 +422,19 @@ struct ConversationalAIExampleView: View {
         ScrollViewReader { proxy in
             ScrollView(.vertical, showsIndicators: true) {
                 LazyVStack(alignment: .leading, spacing: 10) {
-                    ForEach(chatMessages) { msg in
+                    ForEach(arrMessages) { msg in
                         HStack(alignment: .top, spacing: 8) {
-                            VStack(alignment: .leading) {
-                                Text(msg.role.lowercased() == "user" ? "Me :" : "\(agent?.name ?? "") :")
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(msg.role == .user ? "Me :" : "\(agent?.name ?? "") :")
                                     .font(.custom("Rubik-Bold", size: 13))
                                     .padding(.horizontal, 3)
                                     .padding(.vertical, 1)
-                                    .foregroundColor(msg.role.lowercased() == "user" ? .red : .blue)
+                                    .foregroundColor(msg.role == .user ? .red : .blue)
 
                                 Text(msg.text.isEmpty ? " " : msg.text)
                                     .font(.custom("Rubik-Regular", size: 13))
                                     .foregroundColor(.white)
+                                    .padding(.horizontal, 3)
                                     .padding(1)
                                     .fixedSize(horizontal: false, vertical: true)
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -444,11 +448,11 @@ struct ConversationalAIExampleView: View {
                 .padding(.horizontal, 12)
                 .frame(maxWidth: UIScreen.main.bounds.width)
             }
-            .background(chatMessages.isEmpty ? Color.clear : Color.black.opacity(0.1))
+            .background(arrMessages.isEmpty ? Color.clear : Color.black.opacity(0.1))
             .cornerRadius(12)
             .clipped()
-            .onChange(of: chatMessages.count) {
-                if let lastID = chatMessages.last?.id {
+            .onChange(of: arrMessages.count) {
+                if let lastID = arrMessages.last?.id {
                     withAnimation(.easeOut(duration: 0.3)) {
                         proxy.scrollTo(lastID, anchor: .bottom)
                     }
@@ -459,12 +463,12 @@ struct ConversationalAIExampleView: View {
     
     // MARK: - Button to call
     private var callButton: some View {
-        Button(action: action) {
+        Button(action: handleCallButtonTap) {
             RoundedRectangle(cornerRadius: 15)
                 .frame(width: 60, height: 60)
                 .shadow(radius: 5)
                 .overlay(
-                    Image(buttonImg)
+                    Image(callButtonImg)
                         .resizable()
                         .scaledToFit()
                 )
@@ -483,6 +487,14 @@ struct ConversationalAIExampleView: View {
         default:
             return "call"
         }
+    }
+    
+    private func handleCallButtonTap() {
+        // Example: toggle mute or start conversation
+        if isConnected {
+            
+        }
+        print("☎️ Call button tapped, isMuted = \(isMuted)")
     }
     
 }
