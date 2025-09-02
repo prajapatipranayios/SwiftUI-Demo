@@ -489,18 +489,22 @@ struct ConversationalAIExampleView: View {
     private var communicationLog: some View {
         ScrollViewReader { proxy in
             ScrollView(.vertical, showsIndicators: true) {
-                LazyVStack(alignment: .leading, spacing: 10) {
+                LazyVStack(alignment: .leading) {
                     ForEach(chatMessages) { msg in
-                        HStack(alignment: .top, spacing: 8) {
-                            VStack(alignment: .leading) {
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading, spacing: 0) {
                                 Text(msg.role.lowercased() == "user" ? "Me :" : "\(agent?.name ?? "") :")
-                                    .font(.custom("Rubik-Bold", size: 13))
-                                    .padding(.horizontal, 3)
+                                    .font(
+                                        .custom("Rubik-Bold", size: 14)
+                                    )
+                                    .padding(.horizontal, 1)
                                     .padding(.vertical, 1)
                                     .foregroundColor(msg.role.lowercased() == "user" ? .red : .blue)
-
+                                
                                 Text(msg.text.isEmpty ? " " : msg.text)
-                                    .font(.custom("Rubik-Regular", size: 13))
+                                    .font(
+                                        .custom("Rubik-Italic", size: 13)
+                                    )
                                     .foregroundColor(.white)
                                     .padding(1)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -512,7 +516,7 @@ struct ConversationalAIExampleView: View {
                     }
                 }
                 .padding(.vertical, 8)
-                .padding(.horizontal, 12)
+                .padding(.horizontal, 8)
                 .frame(maxWidth: UIScreen.main.bounds.width)
             }
             .background(chatMessages.isEmpty ? Color.clear : Color.black.opacity(0.1))
@@ -887,6 +891,20 @@ struct ObjAgent: Codable, Identifiable {
         self.updatedAt = ""
         self.imagePath = "https://cdn.growy.app/agents/second.png"
         self.agentLang = [
+            AgentLang(
+                id: 1,
+                userID: 10680,
+                agentID: 1,
+                languageCode: "en",
+                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/us.svg",
+                firstMessage: "",
+                voiceID: "iP95p4xoKVk53GoZ742B",
+                modelID: "",
+                firstMessageTranslation: "",
+                createdAt: "2025-08-26T13:36:37.000000Z",
+                updatedAt: "2025-08-27T13:31:13.000000Z",
+                langName: "English"
+            ),
             AgentLang(
                 id: 3,
                 userID: 10680,
