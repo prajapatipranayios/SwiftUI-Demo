@@ -24,15 +24,39 @@ struct ConversationalAIExampleView: View {
     }
     
     // MARK: - State
-    @State private var arrMessages: [Message] = []
+    //@State private var arrMessages: [Message] = []
+    @State private var arrMessages: [ChatMessage] = []
     @State private var isConnected = false
     @State private var isMuted = false
     @State private var agentState: AgentState = .listening
     @State private var connectionStatus = "Disconnected"
     
-    private var cancellables = Set<AnyCancellable>()
+    //private var cancellables = Set<AnyCancellable>()
+    @State private var cancellableStore = CancellableStore()
     @State private var conversation: Conversation?
     
+    struct ChatMessage: Identifiable, Equatable {
+        let id : String
+        let role: String   // "user" or "assistant"
+        let content: String
+        let timestamp: Date
+        
+        enum Role: Sendable {
+            case user
+            case agent
+        }
+        
+        init(id: String, role: String, content: String, timestamp: Date) {
+            self.id = id
+            self.role = role
+            self.content = content
+            self.timestamp = timestamp
+        }
+        
+        static func == (lhs: ChatMessage, rhs: ChatMessage) -> Bool {
+            return lhs.id == rhs.id && lhs.role == rhs.role && lhs.content == rhs.content
+        }
+    }
     
     private let audioEngine = AVAudioEngine()
     
@@ -87,17 +111,24 @@ struct ConversationalAIExampleView: View {
                 }
                 
                 HStack(spacing: 0) {
-//                    CallButton(
-//                        connectionStatus: status,
-//                        action: {
-//                            if status == .disconnected { chatMessages.removeAll() }
-//                            beginConversation(agent: agent!)
-//                        }
-//                    )
-                    callButton
+                    
+                    if self.isConnected {
+                        AudioButton(isMute: self.isMuted) {
+                            self.toggleMute()
+                        }
+                    }
+                    
+                    CallButton(conv: conversation) {
+                        if isConnected {
+                            Task { await endConversation() }
+                        }
+                        else {
+                            arrMessages.removeAll()
+                            Task { await startConversation() }
+                        }
+                    }
                 }
                 .padding(.bottom, 5)
-                
                 
                 communicationLog
                     .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
@@ -134,57 +165,59 @@ struct ConversationalAIExampleView: View {
     }
     
     // MARK: - Conversation lifecycle
-    private mutating func startConversation() async {
+    private func startConversation() async {
         // Pick language (fall back to English)
-        let langCode = (agent?.defaultLanguage ?? "en").lowercased()
+        let langCode = (selectedLang?.languageCode ?? "en").lowercased()
         
-        // Build the config
-//        let config = ConversationConfig(
-//            agent: AgentConfig(
-//                prompt: AgentPrompt(prompt: agent?.systemPrompt ?? ""),
-//                language: Language(rawValue: langCode) ?? .en
-//            )
-//        )
-        
-        print("Lang >>>>>> \(langCode)")
         let agentOverrides = AgentOverrides(language: Language(rawValue: langCode))
         
         do {
             conversation = try await ElevenLabs.startConversation(
                 agentId: agent?.agentID ?? "",
-                config: ConversationConfig(agentOverrides: agentOverrides)
+                config: ConversationConfig(agentOverrides: agentOverrides, userId: userId)
             )
             setupObservers()
-            connectionStatus = "Connected"
         } catch {
             print("❌ Failed to start conversation: \(error)")
             connectionStatus = "Failed to connect"
         }
     }
     
-    private mutating func endConversation() async {
+    private func endConversation() async {
         await conversation?.endConversation()
         conversation = nil
-        cancellables.removeAll()
+        cancellableStore.set.removeAll()
+        DispatchQueue.main.async {
+            self.isConnected = false
+            self.isMuted = false
+            self.connectionStatus = "Disconnected"
+        }
     }
     
-    private func toggleMute() async {
-        try? await conversation?.toggleMute()
+    private func toggleMute() {
+        Task {
+            do {
+                try await conversation?.toggleMute()
+            }
+            catch {
+                print("❌ Failed to toggle mute: \(error)")
+            }
+        }
     }
-    
-//    private func sendTestMessage() async {
-//        try? await conversation?.sendMessage("Hello from the app!")
-//    }
     
     // MARK: - Observers
     //private func setupObservers(_ conv: Conversation) {
-    private mutating func setupObservers() {
+    private func setupObservers() {
         conversation?.$messages
             .receive(on: RunLoop.main)
             .sink { msgs in
-                self.arrMessages = msgs
+                //arrMessages = msgs
+                print("message received: \(msgs)")
+                if let last = msgs.last {
+                    self.loadMessages(msg: last)
+                }
             }
-            .store(in: &cancellables)
+            .store(in: &cancellableStore.set)
         
         conversation?.$state
             .receive(on: RunLoop.main)
@@ -198,21 +231,21 @@ struct ConversationalAIExampleView: View {
                 }
                 self.isConnected = state.isActive
             }
-            .store(in: &cancellables)
+            .store(in: &cancellableStore.set)
         
         conversation?.$isMuted
             .receive(on: RunLoop.main)
             .sink { muted in
                 self.isMuted = muted
             }
-            .store(in: &cancellables)
+            .store(in: &cancellableStore.set)
         
         conversation?.$agentState
             .receive(on: RunLoop.main)
             .sink { state in
                 self.agentState = state
             }
-            .store(in: &cancellables)
+            .store(in: &cancellableStore.set)
     }
     
     
@@ -423,25 +456,7 @@ struct ConversationalAIExampleView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 LazyVStack(alignment: .leading, spacing: 10) {
                     ForEach(arrMessages) { msg in
-                        HStack(alignment: .top, spacing: 8) {
-                            VStack(alignment: .leading, spacing: 0) {
-                                Text(msg.role == .user ? "Me :" : "\(agent?.name ?? "") :")
-                                    .font(.custom("Rubik-Bold", size: 13))
-                                    .padding(.horizontal, 3)
-                                    .padding(.vertical, 1)
-                                    .foregroundColor(msg.role == .user ? .red : .blue)
-
-                                Text(msg.text.isEmpty ? " " : msg.text)
-                                    .font(.custom("Rubik-Regular", size: 13))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 3)
-                                    .padding(1)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                        .frame(maxWidth: UIScreen.main.bounds.width, alignment: .leading)
-                        .id(msg.id)
+                        MessageRow(msg: msg, agentName: agent?.name)
                     }
                 }
                 .padding(.vertical, 8)
@@ -451,7 +466,7 @@ struct ConversationalAIExampleView: View {
             .background(arrMessages.isEmpty ? Color.clear : Color.black.opacity(0.1))
             .cornerRadius(12)
             .clipped()
-            .onChange(of: arrMessages.count) {
+            .onChange(of: arrMessages) { _ in
                 if let lastID = arrMessages.last?.id {
                     withAnimation(.easeOut(duration: 0.3)) {
                         proxy.scrollTo(lastID, anchor: .bottom)
@@ -461,41 +476,39 @@ struct ConversationalAIExampleView: View {
         }
     }
     
-    // MARK: - Button to call
-    private var callButton: some View {
-        Button(action: handleCallButtonTap) {
-            RoundedRectangle(cornerRadius: 15)
-                .frame(width: 60, height: 60)
-                .shadow(radius: 5)
-                .overlay(
-                    Image(callButtonImg)
-                        .resizable()
-                        .scaledToFit()
-                )
+    struct MessageRow: View {
+        let msg: ChatMessage
+        let agentName: String?
+
+        var body: some View {
+            HStack(alignment: .top, spacing: 8) {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(msg.role == "user" ? "Me :" : "\(agentName ?? "") :")
+                        .font(.custom("Rubik-Bold", size: 14))
+                        .padding(.horizontal, 3)
+                        .padding(.vertical, 1)
+                        .foregroundColor(msg.role == "user" ? .red : .blue)
+
+                    Text(msg.content.isEmpty ? " " : msg.content)
+                        .font(.custom("Rubik-Italic", size: 14))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 3)
+                        .padding(1)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .frame(maxWidth: UIScreen.main.bounds.width, alignment: .leading)
+            .id(msg.id)
         }
-        .padding(.bottom, 10)
     }
     
-    private var callButtonImg: String {
-        switch connectionStatus {
-        case "A":
-            return "callEnd"
-        case "B":
-            return "call"
-        case "C":
-            return "callEnd"
-        default:
-            return "call"
+    func loadMessages(msg: Message) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0) {
+            self.arrMessages.append(ChatMessage.init(id: msg.id, role: (msg.role == .user ? "user" : "agent"), content: msg.content, timestamp: msg.timestamp))
         }
     }
     
-    private func handleCallButtonTap() {
-        // Example: toggle mute or start conversation
-        if isConnected {
-            
-        }
-        print("☎️ Call button tapped, isMuted = \(isMuted)")
-    }
     
 }
 
@@ -557,56 +570,45 @@ struct SVGImageView: View {
 
 
 // MARK: - Call Button
-//struct CallButton: View {
-//    //let connectionStatus: ElevenLabs.Status
-//    private var conversation: Conversation?
-//    let connectionStatus: conversation?.$state
-//    let action: () -> Void
-//    
-//    private var buttonImg: String {
-//        switch connectionStatus {
-//        case .connected:
-//            return "callEnd"
-//        case .connecting:
-//            return "call"
-//        case .disconnecting:
-//            return "callEnd"
-//        default:
-//            return "call"
-//        }
-//    }
-//    
-//    private var buttonColor: Color {
-//        switch connectionStatus {
-//        case .connected:
-//            return .red
-//        case .connecting, .disconnecting:
-//            return .gray
-//        default:
-//            return .black
-//        }
-//    }
-//    
-//    var body: some View {
-//        Button(action: action) {
-//            RoundedRectangle(cornerRadius: 15)
-//                .frame(width: 60, height: 60)
-//                .shadow(radius: 5)
-//                .overlay(
-//                    Image(buttonImg)
-//                        .resizable() // for asset images
-//                        .scaledToFit()
-//                        //.frame(width: 24, height: 24)
-//                        //.foregroundColor(.white)
-//                )
-//        }
-//        .padding(.bottom, 10)
-//    }
-//}
+struct CallButton: View {
+    //let connectionStatus: ElevenLabs.Status
+    var conv: Conversation?
+    //let connectionStatus: conversation?.$state
+    let action: () -> Void
+    
+    private var buttonImg: String {
+        switch conv?.state {
+        case .connecting:
+            return "call"
+        case .active:
+            return "callEnd"
+        case .ended:
+            return "callEnd"
+        default:
+            return "call"
+        }
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            RoundedRectangle(cornerRadius: 15)
+                .frame(width: 60, height: 60)
+                .shadow(radius: 5)
+                .overlay(
+                    Image(buttonImg)
+                        .resizable() // for asset images
+                        .scaledToFit()
+                        //.frame(width: 24, height: 24)
+                        //.foregroundColor(.white)
+                )
+        }
+        .padding(.bottom, 10)
+    }
+}
 
 // MARK: - Audio Button (Mic Toggle)
 struct AudioButton: View {
-    let isMicEnabled: Bool
+    let isMute: Bool
     let action: () -> Void
     
     var body: some View {
@@ -616,7 +618,7 @@ struct AudioButton: View {
                 .frame(width: 60, height: 60)
                 .shadow(radius: 5)
                 .overlay(
-                    Image(isMicEnabled ? "mute" : "mute")
+                    Image(!isMute ? "unmute" : "mute")
                         .resizable() // for asset images
                         .scaledToFit()
                         //.font(.system(size: 24, weight: .medium))
@@ -624,6 +626,7 @@ struct AudioButton: View {
                 )
         }
         .tint(.clear)
+        .padding(.horizontal, 10)
         .padding(.bottom, 10)
     }
 }
@@ -695,18 +698,18 @@ struct RippleBackground: UIViewRepresentable {
     
     func makeUIView(context: Context) -> RippleBackgroundView {
         let view = RippleBackgroundView()
-        DispatchQueue.main.async {
-            view.start()
-        }
+//        DispatchQueue.main.async {
+//            view.start()
+//        }
         return view
     }
     
     func updateUIView(_ uiView: RippleBackgroundView, context: Context) {
-//        if status == "Connected" || status == "Connecting..." {
-//            uiView.start()
-//        } else {
-//            uiView.stop()
-//        }
+        if status == "Connected" || status == "Connecting..." {
+            uiView.start()
+        } else {
+            uiView.stop()
+        }
     }
 }
 
@@ -773,6 +776,10 @@ class RippleBackgroundView: UIView {
     }
 }
 
+class CancellableStore {
+    var set = Set<AnyCancellable>()
+}
+
  // Helper to access UIViewController
 extension View {
     func getHostingController() -> UIViewController? {
@@ -798,7 +805,6 @@ extension UIViewController {
         return self
     }
 }
-
 
 
 

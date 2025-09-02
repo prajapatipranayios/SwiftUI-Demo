@@ -14,9 +14,9 @@ import LiveKit
 struct ConversationView: View {
     @StateObject private var viewModel = ConversationViewModel()
 
-    var agent : ObjAgent?
-    var userId: String
-    var baseUrl: String
+//    var agent : ObjAgent?
+//    var userId: String
+//    var baseUrl: String
     
     var body: some View {
         VStack(spacing: 20) {
@@ -141,7 +141,12 @@ class ConversationViewModel: ObservableObject {
         guard let conversation else { return }
 
         conversation.$messages
-            .assign(to: &$messages)
+//            .receive(on: RunLoop.main)
+            .sink { msgs in
+                print("📩 Updated messages: \(msgs)")
+            }
+            .store(in: &cancellables)
+//            .assign(to: &$messages)
 
         conversation.$state
             .map { state in
@@ -166,124 +171,3 @@ class ConversationViewModel: ObservableObject {
             .assign(to: &$agentState)
     }
 }
-
-
-// MARK: - Welcome
-//struct ObjAgent: Codable, Identifiable {
-//    var id: Int?
-//    var userID: Int?
-//    var name: String?
-//    var role: String?
-//    var image: String?
-//    var agentID: String?
-//    var defaultLanguage: String?
-//    var langFlagImage: String?
-//    var langName: String?
-//    var firstMessage: String?
-//    var systemPrompt: String?
-//    var isExternalKnowledge: Int?
-//    var voiceID: String?
-//    var duration: Int?
-//    var noOfLanguages: Int?
-//    var isActive: Int?
-//    var createdAt: String?
-//    var updatedAt: String?
-//    var imagePath: String?
-//    var agentLang: [AgentLang]?
-//
-//    enum CodingKeys: String, CodingKey {
-//        case id
-//        case userID = "userId"
-//        case name, role, image
-//        case agentID = "agentId"
-//        case defaultLanguage, langFlagImage, langName, firstMessage, systemPrompt, isExternalKnowledge
-//        case voiceID = "voiceId"
-//        case duration, noOfLanguages, isActive
-//        case createdAt = "created_at"
-//        case updatedAt = "updated_at"
-//        case imagePath
-//        case agentLang = "agent_lang"
-//    }
-//    
-//    // ✅ Empty initializer
-//    init() {
-//        self.id = 0
-//        self.userID = 0
-//        self.name = "Darrell Steward"
-//        self.role = ""
-//        self.image = ""
-//        //self.agentID = "agent_1901k3k9k4a3egv98f017dgsqc68"
-//        self.agentID = "agent_5301k3zshq6neaxsyrxemxd9k5ch"
-//        self.defaultLanguage = ""
-//        self.langFlagImage = ""
-//        self.langName = ""
-//        self.firstMessage = ""
-//        self.systemPrompt = ""
-//        self.isExternalKnowledge = 0
-//        self.voiceID = ""
-//        self.duration = 0
-//        self.noOfLanguages = 0
-//        self.isActive = 0
-//        self.createdAt = ""
-//        self.updatedAt = ""
-//        self.imagePath = "https://cdn.growy.app/agents/second.png"
-//        self.agentLang = [
-//            AgentLang(
-//                id: 3,
-//                userID: 10680,
-//                agentID: 2,
-//                languageCode: "hi",
-//                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/in.svg",
-//                firstMessage: "",
-//                voiceID: "iP95p4xoKVk53GoZ742B",
-//                modelID: "",
-//                firstMessageTranslation: "",
-//                createdAt: "2025-08-26T13:36:37.000000Z",
-//                updatedAt: "2025-08-27T13:31:13.000000Z",
-//                langName: "Hindi"
-//            ),
-//            AgentLang(
-//                id: 2,
-//                userID: 10680,
-//                agentID: 2,
-//                languageCode: "it",
-//                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/it.svg",
-//                firstMessage: "",
-//                voiceID: "iP95p4xoKVk53GoZ742B",
-//                modelID: "",
-//                firstMessageTranslation: "",
-//                createdAt: "2025-08-26T13:36:37.000000Z",
-//                updatedAt: "2025-08-27T13:31:14.000000Z",
-//                langName: "Italian"
-//            )]
-//    }
-//}
-
-// MARK: - AgentLang
-//struct AgentLang: Codable, Identifiable, Hashable {
-//    var id: Int?
-//    var userID: Int?
-//    var agentID: Int?
-//    var languageCode: String?
-//    var langFlagImage: String?
-//    var firstMessage: String?
-//    var voiceID: String?
-//    var modelID: String?
-//    var firstMessageTranslation: String?
-//    var createdAt: String?
-//    var updatedAt: String?
-//    var langName: String?
-//
-//    enum CodingKeys: String, CodingKey {
-//        case id
-//        case userID = "userId"
-//        case agentID = "agentId"
-//        case languageCode, langFlagImage, firstMessage
-//        case voiceID = "voiceId"
-//        case modelID = "modelId"
-//        case firstMessageTranslation
-//        case createdAt = "created_at"
-//        case updatedAt = "updated_at"
-//        case langName
-//    }
-//}
