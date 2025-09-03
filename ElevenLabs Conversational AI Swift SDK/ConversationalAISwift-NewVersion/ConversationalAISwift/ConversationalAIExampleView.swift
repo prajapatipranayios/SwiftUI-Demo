@@ -548,11 +548,11 @@ import SwiftUI
 //
 //
 //// MARK: - Preview
-//struct ConvAIExampleView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ConversationalAIExampleView(agent: ObjAgent(), userId: "123", baseUrl: "Test Url")
-//    }
-//}
+////struct ConvAIExampleView_Previews: PreviewProvider {
+////    static var previews: some View {
+////        ConversationalAIExampleView(agent: ObjAgent(), userId: "123", baseUrl: "Test Url")
+////    }
+////}
 //
 //// MARK: - Load SVG image from url
 //struct SVGImageView: View {
@@ -813,32 +813,32 @@ import SwiftUI
 //        isAnimating = false
 //    }
 //}
-//
-//// Helper to access UIViewController
-//extension View {
-//    func getHostingController() -> UIViewController? {
-//        return UIApplication.shared.connectedScenes
-//            .compactMap { $0 as? UIWindowScene }
-//            .flatMap { $0.windows }
-//            .first { $0.isKeyWindow }?.rootViewController?
-//            .topMostViewController()
-//    }
-//}
-//
-//extension UIViewController {
-//    func topMostViewController() -> UIViewController {
-//        if let presented = self.presentedViewController {
-//            return presented.topMostViewController()
-//        }
-//        if let nav = self as? UINavigationController {
-//            return nav.visibleViewController?.topMostViewController() ?? nav
-//        }
-//        if let tab = self as? UITabBarController {
-//            return tab.selectedViewController?.topMostViewController() ?? tab
-//        }
-//        return self
-//    }
-//}
+
+// Helper to access UIViewController
+extension View {
+    func getHostingController() -> UIViewController? {
+        return UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }?.rootViewController?
+            .topMostViewController()
+    }
+}
+
+extension UIViewController {
+    func topMostViewController() -> UIViewController {
+        if let presented = self.presentedViewController {
+            return presented.topMostViewController()
+        }
+        if let nav = self as? UINavigationController {
+            return nav.visibleViewController?.topMostViewController() ?? nav
+        }
+        if let tab = self as? UITabBarController {
+            return tab.selectedViewController?.topMostViewController() ?? tab
+        }
+        return self
+    }
+}
 
 
 
