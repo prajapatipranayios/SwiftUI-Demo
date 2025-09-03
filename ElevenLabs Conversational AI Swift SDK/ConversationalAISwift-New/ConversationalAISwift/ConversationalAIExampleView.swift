@@ -1,6 +1,5 @@
 import SwiftUI
 import Combine
-import AVFAudio
 import ElevenLabs
 import _Concurrency
 import SDWebImageSwiftUI
@@ -58,16 +57,9 @@ struct ConversationalAIExampleView: View {
         }
     }
     
-    private let audioEngine = AVAudioEngine()
-    
     // MARK: - Helpers
     
     
-    
-    // MARK: - Toggle mic
-    private func toggleMic() {
-        
-    }
     
     @State private var selectedLang: AgentLang? = nil
     
@@ -185,13 +177,6 @@ struct ConversationalAIExampleView: View {
     
     private func endConversation() async {
         await conversation?.endConversation()
-        conversation = nil
-        cancellableStore.set.removeAll()
-        DispatchQueue.main.async {
-            self.isConnected = false
-            self.isMuted = false
-            self.connectionStatus = "Disconnected"
-        }
     }
     
     private func toggleMute() {
@@ -223,13 +208,32 @@ struct ConversationalAIExampleView: View {
             .receive(on: RunLoop.main)
             .sink { state in
                 switch state {
-                case .idle: self.connectionStatus = "Disconnected"
-                case .connecting: self.connectionStatus = "Connecting..."
-                case .active: self.connectionStatus = "Connected"
-                case .ended: self.connectionStatus = "Ended"
-                case .error: self.connectionStatus = "Error"
+                case .idle:
+                    self.connectionStatus = "Disconnected"
+                    self.isConnected = false
+                    print("Connection state: idle >>>>>>>> \(self.connectionStatus) >>>> isConnected: \(self.isConnected) ")
+                case .connecting:
+                    self.connectionStatus = "Connecting..."
+                    self.isConnected = false
+                    print("Connection state: idle >>>>>>>> \(self.connectionStatus) >>>> isConnected: \(self.isConnected) ")
+                case .active:
+                    self.connectionStatus = "Connected"
+                    self.isConnected = true
+                    print("Connection state: idle >>>>>>>> \(self.connectionStatus) >>>> isConnected: \(self.isConnected) ")
+                case .ended:
+                    // 👇 ignore — do nothing
+                    self.connectionStatus = "Disconnected"
+                    self.isConnected = false
+                    self.isMuted = false
+                    print("Connection state: ended >>>>>>>> \(self.connectionStatus) >>>> isConnected: \(self.isConnected) ")
+                    //cancellableStore.set.removeAll()
+                    //conversation = nil
+                case .error:
+                    self.connectionStatus = "Error"
+                    self.isConnected = false
+                    print("Connection state: idle >>>>>>>> \(self.connectionStatus) >>>> isConnected: \(self.isConnected) ")
+                    break
                 }
-                self.isConnected = state.isActive
             }
             .store(in: &cancellableStore.set)
         
@@ -583,7 +587,7 @@ struct CallButton: View {
         case .active:
             return "callEnd"
         case .ended:
-            return "callEnd"
+            return "call"
         default:
             return "call"
         }
@@ -676,21 +680,32 @@ extension UIImage {
 
 // MARK: - Hex to Color
 extension Color {
-    init(hex: String) {
-        let scanner = Scanner(string: hex)
-        scanner.currentIndex = hex.startIndex
+    init?(hex: String) {
+        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
 
         var rgba: UInt64 = 0
-        scanner.scanHexInt64(&rgba)
+        guard Scanner(string: hexSanitized).scanHexInt64(&rgba) else { return nil }
 
-        let a = Double((rgba & 0xFF000000) >> 24) / 255
-        let r = Double((rgba & 0x00FF0000) >> 16) / 255
-        let g = Double((rgba & 0x0000FF00) >> 8) / 255
-        let b = Double(rgba & 0x000000FF) / 255
-
+        let r, g, b, a: Double
+        switch hexSanitized.count {
+        case 6: // RGB
+            r = Double((rgba & 0xFF0000) >> 16) / 255
+            g = Double((rgba & 0x00FF00) >> 8) / 255
+            b = Double(rgba & 0x0000FF) / 255
+            a = 1
+        case 8: // ARGB
+            a = Double((rgba & 0xFF000000) >> 24) / 255
+            r = Double((rgba & 0x00FF0000) >> 16) / 255
+            g = Double((rgba & 0x0000FF00) >> 8) / 255
+            b = Double(rgba & 0x000000FF) / 255
+        default:
+            return nil
+        }
         self.init(red: r, green: g, blue: b, opacity: a)
     }
 }
+
 
 // MARK: - SwiftUI Wrapper
 struct RippleBackground: UIViewRepresentable {
@@ -871,9 +886,23 @@ struct ObjAgent: Codable, Identifiable {
         self.imagePath = "https://cdn.growy.app/agents/second.png"
         self.agentLang = [
             AgentLang(
+                id: 1,
+                userID: 10680,
+                agentID: 1,
+                languageCode: "en",
+                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/us.svg",
+                firstMessage: "",
+                voiceID: "iP95p4xoKVk53GoZ742B",
+                modelID: "",
+                firstMessageTranslation: "",
+                createdAt: "2025-08-26T13:36:37.000000Z",
+                updatedAt: "2025-08-27T13:31:13.000000Z",
+                langName: "English"
+            ),
+            AgentLang(
                 id: 3,
                 userID: 10680,
-                agentID: 2,
+                agentID: 3,
                 languageCode: "hi",
                 langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/in.svg",
                 firstMessage: "",
