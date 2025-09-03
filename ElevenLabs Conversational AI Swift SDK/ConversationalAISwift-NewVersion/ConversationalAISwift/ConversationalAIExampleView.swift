@@ -99,12 +99,10 @@ struct ConversationalAIExampleView: View {
                                 Task {
                                     if objViewModel.isConnected {
                                         
-                                        let strConversationID: String = "objViewModel.getConvID()"
-                                        
                                         APIService.shared.sendRequest(
                                             urlString: "\(baseUrl)agent/create-conversations",
                                             method: .post,
-                                            body: ["conversationId": strConversationID]
+                                            body: ["conversationId": objViewModel.strConversationId ?? ""]
                                         ) { result in
                                             switch result {
                                             case .success(let response):
@@ -460,6 +458,7 @@ class ConversationViewModel: ObservableObject {
     @Published var agentState: AgentState = .listening
     @Published var connectionStatus = "Disconnected"
     @Published var selectedLang: AgentLang? = nil
+    @Published var strConversationId: String? = ""
     
     private var conversation: Conversation?
     private var cancellables = Set<AnyCancellable>()
@@ -473,11 +472,6 @@ class ConversationViewModel: ObservableObject {
             let agentOverrides = AgentOverrides(language: Language(rawValue: langCode))
             
             print("Language >>>>>>> \(langCode) And User ID >>>>> \(userId ?? "")")
-//            conversation = try await ElevenLabs.startConversation(
-//                agentId: agent?.agentID ?? "",
-//                config: ConversationConfig(agentOverrides: agentOverrides, userId: userId ?? "")
-//            )
-            
             conversation = try await ElevenLabs.startConversation(
                 agentId: agent?.agentID ?? "",
                 config: ConversationConfig(agentOverrides: agentOverrides,
@@ -504,13 +498,13 @@ class ConversationViewModel: ObservableObject {
         try? await conversation?.sendMessage("Hello from the app!")
     }
     
-//    func getConvID() -> String {
-//        if let convID = conversation?.getId() {
+    func getConvID() -> String {
+//        if let convID = conversation. {
 //            print("✅ Active Conversation ID: \(convID)")
 //            return convID
 //        }
-//        return "NoConvID"
-//    }
+        return "NoConvID"
+    }
     
     private func setupObservers() {
         guard let conversation else { return }
