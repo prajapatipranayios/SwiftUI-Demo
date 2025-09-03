@@ -90,7 +90,7 @@ struct ConversationalAIExampleView: View {
                     CallButton(
                         connectionStatus: objViewModel.connectionStatus,
                         action: {
-                            if (objViewModel.connectionStatus == "Disconnected" || objViewModel.connectionStatus == "Ended") {
+                            if (objViewModel.connectionStatus == "Disconnected" || objViewModel.connectionStatus == "Disconnected") {
                                 chatMessages.removeAll()
                             }
                             
@@ -167,7 +167,7 @@ struct ConversationalAIExampleView: View {
         })
         .onChange(of: objViewModel.connectionStatus) { oldValue, newValue in
             switch newValue {
-            case "Ended", "Connected":
+            case "Disconnected", "Connected":
                 isBtnTap = true
             case "Connecting...", "Disconnecting":
                 isBtnTap = false
@@ -472,10 +472,16 @@ class ConversationViewModel: ObservableObject {
             let langCode = (selectedLang?.languageCode ?? "en").lowercased()
             let agentOverrides = AgentOverrides(language: Language(rawValue: langCode))
             
-            print("Language >>>>>>> \(langCode) And User ID >>>>> \(userId)")
+            print("Language >>>>>>> \(langCode) And User ID >>>>> \(userId ?? "")")
+//            conversation = try await ElevenLabs.startConversation(
+//                agentId: agent?.agentID ?? "",
+//                config: ConversationConfig(agentOverrides: agentOverrides, userId: userId ?? "")
+//            )
+            
             conversation = try await ElevenLabs.startConversation(
                 agentId: agent?.agentID ?? "",
-                config: ConversationConfig(agentOverrides: agentOverrides, userId: userId ?? "")
+                config: ConversationConfig(agentOverrides: agentOverrides,
+                                           userId: userId ?? "")
             )
             setupObservers()
         } catch {
@@ -499,7 +505,7 @@ class ConversationViewModel: ObservableObject {
     }
     
 //    func getConvID() -> String {
-//        if let convID = conversation. {
+//        if let convID = conversation?.getId() {
 //            print("✅ Active Conversation ID: \(convID)")
 //            return convID
 //        }
@@ -508,7 +514,7 @@ class ConversationViewModel: ObservableObject {
     
     private func setupObservers() {
         guard let conversation else { return }
-
+        
         conversation.$messages
             .assign(to: &$messages)
 
@@ -522,7 +528,8 @@ class ConversationViewModel: ObservableObject {
                 case .active:
                     return "Connected"
                 case .ended:
-                    return "Ended"
+                    //return "Ended"
+                    return "Disconnected"
                 case .error:
                     return "Error"
                 }
@@ -602,7 +609,7 @@ struct CallButton: View {
             return "call"
         case "Disconnecting":
             return "callEnd"
-        case "Ended":
+        case "Disconnected":
             return "call"
         default:
             return "call"
