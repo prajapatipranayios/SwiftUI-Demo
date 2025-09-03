@@ -12,7 +12,7 @@ import Combine
 import LiveKit
 import SVGKit
 
-struct ConversationView: View {
+struct ConversationalAIExampleView: View {
     
     var agent: ObjAgent?
     var userId: String
@@ -84,7 +84,7 @@ struct ConversationView: View {
                         AudioButton(isMicEnabled: objViewModel.isMuted) {
                             Task { await objViewModel.toggleMute() }
                         }
-                        .padding(.trailing, 8)
+                        .padding(.trailing, 16)
                     }
                     
                     CallButton(
@@ -98,6 +98,22 @@ struct ConversationView: View {
                                 self.isBtnTap = false
                                 Task {
                                     if objViewModel.isConnected {
+                                        
+                                        let strConversationID: String = "objViewModel.getConvID()"
+                                        
+                                        APIService.shared.sendRequest(
+                                            urlString: "\(baseUrl)agent/create-conversations",
+                                            method: .post,
+                                            body: ["conversationId": strConversationID]
+                                        ) { result in
+                                            switch result {
+                                            case .success(let response):
+                                                print("✅ POST Response:", response)
+                                            case .failure(let error):
+                                                print("❌ Error:", error.localizedDescription)
+                                            }
+                                        }
+                                        
                                         await objViewModel.endConversation()
                                     }
                                     else {
@@ -428,6 +444,91 @@ struct ConversationView: View {
     
 }
 
+
+@MainActor
+class ConversationViewModel: ObservableObject {
+    @Published var messages: [Message] = []
+    @Published var isConnected = false
+    @Published var isMuted = false
+    @Published var agentState: AgentState = .listening
+    @Published var connectionStatus = "Disconnected"
+
+    private var conversation: Conversation?
+    private var cancellables = Set<AnyCancellable>()
+
+    var agent: ObjAgent?
+    
+    func startConversation() async {
+        do {
+            conversation = try await ElevenLabs.startConversation(
+                agentId: agent?.agentID ?? "",
+                config: ConversationConfig()
+            )
+            setupObservers()
+        } catch {
+            print("Failed to start conversation: \(error)")
+            connectionStatus = "Failed to connect"
+        }
+    }
+
+    func endConversation() async {
+        await conversation?.endConversation()
+        conversation = nil
+        cancellables.removeAll()
+    }
+
+    func toggleMute() async {
+        try? await conversation?.toggleMute()
+    }
+
+    func sendTestMessage() async {
+        try? await conversation?.sendMessage("Hello from the app!")
+    }
+    
+//    func getConvID() -> String {
+//        if let convID = conversation. {
+//            print("✅ Active Conversation ID: \(convID)")
+//            return convID
+//        }
+//        return "NoConvID"
+//    }
+    
+    private func setupObservers() {
+        guard let conversation else { return }
+
+        conversation.$messages
+            .assign(to: &$messages)
+
+        conversation.$state
+            .map { state in
+                switch state {
+                case .idle:
+                    return "Disconnected"
+                case .connecting:
+                    return "Connecting..."
+                case .active:
+                    return "Connected"
+                case .ended:
+                    return "Ended"
+                case .error:
+                    return "Error"
+                }
+            }
+            .assign(to: &$connectionStatus)
+
+        conversation.$state
+            .map { $0.isActive }
+            .assign(to: &$isConnected)
+
+        conversation.$isMuted
+            .assign(to: &$isMuted)
+
+        conversation.$agentState
+            .assign(to: &$agentState)
+    }
+}
+
+
 // MARK: - Load SVG image from url
 struct SVGImageView: View {
     let urlString: String?
@@ -474,7 +575,6 @@ struct SVGImageView: View {
         }.resume()
     }
 }
-
 
 // MARK: - Call Button
 struct CallButton: View {
@@ -646,77 +746,226 @@ class RippleBackgroundView: UIView {
     }
 }
 
-@MainActor
-class ConversationViewModel: ObservableObject {
-    @Published var messages: [Message] = []
-    @Published var isConnected = false
-    @Published var isMuted = false
-    @Published var agentState: AgentState = .listening
-    @Published var connectionStatus = "Disconnected"
+// Helper to access UIViewController
+extension View {
+    func getHostingController() -> UIViewController? {
+        return UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }?.rootViewController?
+            .topMostViewController()
+    }
+}
 
-    private var conversation: Conversation?
-    private var cancellables = Set<AnyCancellable>()
-
-    var agent: ObjAgent?
-    
-    func startConversation() async {
-        do {
-            conversation = try await ElevenLabs.startConversation(
-                agentId: agent?.agentID ?? "",
-                config: ConversationConfig()
-            )
-            setupObservers()
-        } catch {
-            print("Failed to start conversation: \(error)")
-            connectionStatus = "Failed to connect"
+extension UIViewController {
+    func topMostViewController() -> UIViewController {
+        if let presented = self.presentedViewController {
+            return presented.topMostViewController()
         }
+        if let nav = self as? UINavigationController {
+            return nav.visibleViewController?.topMostViewController() ?? nav
+        }
+        if let tab = self as? UITabBarController {
+            return tab.selectedViewController?.topMostViewController() ?? tab
+        }
+        return self
     }
+}
 
-    func endConversation() async {
-        await conversation?.endConversation()
-        conversation = nil
-        cancellables.removeAll()
+
+
+
+
+// MARK: - Welcome
+struct ObjAgent: Codable, Identifiable {
+    var id: Int?
+    var userID: Int?
+    var name: String?
+    var role: String?
+    var image: String?
+    var agentID: String?
+    var defaultLanguage: String?
+    var langFlagImage: String?
+    var langName: String?
+    var firstMessage: String?
+    var systemPrompt: String?
+    var isExternalKnowledge: Int?
+    var voiceID: String?
+    var duration: Int?
+    var noOfLanguages: Int?
+    var isActive: Int?
+    var createdAt: String?
+    var updatedAt: String?
+    var imagePath: String?
+    var agentLang: [AgentLang]?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case userID = "userId"
+        case name, role, image
+        case agentID = "agentId"
+        case defaultLanguage, langFlagImage, langName, firstMessage, systemPrompt, isExternalKnowledge
+        case voiceID = "voiceId"
+        case duration, noOfLanguages, isActive
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case imagePath
+        case agentLang = "agent_lang"
     }
-
-    func toggleMute() async {
-        try? await conversation?.toggleMute()
+    
+    // ✅ Empty initializer
+    init() {
+        self.id = 0
+        self.userID = 0
+        self.name = "Darrell Steward"
+        self.role = ""
+        self.image = ""
+        //self.agentID = "agent_1901k3k9k4a3egv98f017dgsqc68"
+        self.agentID = "agent_5301k3zshq6neaxsyrxemxd9k5ch"
+        self.defaultLanguage = ""
+        self.langFlagImage = ""
+        self.langName = ""
+        self.firstMessage = ""
+        self.systemPrompt = ""
+        self.isExternalKnowledge = 0
+        self.voiceID = ""
+        self.duration = 0
+        self.noOfLanguages = 0
+        self.isActive = 0
+        self.createdAt = ""
+        self.updatedAt = ""
+        self.imagePath = "https://cdn.growy.app/agents/second.png"
+        self.agentLang = [
+            AgentLang(
+                id: 1,
+                userID: 10680,
+                agentID: 1,
+                languageCode: "en",
+                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/us.svg",
+                firstMessage: "",
+                voiceID: "iP95p4xoKVk53GoZ742B",
+                modelID: "",
+                firstMessageTranslation: "",
+                createdAt: "2025-08-26T13:36:37.000000Z",
+                updatedAt: "2025-08-27T13:31:13.000000Z",
+                langName: "English"
+            ),
+            AgentLang(
+                id: 3,
+                userID: 10680,
+                agentID: 2,
+                languageCode: "hi",
+                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/in.svg",
+                firstMessage: "",
+                voiceID: "iP95p4xoKVk53GoZ742B",
+                modelID: "",
+                firstMessageTranslation: "",
+                createdAt: "2025-08-26T13:36:37.000000Z",
+                updatedAt: "2025-08-27T13:31:13.000000Z",
+                langName: "Hindi"
+            ),
+            AgentLang(
+                id: 2,
+                userID: 10680,
+                agentID: 2,
+                languageCode: "it",
+                langFlagImage: "https://storage.googleapis.com/eleven-public-cdn/images/flags/circle-flags/it.svg",
+                firstMessage: "",
+                voiceID: "iP95p4xoKVk53GoZ742B",
+                modelID: "",
+                firstMessageTranslation: "",
+                createdAt: "2025-08-26T13:36:37.000000Z",
+                updatedAt: "2025-08-27T13:31:14.000000Z",
+                langName: "Italian"
+            )]
     }
+}
 
-    func sendTestMessage() async {
-        try? await conversation?.sendMessage("Hello from the app!")
+// MARK: - AgentLang
+struct AgentLang: Codable, Identifiable, Hashable {
+    var id: Int?
+    var userID: Int?
+    var agentID: Int?
+    var languageCode: String?
+    var langFlagImage: String?
+    var firstMessage: String?
+    var voiceID: String?
+    var modelID: String?
+    var firstMessageTranslation: String?
+    var createdAt: String?
+    var updatedAt: String?
+    var langName: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case userID = "userId"
+        case agentID = "agentId"
+        case languageCode, langFlagImage, firstMessage
+        case voiceID = "voiceId"
+        case modelID = "modelId"
+        case firstMessageTranslation
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case langName
     }
+}
 
-    private func setupObservers() {
-        guard let conversation else { return }
 
-        conversation.$messages
-            .assign(to: &$messages)
 
-        conversation.$state
-            .map { state in
-                switch state {
-                case .idle: 
-                    return "Disconnected"
-                case .connecting: 
-                    return "Connecting..."
-                case .active: 
-                    return "Connected"
-                case .ended: 
-                    return "Ended"
-                case .error: 
-                    return "Error"
-                }
+enum HTTPMethod: String {
+    case get     = "GET"
+    case post    = "POST"
+    case put     = "PUT"
+    case delete  = "DELETE"
+    case patch   = "PATCH"
+    case head    = "HEAD"
+    case options = "OPTIONS"
+    case trace   = "TRACE"
+    case connect = "CONNECT"
+}
+
+struct APIService {
+    
+    static let shared = APIService()
+    
+    /// Generic API request with dynamic HTTP method
+    func sendRequest(
+        urlString: String,
+        method: HTTPMethod,
+        body: [String: Any]? = nil,
+        completion: @escaping (Result<Data, Error>) -> Void
+    ) {
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue   // ✅ use enum
+
+        // Only attach body for POST/PUT/PATCH/DELETE (not GET/HEAD/OPTIONS)
+        switch method {
+        case .post, .put, .patch, .delete:
+            if let body = body {
+                request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
             }
-            .assign(to: &$connectionStatus)
+        default:
+            break
+        }
 
-        conversation.$state
-            .map { $0.isActive }
-            .assign(to: &$isConnected)
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
 
-        conversation.$isMuted
-            .assign(to: &$isMuted)
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data", code: 0)))
+                return
+            }
 
-        conversation.$agentState
-            .assign(to: &$agentState)
+            completion(.success(data))
+        }.resume()
     }
 }
