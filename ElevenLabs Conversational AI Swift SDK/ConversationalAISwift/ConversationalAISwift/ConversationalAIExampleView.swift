@@ -32,6 +32,8 @@ struct ConversationalAIExampleView: View {
     var userId: String
     var baseUrl: String
     
+    @State private var isBtnTap: Bool = true
+    
     private let audioEngine = AVAudioEngine()
     
     // MARK: - Helpers
@@ -119,8 +121,6 @@ struct ConversationalAIExampleView: View {
                     var callbacks = ElevenLabsSDK.Callbacks()
                     callbacks.onConnect = { _ in
                         status = .connected
-                        
-                        print("Conversation ID >>>>>>>>> \(conversation?.getId())")
                     }
                     callbacks.onDisconnect = {
                         status = .disconnected
@@ -241,7 +241,11 @@ struct ConversationalAIExampleView: View {
                         connectionStatus: status,
                         action: {
                             if status == .disconnected { chatMessages.removeAll() }
-                            beginConversation(agent: agent!)
+                            
+                            if self.isBtnTap {
+                                self.isBtnTap = false
+                                beginConversation(agent: agent!)
+                            }
                         }
                     )
                 }
@@ -281,6 +285,14 @@ struct ConversationalAIExampleView: View {
             .padding(.horizontal, 16)
             .padding(.top, 8) // small offset below the status bar
             .background(Color.clear)
+        }
+        .onChange(of: status) { oldValue, newValue in
+            switch newValue {
+            case .disconnected, .connected:
+                isBtnTap = true
+            case .connecting, .disconnecting:
+                isBtnTap = false
+            }
         }
     }
     
