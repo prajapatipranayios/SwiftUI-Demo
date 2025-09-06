@@ -61,7 +61,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4D9-Bc-BqA">
-                                <rect key="frame" x="140.66666666666666" y="162" width="112" height="35"/>
+                                <rect key="frame" x="140.66666666666666" y="162" width="112" height="40.333333333333343"/>
                                 <color key="backgroundColor" red="0.44705882352941173" green="0.76470588235294112" blue="0.46666666666666667" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Show Toast"/>
@@ -70,7 +70,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAL-75-TQ4">
-                                <rect key="frame" x="111" y="222" width="171" height="35"/>
+                                <rect key="frame" x="111" y="227.33333333333334" width="171" height="40.333333333333343"/>
                                 <color key="backgroundColor" red="0.44705882349999998" green="0.76470588240000004" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="ConfirmationDialog"/>
@@ -79,7 +79,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q7L-Xb-iWd">
-                                <rect key="frame" x="129" y="282" width="135" height="35"/>
+                                <rect key="frame" x="129" y="292.66666666666669" width="135" height="40.333333333333314"/>
                                 <color key="backgroundColor" red="0.44705882349999998" green="0.76470588240000004" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Date Selection"/>
@@ -88,7 +88,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NAa-j9-DWR">
-                                <rect key="frame" x="0.0" y="342" width="123" height="35"/>
+                                <rect key="frame" x="0.0" y="358" width="123" height="40.333333333333314"/>
                                 <color key="backgroundColor" red="0.44705882349999998" green="0.76470588240000004" blue="0.46666666670000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Select Image"/>
@@ -97,7 +97,7 @@
                                 </connections>
                             </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="profile" translatesAutoresizingMaskIntoConstraints="NO" id="nmu-aX-5sg">
-                                <rect key="frame" x="16" y="385" width="361" height="120.33333333333331"/>
+                                <rect key="frame" x="16" y="406.33333333333331" width="361" height="120.33333333333331"/>
                                 <color key="backgroundColor" systemColor="linkColor"/>
                                 <color key="tintColor" systemColor="linkColor"/>
                                 <constraints>
@@ -105,11 +105,11 @@
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="dOd-Xr-HK4">
-                                <rect key="frame" x="0.0" y="505.33333333333326" width="393" height="278.66666666666674"/>
+                                <rect key="frame" x="0.0" y="526.66666666666663" width="393" height="257.33333333333337"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YWZ-ul-lTz">
-                                <rect key="frame" x="292" y="749.66666666666663" width="75" height="34.333333333333371"/>
+                                <rect key="frame" x="292" y="743.66666666666663" width="75" height="40.333333333333371"/>
                                 <color key="backgroundColor" systemColor="systemGray4Color"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Button"/>
@@ -117,7 +117,7 @@
                                     <action selector="btnDropdownDialogTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jkc-4V-BgL"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QTX-Re-9lc">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QTX-Re-9lc">
                                 <rect key="frame" x="0.0" y="162" width="393" height="622"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Bi-DY-4Eo" customClass="APVideoPlayer" customModule="SwiftDemo1" customModuleProvider="target">
@@ -303,8 +303,25 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7RE-LT-wox">
+                                        <rect key="frame" x="117" y="372" width="159" height="44"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="44" id="2Am-jM-ht5"/>
+                                            <constraint firstAttribute="width" constant="159" id="Fie-eh-ySk"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="AmericanTypewriter" family="American Typewriter" pointSize="27"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" title="Connect AI"/>
+                                        <connections>
+                                            <action selector="btnConnectAI:" destination="u9R-3U-1yX" eventType="touchUpInside" id="kna-DF-8TZ"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemMintColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="7RE-LT-wox" secondAttribute="bottom" constant="250" id="LBN-hn-ikp"/>
+                                    <constraint firstItem="7RE-LT-wox" firstAttribute="centerX" secondItem="i1d-aZ-VtQ" secondAttribute="centerX" id="pOd-cu-2co"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="jno-wL-8X8"/>
@@ -343,19 +360,19 @@
     <resources>
         <image name="profile" width="512" height="512"/>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray4Color">
-            <color red="0.81960784310000001" green="0.81960784310000001" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.81960784313725488" green="0.81960784313725488" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemMintColor">
-            <color red="0.0" green="0.78039215689999997" blue="0.74509803919999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.7803921568627451" blue="0.74509803921568629" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
