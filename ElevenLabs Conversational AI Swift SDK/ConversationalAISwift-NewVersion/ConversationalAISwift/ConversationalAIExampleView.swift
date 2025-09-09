@@ -65,7 +65,7 @@ struct ConversationalAIExampleView: View {
 
                 Text("Status: \(objViewModel.connectionStatus)")
                     .font(.custom("Rubik-Regular", size: 13))
-                    .foregroundColor(((objViewModel.connectionStatus == "Connected") || (objViewModel.connectionStatus == "Connecting...")) ? .green : .gray)
+                    .foregroundColor((objViewModel.connectionStatus == "Connected") ? .green : (objViewModel.connectionStatus == "Connecting...") ? Color(hex: "E1A500") : .gray)
                     .padding(.bottom, 10)
                 
                 if objViewModel.isConnected {
@@ -138,8 +138,10 @@ struct ConversationalAIExampleView: View {
                             .scaledToFit())
                         .tint(Color.black.opacity(0.3))
                 }
+                .allowsHitTesting(self.isBtnTap)
                 .disabled(objViewModel.isConnected)
                 .opacity(objViewModel.isConnected ? 0.4 : 1.0)
+                
 
                 Spacer()
             }
@@ -150,6 +152,27 @@ struct ConversationalAIExampleView: View {
         .onAppear(perform: {
             objViewModel.agent = agent
             objViewModel.userId = userId
+            
+            // 👇 Listen to lifecycle notifications here
+            NotificationCenter.default.addObserver(
+                forName: UIApplication.didEnterBackgroundNotification,
+                object: nil,
+                queue: .main
+            ) { _ in
+                print("App moved to background")
+                Task {
+                    await self.endConnection()
+                }
+            }
+            
+            NotificationCenter.default.addObserver(
+                forName: UIApplication.willEnterForegroundNotification,
+                object: nil,
+                queue: .main
+            ) { _ in
+                print("App moved to foreground")
+                self.isBtnTap = true
+            }
         })
         .onChange(of: objViewModel.connectionStatus) { oldValue, newValue in
             switch newValue {
@@ -176,11 +199,7 @@ struct ConversationalAIExampleView: View {
             switch newPhase {
             case .active:
                 print("App moved to foreground")
-//                Task {
-//                    if !objViewModel.isConnected {
-//                        await objViewModel.startConversation()
-//                    }
-//                }
+                self.isBtnTap = true
             case .background:
                 print("App moved to background")
                 Task {
@@ -512,6 +531,7 @@ class ConversationViewModel: ObservableObject {
             let agentOverrides = AgentOverrides(language: Language(rawValue: langCode))
             
             print("Language >>>>>>> \(langCode) And User ID >>>>> \(userId ?? "")")
+            connectionStatus = "Connecting..."
             conversation = try await ElevenLabs.startConversation(
                 agentId: agent?.agentID ?? "",
                 config: ConversationConfig(agentOverrides: agentOverrides,
