@@ -34,6 +34,8 @@ struct ConversationalAIExampleView: View {
     }
     @State private var chatMessages: [ChatMessage] = []
     
+    @Environment(\.scenePhase) private var scenePhase
+    
     init(agent: ObjAgent?, userId: String, baseUrl: String) {
         self.agent = agent
         self.userId = userId
@@ -98,21 +100,7 @@ struct ConversationalAIExampleView: View {
                                 self.isBtnTap = false
                                 Task {
                                     if objViewModel.isConnected {
-                                        
-                                        APIService.shared.sendRequest(
-                                            urlString: "\(baseUrl)agent/create-conversations",
-                                            method: .post,
-                                            body: ["conversationId": objViewModel.strConversationId ?? ""]
-                                        ) { result in
-                                            switch result {
-                                            case .success(let response):
-                                                print("✅ POST Response:", response)
-                                            case .failure(let error):
-                                                print("❌ Error:", error.localizedDescription)
-                                            }
-                                        }
-                                        
-                                        await objViewModel.endConversation()
+                                        await self.endConnection()
                                     }
                                     else {
                                         await objViewModel.startConversation()
@@ -184,6 +172,43 @@ struct ConversationalAIExampleView: View {
                 }
             }
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .active:
+                print("App moved to foreground")
+//                Task {
+//                    if !objViewModel.isConnected {
+//                        await objViewModel.startConversation()
+//                    }
+//                }
+            case .background:
+                print("App moved to background")
+                Task {
+                    await self.endConnection()
+                }
+            case .inactive:
+                print("App inactive (transitioning)")
+            @unknown default:
+                break
+            }
+        }
+    }
+    
+    func endConnection() async {
+        APIService.shared.sendRequest(
+            urlString: "\(baseUrl)agent/create-conversations",
+            method: .post,
+            body: ["conversationId": objViewModel.getConversationID()]
+        ) { result in
+            switch result {
+            case .success(let response):
+                print("✅ POST Response:", response)
+            case .failure(let error):
+                print("❌ Error:", error.localizedDescription)
+            }
+        }
+        
+        await objViewModel.endConversation()
     }
     
     // MARK: - Background
@@ -459,6 +484,7 @@ class ConversationViewModel: ObservableObject {
     @Published var connectionStatus = "Disconnected"
     @Published var selectedLang: AgentLang? = nil
     @Published var strConversationId: String? = ""
+    @Published var ongoingTask: Task<Void, Never>? = nil
     
     private var conversation: Conversation?
     private var cancellables = Set<AnyCancellable>()
@@ -467,6 +493,20 @@ class ConversationViewModel: ObservableObject {
     var userId: String?
     
     func startConversation() async {
+        ongoingTask?.cancel()  // cancel any previous task
+        ongoingTask = Task {
+            do {
+                try Task.checkCancellation()
+                await startConversationSafe()   // ✅ call the safe function
+                ongoingTask = nil
+                print("Conversation task >>>>> startConversation")
+            } catch {
+                print("Conversation task cancelled or failed")
+            }
+        }
+    }
+    
+    func startConversationSafe() async {
         do {
             let langCode = (selectedLang?.languageCode ?? "en").lowercased()
             let agentOverrides = AgentOverrides(language: Language(rawValue: langCode))
@@ -485,6 +525,14 @@ class ConversationViewModel: ObservableObject {
     }
 
     func endConversation() async {
+        ongoingTask?.cancel()
+        ongoingTask = Task {
+            await endConversationSafe()
+            ongoingTask = nil
+        }
+    }
+    
+    func endConversationSafe() async {
         await conversation?.endConversation()
         conversation = nil
         cancellables.removeAll()
@@ -493,16 +541,12 @@ class ConversationViewModel: ObservableObject {
     func toggleMute() async {
         try? await conversation?.toggleMute()
     }
-
-    func sendTestMessage() async {
-        try? await conversation?.sendMessage("Hello from the app!")
-    }
     
-    func getConvID() -> String {
-//        if let convID = conversation. {
-//            print("✅ Active Conversation ID: \(convID)")
-//            return convID
-//        }
+    func getConversationID() -> String {
+        if let metadata = conversation?.conversationMetadata {
+            print("Conversation ID >>>>>>>>>>>> ", metadata.conversationId)
+            return metadata.conversationId
+        }
         return "NoConvID"
     }
     
@@ -520,6 +564,11 @@ class ConversationViewModel: ObservableObject {
                 case .connecting:
                     return "Connecting..."
                 case .active:
+                    print("Get Conversation ID >>>>>>>>>>>> ")
+                    if let metadata = conversation.conversationMetadata {
+                        self.strConversationId = metadata.conversationId
+                        print("Conversation ID >>>>>>>>>>>> active >>>>>", metadata.conversationId)
+                    }
                     return "Connected"
                 case .ended:
                     //return "Ended"
@@ -539,6 +588,7 @@ class ConversationViewModel: ObservableObject {
 
         conversation.$agentState
             .assign(to: &$agentState)
+        
     }
 }
 
@@ -613,7 +663,7 @@ struct CallButton: View {
     var body: some View {
         Button(action: action) {
             RoundedRectangle(cornerRadius: 15)
-                .frame(width: 60, height: 60)
+                .frame(width: 45, height: 45)
                 .shadow(radius: 5)
                 .overlay(
                     Image(buttonImg)
@@ -636,7 +686,7 @@ struct AudioButton: View {
         Button(action: action) {
             RoundedRectangle(cornerRadius: 15)
                 //.fill(isMicEnabled ? Color.green : Color.gray)
-                .frame(width: 60, height: 60)
+                .frame(width: 45, height: 45)
                 .shadow(radius: 5)
                 .overlay(
                     Image(isMicEnabled ? "mute" : "unmute")

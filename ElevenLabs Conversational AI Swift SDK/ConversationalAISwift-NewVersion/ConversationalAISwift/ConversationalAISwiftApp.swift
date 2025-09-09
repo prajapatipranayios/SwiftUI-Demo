@@ -6,7 +6,7 @@ struct ConversationalAISwiftApp: App {
         WindowGroup {
             ConversationalAIExampleView(
                 agent: ObjAgent(),                 // or your decoded agent
-                userId: "123",                     // supply actual userId
+                userId: "12345",                     // supply actual userId
                 baseUrl: "https://api.example.com" // supply your URL
             )
         }
