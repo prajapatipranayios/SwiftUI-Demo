@@ -1,0 +1,39 @@
+//
+//  ScreenOne.swift
+//  SwiftUIDemoTussly
+//
+//  Created by Auxano on 09/04/24.
+//
+
+import SwiftUI
+
+struct ScreenOne: View {
+    
+    @EnvironmentObject var router: TabRouter
+    
+    var body: some View {
+        ZStack {
+            
+            VStack {
+                Text("Screen 1")
+                    .bold()
+                    .foregroundColor(.white)
+                
+                Button {
+                    router.change(to: .two)
+                } label: {
+                    Text("Switch to screen 2")
+                }
+            }
+        }
+        .frame(maxWidth: .infinity,
+               maxHeight: .infinity)
+        .background(.mint)
+        .clipped()
+    }
+}
+
+#Preview {
+    ScreenOne()
+        .environmentObject(TabRouter())
+}
