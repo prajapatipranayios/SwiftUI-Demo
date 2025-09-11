@@ -29,5 +29,12 @@
     </array>
     <key>NSMicrophoneUsageDescription</key>
     <string>This app requires access to the microphone for voice input and conversations.</string>
+    
+    <key>BASE_URL</key>
+    <string>$(BASE_URL)</string>
+    <key>GOOGLE_API_KEY</key>
+    <string>$(GOOGLE_API_KEY)</string>
+    <key>CHAT_KEY</key>
+    <string>$(CHAT_KEY)</string>
 </dict>
 </plist>

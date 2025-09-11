@@ -9,6 +9,21 @@ import UIKit
 import DropDown
 import AVKit
 
+struct AppConfig {
+    static var baseURL: String {
+        let raw = Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String ?? ""
+        return raw.replacingOccurrences(of: "\\", with: "")
+        //return Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String ?? ""
+    }
+
+    static var googleAPIKey: String {
+        return Bundle.main.object(forInfoDictionaryKey: "GOOGLE_API_KEY") as? String ?? ""
+    }
+
+    static var chatKey: String {
+        return Bundle.main.object(forInfoDictionaryKey: "CHAT_KEY") as? String ?? ""
+    }
+}
 
 class Section {
     let title: String
@@ -261,6 +276,14 @@ class ViewController: UIViewController {
         
         //self.ivImage.contentMode = .scaleAspectFit
         
+        if let dict = Bundle.main.infoDictionary {
+            print("Info.plist contents: \(dict)")
+        }
+        
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("AppConfig.baseURL >>>>>>>>>>> " + AppConfig.baseURL)
+        print("AppConfig.googleAPIKey >>>>>> " + AppConfig.googleAPIKey)
+        print("AppConfig.chatKey >>>>>>>>>>> " + AppConfig.chatKey)
         
         // Setup models
         

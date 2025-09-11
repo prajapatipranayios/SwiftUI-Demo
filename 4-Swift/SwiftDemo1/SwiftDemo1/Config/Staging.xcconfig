@@ -1,0 +1,13 @@
+//
+//  Staging.xcconfig
+//  SwiftDemo1
+//
+//  Created by Auxano on 10/09/25.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+BASE_URL = https:\/\/uat.tussly.com\/
+GOOGLE_API_KEY = your-staging-google-key
+CHAT_KEY = your-staging-chat-key

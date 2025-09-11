@@ -1,0 +1,13 @@
+//
+//  Production.xcconfig
+//  SwiftDemo1
+//
+//  Created by Auxano on 10/09/25.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+BASE_URL = https:\/\/live.yourapi.com\/
+GOOGLE_API_KEY = your-production-google-key
+CHAT_KEY = your-production-chat-key

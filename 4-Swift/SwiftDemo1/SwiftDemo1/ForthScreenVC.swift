@@ -38,9 +38,9 @@ class ForthScreenVC: UIViewController, SideMenuDelegate {
     @IBAction func btnConnectAI(_ sender: UIButton) {
         print("AI Button tap event")
         
-        let swiftUIView = ConversationalAIView(agent: ObjAgent(), userId: "212", baseUrl: "https://api.openai.com/v1/")
-        let hostingController = UIHostingController(rootView: swiftUIView)
-        self.navigationController?.pushViewController(hostingController, animated: true)
+//        let swiftUIView = ConversationalAIView(agent: ObjAgent(), userId: "212", baseUrl: "https://api.openai.com/v1/")
+//        let hostingController = UIHostingController(rootView: swiftUIView)
+//        self.navigationController?.pushViewController(hostingController, animated: true)
     }
     
     private func setupNavigationBar() {
