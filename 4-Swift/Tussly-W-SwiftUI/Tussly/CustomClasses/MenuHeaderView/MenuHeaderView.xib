@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="OpenSans-Bold.ttf">
+            <string>OpenSans-Bold</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="iN0-l3-epB" customClass="MenuHeaderView" customModule="Tussly" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="339" height="210"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aaS-PR-smo">
+                    <rect key="frame" x="0.0" y="32" width="339" height="146"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l4R-iL-iZb">
+                            <rect key="frame" x="109.5" y="0.0" width="120" height="120"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        </view>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Default" highlighted="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cpX-WR-uaI">
+                            <rect key="frame" x="109.5" y="0.0" width="120" height="120"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="cpX-WR-uaI" secondAttribute="height" multiplier="1:1" id="V4Z-cA-zNV"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Zedrick Van D" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U83-iT-62G">
+                            <rect key="frame" x="16" y="128" width="307" height="18"/>
+                            <fontDescription key="fontDescription" name="OpenSans-Bold" family="Open Sans" pointSize="20"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <constraints>
+                        <constraint firstItem="cpX-WR-uaI" firstAttribute="centerX" secondItem="aaS-PR-smo" secondAttribute="centerX" id="1qD-hJ-2gm"/>
+                        <constraint firstItem="l4R-iL-iZb" firstAttribute="width" secondItem="cpX-WR-uaI" secondAttribute="width" id="4Cr-j7-En1"/>
+                        <constraint firstItem="l4R-iL-iZb" firstAttribute="bottom" secondItem="cpX-WR-uaI" secondAttribute="bottom" id="88b-jG-upe"/>
+                        <constraint firstItem="U83-iT-62G" firstAttribute="top" secondItem="cpX-WR-uaI" secondAttribute="bottom" constant="8" id="KBm-sg-8Ww"/>
+                        <constraint firstItem="l4R-iL-iZb" firstAttribute="trailing" secondItem="cpX-WR-uaI" secondAttribute="trailing" id="QcM-Jt-0Tu"/>
+                        <constraint firstItem="l4R-iL-iZb" firstAttribute="height" secondItem="cpX-WR-uaI" secondAttribute="height" id="YVC-jo-hGn"/>
+                        <constraint firstItem="cpX-WR-uaI" firstAttribute="top" secondItem="aaS-PR-smo" secondAttribute="top" id="dBg-kx-g4v"/>
+                        <constraint firstItem="U83-iT-62G" firstAttribute="leading" secondItem="aaS-PR-smo" secondAttribute="leading" constant="16" id="hZI-ts-hmv"/>
+                        <constraint firstAttribute="trailing" secondItem="U83-iT-62G" secondAttribute="trailing" constant="16" id="l0U-P9-ebD"/>
+                        <constraint firstItem="l4R-iL-iZb" firstAttribute="top" secondItem="cpX-WR-uaI" secondAttribute="top" id="l11-9q-saf"/>
+                        <constraint firstItem="l4R-iL-iZb" firstAttribute="leading" secondItem="cpX-WR-uaI" secondAttribute="leading" id="oRD-lY-S5l"/>
+                        <constraint firstAttribute="bottom" secondItem="U83-iT-62G" secondAttribute="bottom" id="r8p-oa-Vic"/>
+                        <constraint firstItem="cpX-WR-uaI" firstAttribute="width" secondItem="aaS-PR-smo" secondAttribute="width" multiplier="0.353982" id="vpy-5z-fa6"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="aaS-PR-smo" secondAttribute="bottom" constant="32" id="7fQ-6u-Nci"/>
+                <constraint firstItem="aaS-PR-smo" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="E3i-Ji-GmH"/>
+                <constraint firstItem="aaS-PR-smo" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="32" id="H02-61-DvX"/>
+                <constraint firstItem="aaS-PR-smo" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="bd8-MC-mjR"/>
+                <constraint firstAttribute="trailing" secondItem="aaS-PR-smo" secondAttribute="trailing" id="syj-4m-Gb4"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="ivUser" destination="cpX-WR-uaI" id="o7y-HA-xJ1"/>
+                <outlet property="lblUserName" destination="U83-iT-62G" id="lLo-q2-Q7U"/>
+                <outlet property="viewShadow" destination="l4R-iL-iZb" id="mta-UA-hrx"/>
+            </connections>
+            <point key="canvasLocation" x="122.46376811594205" y="-103.45982142857143"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="Default" width="100" height="100"/>
+    </resources>
+</document>

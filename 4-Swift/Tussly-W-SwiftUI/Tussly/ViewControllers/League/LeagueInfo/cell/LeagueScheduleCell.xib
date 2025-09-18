@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="OpenSans-Regular.ttf">
+            <string>OpenSans</string>
+        </array>
+        <array key="OpenSans-Semibold.ttf">
+            <string>OpenSans-Semibold</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LeagueScheduleCell" rowHeight="77" id="j4C-yk-gyA" customClass="LeagueScheduleCell" customModule="Tussly" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="394" height="77"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="j4C-yk-gyA" id="YGS-Nq-r0i">
+                <rect key="frame" x="0.0" y="0.0" width="394" height="77"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gEc-uh-AW0">
+                        <rect key="frame" x="0.0" y="0.0" width="394" height="77"/>
+                        <connections>
+                            <action selector="onTapSocialMedia:" destination="j4C-yk-gyA" eventType="touchUpInside" id="KBV-gq-Emm"/>
+                        </connections>
+                    </button>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C3E-zM-bfZ">
+                        <rect key="frame" x="16" y="0.0" width="5" height="77"/>
+                        <color key="backgroundColor" red="0.54117647058823526" green="0.027450980392156862" blue="0.0078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="5" id="i8h-NX-97r"/>
+                        </constraints>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Monday" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gXb-cd-hvX">
+                        <rect key="frame" x="37" y="8" width="341" height="36.5"/>
+                        <fontDescription key="fontDescription" name="OpenSans-Semibold" family="Open Sans" pointSize="14"/>
+                        <color key="textColor" red="0.13851124049999999" green="0.1385375261" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="8:00 - 10:00 PM EST" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6R2-wc-XGH">
+                        <rect key="frame" x="37" y="52.5" width="341" height="16.5"/>
+                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="12"/>
+                        <color key="textColor" red="0.13851124049999999" green="0.1385375261" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="gXb-cd-hvX" secondAttribute="trailing" constant="16" id="3uP-ts-abC"/>
+                    <constraint firstAttribute="bottom" secondItem="gEc-uh-AW0" secondAttribute="bottom" id="AOV-c9-dLJ"/>
+                    <constraint firstItem="gXb-cd-hvX" firstAttribute="leading" secondItem="C3E-zM-bfZ" secondAttribute="trailing" constant="16" id="Kux-pP-peK"/>
+                    <constraint firstItem="6R2-wc-XGH" firstAttribute="leading" secondItem="gXb-cd-hvX" secondAttribute="leading" id="QGX-HF-DaD"/>
+                    <constraint firstItem="6R2-wc-XGH" firstAttribute="top" secondItem="gXb-cd-hvX" secondAttribute="bottom" constant="8" id="Tsa-bD-ec9"/>
+                    <constraint firstAttribute="bottom" secondItem="6R2-wc-XGH" secondAttribute="bottom" constant="8" id="XDd-g2-tgd"/>
+                    <constraint firstItem="6R2-wc-XGH" firstAttribute="trailing" secondItem="gXb-cd-hvX" secondAttribute="trailing" id="YiS-I4-rAe"/>
+                    <constraint firstItem="C3E-zM-bfZ" firstAttribute="leading" secondItem="YGS-Nq-r0i" secondAttribute="leading" constant="16" id="YwN-vu-VQO"/>
+                    <constraint firstItem="gEc-uh-AW0" firstAttribute="top" secondItem="YGS-Nq-r0i" secondAttribute="top" id="gJW-aD-AFK"/>
+                    <constraint firstAttribute="bottom" secondItem="C3E-zM-bfZ" secondAttribute="bottom" id="mKB-kL-yMy"/>
+                    <constraint firstItem="C3E-zM-bfZ" firstAttribute="top" secondItem="YGS-Nq-r0i" secondAttribute="top" id="oXv-7P-9BQ"/>
+                    <constraint firstItem="gXb-cd-hvX" firstAttribute="top" secondItem="YGS-Nq-r0i" secondAttribute="top" constant="8" id="qyx-5H-JHy"/>
+                    <constraint firstItem="gEc-uh-AW0" firstAttribute="leading" secondItem="YGS-Nq-r0i" secondAttribute="leading" id="rug-HY-nyO"/>
+                    <constraint firstAttribute="trailing" secondItem="gEc-uh-AW0" secondAttribute="trailing" id="ugu-79-0AK"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="lblDay" destination="gXb-cd-hvX" id="7IJ-9h-Ccx"/>
+                <outlet property="lblTime" destination="6R2-wc-XGH" id="3Aa-Vf-E2E"/>
+            </connections>
+            <point key="canvasLocation" x="185.50724637681162" y="206.58482142857142"/>
+        </tableViewCell>
+    </objects>
+</document>
