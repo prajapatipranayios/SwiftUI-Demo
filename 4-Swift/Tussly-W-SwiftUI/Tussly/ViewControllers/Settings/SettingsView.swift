@@ -119,7 +119,7 @@ struct SettingsView: View {
                             Image(uiImage: avatar)
                                 .resizable()
                                 .scaledToFill()
-                                .frame(width: (UIScreen.main.bounds.width / 5) * 2.5, height: (UIScreen.main.bounds.width / 5) * 2.5)
+                                .frame(width: (UIScreen.main.bounds.width / 4) * 2, height: (UIScreen.main.bounds.width / 4) * 2)
                                 .clipShape(Circle())
                         } else {
                             AsyncImage(url: URL(string: viewModel.profile.avatarURL)) { phase in
@@ -130,7 +130,7 @@ struct SettingsView: View {
                                 }
                             }
                             .scaledToFill()
-                            .frame(width: (UIScreen.main.bounds.width / 5) * 2.5, height: (UIScreen.main.bounds.width / 5) * 2.5)
+                            .frame(width: (UIScreen.main.bounds.width / 1.5), height: (UIScreen.main.bounds.width / 1.5))
                             .clipShape(Circle())
                         }
                     }
