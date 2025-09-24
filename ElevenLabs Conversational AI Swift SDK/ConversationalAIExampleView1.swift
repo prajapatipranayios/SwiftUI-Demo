@@ -46,6 +46,7 @@ struct ConversationalAIExampleView: View {
     @State private var popupMessage: String = ""
     @State private var apiCallTimer: Timer? = nil
     @State private var tempApiCallRemainingSeconds: Int = 0
+    @State private var callEndTask: Task<Void, Never>? = nil
     
     
     init(agent: ObjAgent?, userId: String, baseUrl: String, callEndPopupTime: String, apiCallTime: String, authToken: String) {
@@ -62,6 +63,7 @@ struct ConversationalAIExampleView: View {
             // 1) Background only ignores safe area
             backgroundView
                 .ignoresSafeArea()
+            
             // 2) Main content fills the screen and stays inside safe area
             VStack(spacing: 0) {
                 languagePicker
@@ -154,7 +156,6 @@ struct ConversationalAIExampleView: View {
             AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
             objViewModel.agent = agent
             objViewModel.userId = userId
-            objViewModel.apiCallTime = apiCallTime
             
             self.setupFirebaseListener(userId: "\(agent?.userID ?? 0)")
             
@@ -179,6 +180,14 @@ struct ConversationalAIExampleView: View {
             }
         })
         .onChange(of: objViewModel.connectionStatus) { oldValue, newValue in
+            
+            if self.isBtnTap {
+                Task {
+                    await self.endConnection(isAutoDisconnect: true)
+                }
+                print("On Button tap >>>>>> false")
+            }
+            
             switch newValue {
             case "Disconnected", "Connected":
                 isBtnTap = true
@@ -186,6 +195,32 @@ struct ConversationalAIExampleView: View {
                 isBtnTap = false
             default:
                 isBtnTap = false
+            }
+            
+            if newValue == "Connected" {
+                objViewModel.startTimer(seconds: Int(apiCallTime) ?? 0) { remainSecond in
+                //objViewModel.startTimer(seconds: 10) { remainSecond in
+                    tempApiCallRemainingSeconds = remainSecond
+                    print("remainSecond >>>>>>>>> \(remainSecond)")
+                } onComplete: {
+                    //Task { await self.endConnection() }
+                    APIService.shared.sendRequest(
+                        urlString: "\(baseUrl)agent/wallet-second-decrease",
+                        method: .post,
+                        body: ["second": self.apiCallTime],
+                        //body: ["second": "10"],
+                        token: authToken
+                    ) { result in
+                        switch result {
+                        case .success(let response):
+                            print("✅ POST Response:", response)
+                        case .failure(let error):
+                            print("❌ wallet-second-decrease Error:", error.localizedDescription)
+                        }
+                    }
+                }
+            } else if newValue == "Disconnected" {
+                objViewModel.stopTimer()
             }
         }
         .onChange(of: objViewModel.messages.count) { oldValue, newValue in
@@ -225,18 +260,35 @@ struct ConversationalAIExampleView: View {
                 else if objViewModel.connectionStatus == "Connected" {
                     self.showPopupMessage("Your call will automatically end in \(callEndPopupTime) seconds as your credit limit has been exceeded.")
                     
-//                    Task {
-//                        try? await Task.sleep(nanoseconds: UInt64(callEndPopupTime) * 1_000_000_000)
-//                        self.showPopupMessage(nil)
-//                        await self.endConnection()
-//                    }
+                    callEndTask?.cancel() // cancel any previous one before starting new
                     
+                    if let seconds = UInt64(callEndPopupTime) {
+                        callEndTask = Task {
+                            do {
+                                try await Task.sleep(nanoseconds: seconds * 1_000_000_000)
+                                try Task.checkCancellation()
+                                await MainActor.run {
+                                    self.showPopupMessage(nil)
+                                }
+                                await self.endConnection()
+                            } catch {
+                                print("⏹ Call end task was cancelled")
+                            }
+                        }
+                    } else {
+                        print("⚠️ callEndPopupTime is not a valid number: \(callEndPopupTime)")
+                    }
                 }
             }
+            
         }
+        
     }
     
-    func endConnection() async {
+    func endConnection(isAutoDisconnect: Bool = false) async {
+        callEndTask?.cancel()
+        callEndTask = nil
+        
         APIService.shared.sendRequest(
             urlString: "\(baseUrl)agent/create-conversations",
             method: .post,
@@ -253,8 +305,8 @@ struct ConversationalAIExampleView: View {
         APIService.shared.sendRequest(
             urlString: "\(baseUrl)agent/wallet-second-decrease",
             method: .post,
-            //body: ["second": "\(self.apiCallTime - tempApiCallTime)"]
-            body: ["second": "10"],
+            body: ["second": "\((Int(self.apiCallTime) ?? 0) - tempApiCallRemainingSeconds)"],
+            //body: ["second": "10"],
             token: authToken
         ) { result in
             switch result {
@@ -265,30 +317,8 @@ struct ConversationalAIExampleView: View {
             }
         }
         
-        await objViewModel.endConversation()
-    }
-    
-    // MARK: - AgentHeader
-    private var agentHeader: some View {
-        VStack(spacing: 4) {
-            Text(agent?.name ?? "Loading failed")
-                .font(.custom("Rubik-Bold", size: 20))
-                .foregroundColor(agent == nil ? .red : .white)
-
-            Text("Status: \(objViewModel.connectionStatus)")
-                .font(.custom("Rubik-Regular", size: 13))
-                .foregroundColor(statusColor)
-                .padding(.bottom, 10)
-        }
-    }
-    private var statusColor: Color {
-        switch objViewModel.connectionStatus {
-        case "Connected":
-            return .green
-        case "Connecting...":
-            return Color(hex: "E1A500") ?? .yellow
-        default:
-            return .gray
+        if !isAutoDisconnect {
+            await objViewModel.endConversation()
         }
     }
     
@@ -331,6 +361,30 @@ struct ConversationalAIExampleView: View {
         )
     }
     
+    // MARK: - AgentHeader
+    private var agentHeader: some View {
+        VStack(spacing: 4) {
+            Text(agent?.name ?? "Loading failed")
+                .font(.custom("Rubik-Bold", size: 20))
+                .foregroundColor(agent == nil ? .red : .white)
+
+            Text("Status: \(objViewModel.connectionStatus)")
+                .font(.custom("Rubik-Regular", size: 13))
+                .foregroundColor(statusColor)
+                .padding(.bottom, 10)
+        }
+    }
+    private var statusColor: Color {
+        switch objViewModel.connectionStatus {
+        case "Connected":
+            return .green
+        case "Connecting...":
+            return Color(hex: "E1A500") ?? .yellow
+        default:
+            return .gray
+        }
+    }
+    
     // MARK: - AgentStateIndicator
     private var agentStateIndicator: some View {
         Group {
@@ -358,14 +412,12 @@ struct ConversationalAIExampleView: View {
                     Task { await objViewModel.toggleMute() }
                 }
                 .padding(.trailing, 16)
-                
-                
             }
             
             CallButton(
                 connectionStatus: objViewModel.connectionStatus,
                 action: {
-                    if totalCallSecond <= 0 {
+                    if totalCallSecond <= 0 && objViewModel.connectionStatus == "Disconnected" {
                         self.showPopupMessage("You can't access this feature because your credit limit has been exceeded.")
                     } else {
                         if objViewModel.connectionStatus == "Disconnected" {
@@ -653,7 +705,6 @@ struct ConversationalAIExampleView: View {
                 }
             }
     }
-    
 }
 
 
@@ -1269,3 +1320,4 @@ class AppUtility {
         }
     }
 }
+
