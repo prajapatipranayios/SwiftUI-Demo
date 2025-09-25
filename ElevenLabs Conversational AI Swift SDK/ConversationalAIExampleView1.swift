@@ -47,6 +47,7 @@ struct ConversationalAIExampleView: View {
     @State private var apiCallTimer: Timer? = nil
     @State private var tempApiCallRemainingSeconds: Int = 0
     @State private var callEndTask: Task<Void, Never>? = nil
+    @State private var isAppInBackground: Bool = false
     
     
     init(agent: ObjAgent?, userId: String, baseUrl: String, callEndPopupTime: String, apiCallTime: String, authToken: String) {
@@ -164,9 +165,12 @@ struct ConversationalAIExampleView: View {
                 object: nil,
                 queue: .main
             ) { _ in
+                self.isAppInBackground = true
                 print("App moved to background")
-                Task {
-                    await self.endConnection()
+                if objViewModel.connectionStatus == "Connected" {
+                    Task {
+                        await self.endConnection()
+                    }
                 }
             }
             
@@ -176,12 +180,13 @@ struct ConversationalAIExampleView: View {
                 queue: .main
             ) { _ in
                 print("App moved to foreground")
+                self.isAppInBackground = false
                 self.isBtnTap = true
             }
         })
         .onChange(of: objViewModel.connectionStatus) { oldValue, newValue in
             
-            if self.isBtnTap {
+            if self.isBtnTap && !isAppInBackground {
                 Task {
                     await self.endConnection(isAutoDisconnect: true)
                 }
@@ -282,13 +287,15 @@ struct ConversationalAIExampleView: View {
             }
             
         }
-        
+            
     }
     
     func endConnection(isAutoDisconnect: Bool = false) async {
+        objViewModel.stopTimer()
         callEndTask?.cancel()
         callEndTask = nil
         
+        print("endConnection - create-conversations >>>>>>>>")
         APIService.shared.sendRequest(
             urlString: "\(baseUrl)agent/create-conversations",
             method: .post,
@@ -296,12 +303,13 @@ struct ConversationalAIExampleView: View {
         ) { result in
             switch result {
             case .success(let response):
-                print("✅ POST Response:", response)
+                print("✅ endConnection - create-conversations >>>>>>>> POST Response:", response)
             case .failure(let error):
                 print("❌ create-conversations Error:", error.localizedDescription)
             }
         }
         
+        print("endConnection - wallet-second-decrease >>>>>>>> \((Int(self.apiCallTime) ?? 0) - tempApiCallRemainingSeconds)")
         APIService.shared.sendRequest(
             urlString: "\(baseUrl)agent/wallet-second-decrease",
             method: .post,
@@ -311,7 +319,8 @@ struct ConversationalAIExampleView: View {
         ) { result in
             switch result {
             case .success(let response):
-                print("✅ POST Response:", response)
+                tempApiCallRemainingSeconds = (Int(self.apiCallTime) ?? 0)
+                print("✅ endConnection - wallet-second-decrease >>>>>>>> POST Response:", response)
             case .failure(let error):
                 print("❌ wallet-second-decrease Error:", error.localizedDescription)
             }
