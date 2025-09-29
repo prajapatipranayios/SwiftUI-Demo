@@ -13,7 +13,7 @@ import LiveKit
 import SVGKit
 import FirebaseFirestore
 
-struct PopupInfo {
+struct PopupInfo: Codable {
     var alertPopUpTitle: String
     var alertPopUpMessage: String
     var infoPopUpTitle: String
@@ -93,71 +93,21 @@ struct ConversationalAIExampleView: View {
             .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
         }
         // 🔹 Popup overlay here (always on top of ZStack)
-        .overlay(   
+        .overlay(
             Group {
                 if showPopup {
                     ZStack {
                         // Dimmed background
                         Color.black.opacity(0.4)
                             .ignoresSafeArea()
-                        
-                        VStack(spacing: 16) {
-                            // Title
-                            Text(popupTitle) // replace with dynamic title if needed
-                                .font(.headline)
-                                .foregroundColor(.blue)
-                            
-                            // Message
-                            Text(popupMessage)
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.black)
-                            
-                            // OK Button
-                            Button(action: {
-                                showPopup = false
-                            }) {
-                                Text("OK")
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 12)
-                                    .background(Color.blue)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(8)
-                            }
-                            .padding(.horizontal, 16) // left-right padding
-                        }
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(radius: 8)
-                        .frame(maxWidth: 300)
+                        self.popupView
                     }
                 }
             }
         )
         // 4) BACK BUTTON: safe and always tappable; sits above content
         .safeAreaInset(edge: .top) {
-            HStack {
-                Button(action: {
-                    print("Back button press...")
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    RoundedRectangle(cornerRadius: 12)
-                        .frame(width: 40, height: 40)
-                        .shadow(radius: 5)
-                        .overlay(Image(systemName: "chevron.left")
-                            .foregroundColor(.white)
-                            .scaledToFit())
-                        .tint(Color.black.opacity(0.3))
-                }
-                .disabled(objViewModel.isConnected)
-                .opacity(objViewModel.isConnected ? 0.4 : 1.0)
-                .allowsHitTesting(self.isBtnTap)
-                
-                Spacer()
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 8) // small offset below the status bar
-            .background(Color.clear)
+            self.backButton
         }
         .onDisappear {
             self.listener?.remove()
@@ -378,6 +328,65 @@ struct ConversationalAIExampleView: View {
                 }
             }
         )
+    }
+    
+    // MARK: - Popup View
+    private var popupView: some View {
+        VStack(spacing: 16) {
+            // Title
+            Text(popupTitle) // replace with dynamic title if needed
+                .font(.headline)
+                .foregroundColor(.blue)
+            
+            // Message
+            Text(popupMessage)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.black)
+            
+            // OK Button
+            Button(action: {
+                showPopup = false
+            }) {
+                Text("OK")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+            }
+            .padding(.horizontal, 16) // left-right padding
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(radius: 8)
+        .frame(maxWidth: 300)
+    }
+    
+    // MARK: - Back Button
+    private var backButton: some View {
+        HStack {
+            Button(action: {
+                print("Back button press...")
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                RoundedRectangle(cornerRadius: 12)
+                    .frame(width: 40, height: 40)
+                    .shadow(radius: 5)
+                    .overlay(Image(systemName: "chevron.left")
+                        .foregroundColor(.white)
+                        .scaledToFit())
+                    .tint(Color.black.opacity(0.3))
+            }
+            .disabled(objViewModel.isConnected)
+            .opacity(objViewModel.isConnected ? 0.4 : 1.0)
+            .allowsHitTesting(self.isBtnTap)
+            
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 8) // small offset below the status bar
+        .background(Color.clear)
     }
     
     // MARK: - AgentHeader
