@@ -11,17 +11,34 @@ import ElevenLabs
 import Combine
 import LiveKit
 import SVGKit
+import FirebaseFirestore
+
+struct PopupInfo: Codable {
+    var alertPopUpTitle: String
+    var alertPopUpMessage: String
+    var infoPopUpTitle: String
+    var infoPopUpMessage: String
+}
 
 struct ConversationalAIExampleView: View {
     
     var agent: ObjAgent?
     var userId: String
     var baseUrl: String
+    var callEndPopupTime: String
+    var apiCallTime: String
+    var authToken: String
+    var popupInfo: PopupInfo = PopupInfo(
+        alertPopUpTitle: "Credit Limit Exceeded",
+        alertPopUpMessage: "You can't access this feature because your credit limit has been exceeded.",
+        infoPopUpTitle: "Information",
+        infoPopUpMessage: "Your call will end soon if credits run out."
+    )
     
     @StateObject private var objViewModel = ConversationViewModel()
     
     @State private var isBtnTap: Bool = true
-    //@State private var selectedLang: AgentLang? = nil
+    @State private var isAppInBackground: Bool = false
     
     struct ChatMessage: Identifiable, Equatable {
         let id = UUID()
@@ -35,133 +52,72 @@ struct ConversationalAIExampleView: View {
     @State private var chatMessages: [ChatMessage] = []
     
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.presentationMode) var presentationMode
     
-    init(agent: ObjAgent?, userId: String, baseUrl: String) {
+    @State private var listener: ListenerRegistration? = nil
+    @State private var totalCallSecond: Int = 0
+    @State private var showPopup: Bool = false
+    @State private var popupMessage: String = ""
+    @State private var apiCallTimer: Timer? = nil
+    @State private var tempApiCallRemainingSeconds: Int = 0
+    @State private var callEndTask: Task<Void, Never>? = nil
+    @State private var popupTitle: String = ""
+    
+    init(agent: ObjAgent?, userId: String, baseUrl: String, callEndPopupTime: String, apiCallTime: String, authToken: String, popupInfo: PopupInfo) {
         self.agent = agent
         self.userId = userId
         self.baseUrl = baseUrl
+        self.callEndPopupTime = callEndPopupTime
+        self.apiCallTime = apiCallTime
+        self.authToken = authToken
+        self.popupInfo = popupInfo
     }
     
     var body: some View {
         ZStack {
-            // 1) Background only ignores safe area
+            // Background
             backgroundView
-                .ignoresSafeArea()
-
-            // 2) Main content fills the screen and stays inside safe area
-            VStack(spacing: 0) {
-                languagePicker
-                avatarWithRipple
-
-                if let tempAgent = agent {
-                    Text(tempAgent.name ?? "Agent")
-                        .font(.custom("Rubik-Bold", size: 20))
-                        .foregroundColor(.white)
-                } else {
-                    Text("Loading failed")
-                        .font(.custom("Rubik-Bold", size: 20))
-                        .foregroundColor(.red)
-                }
-
-                Text("Status: \(objViewModel.connectionStatus)")
-                    .font(.custom("Rubik-Regular", size: 13))
-                    .foregroundColor((objViewModel.connectionStatus == "Connected") ? .green : (objViewModel.connectionStatus == "Connecting...") ? Color(hex: "E1A500") : .gray)
-                    .padding(.bottom, 10)
-                
-                if objViewModel.isConnected {
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(objViewModel.agentState == .speaking ? Color.green : Color.gray)
-                            .frame(width: 7, height: 7)
-                            .overlay(Circle().stroke(.white, lineWidth: 1))
-                        Text(objViewModel.agentState == .speaking ? "Speaking" : "Listening")
-                            .font(.custom("Rubik-Regular", size: 13))
-                            .foregroundColor(.white)
-                    }
-                    .padding(.bottom, 5)
-                }
-
-                HStack(spacing: 0) {
-                    if objViewModel.isConnected {
-                        AudioButton(isMicEnabled: objViewModel.isMuted) {
-                            Task { await objViewModel.toggleMute() }
-                        }
-                        .padding(.trailing, 16)
-                    }
-                    
-                    CallButton(
-                        connectionStatus: objViewModel.connectionStatus,
-                        action: {
-                            if (objViewModel.connectionStatus == "Disconnected" || objViewModel.connectionStatus == "Disconnected") {
-                                chatMessages.removeAll()
-                            }
-                            
-                            if self.isBtnTap {
-                                self.isBtnTap = false
-                                Task {
-                                    if objViewModel.isConnected {
-                                        await self.endConnection()
-                                    }
-                                    else {
-                                        await objViewModel.startConversation()
-                                    }
-                                }
-                            }
-                        }
-                    )
-                }
-                .padding(.bottom, 5)
-
-                // 3) CHAT LOG: expands to fill remaining space
-                communicationLog
-                    .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
-            }
-            .padding(.horizontal, 20)
-            // Ensure the VStack itself is allowed to fill the screen
-            .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
-            //.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .ignoresSafeArea()
+            
+            // Main content moved into smaller expression
+            mainContent
         }
+        // 🔹 Popup overlay here (always on top of ZStack)
+        .overlay(
+            Group {
+                if showPopup {
+                    self.popupView
+                }
+            }
+        )
         // 4) BACK BUTTON: safe and always tappable; sits above content
         .safeAreaInset(edge: .top) {
-            HStack {
-                Button(action: {
-                    print("Back button press...")
-                    if let vc = getHostingController() {
-                        vc.navigationController?.popViewController(animated: true)
-                    }
-                }) {
-                    RoundedRectangle(cornerRadius: 12)
-                        .frame(width: 40, height: 40)
-                        .shadow(radius: 5)
-                        .overlay(Image(systemName: "chevron.left")
-                            .foregroundColor(.white)
-                            .scaledToFit())
-                        .tint(Color.black.opacity(0.3))
-                }
-                .allowsHitTesting(self.isBtnTap)
-                .disabled(objViewModel.isConnected)
-                .opacity(objViewModel.isConnected ? 0.4 : 1.0)
-                
-
-                Spacer()
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 8) // small offset below the status bar
-            .background(Color.clear)
+            self.backButton
+        }
+        .onDisappear {
+            self.listener?.remove()
+            
+            NotificationCenter.default.removeObserver(self)
+            //AppUtility.lockOrientation(.all) // restore others
         }
         .onAppear(perform: {
+            //AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
             objViewModel.agent = agent
             objViewModel.userId = userId
             
-            // 👇 Listen to lifecycle notifications here
+            self.setupFirebaseListener(userId: "\(agent?.userID ?? 0)")
+            
             NotificationCenter.default.addObserver(
                 forName: UIApplication.didEnterBackgroundNotification,
                 object: nil,
                 queue: .main
             ) { _ in
                 print("App moved to background")
-                Task {
-                    await self.endConnection()
+                isAppInBackground = true
+                if objViewModel.connectionStatus == "Connected" {
+                    Task {
+                        await self.endConnection()
+                    }
                 }
             }
             
@@ -170,11 +126,19 @@ struct ConversationalAIExampleView: View {
                 object: nil,
                 queue: .main
             ) { _ in
+                isAppInBackground = false
                 print("App moved to foreground")
                 self.isBtnTap = true
             }
         })
         .onChange(of: objViewModel.connectionStatus) { oldValue, newValue in
+            if self.isBtnTap && !isAppInBackground {
+                Task {
+                    await self.endConnection(true)
+                }
+                print("On Button tap >>>>>> false")
+            }
+            
             switch newValue {
             case "Disconnected", "Connected":
                 isBtnTap = true
@@ -182,6 +146,29 @@ struct ConversationalAIExampleView: View {
                 isBtnTap = false
             default:
                 isBtnTap = false
+            }
+            
+            if newValue == "Connected" {
+                objViewModel.startTimer(seconds: Int(apiCallTime) ?? 0) { remainSecond in
+                    tempApiCallRemainingSeconds = remainSecond
+                    print("remainSecond >>>>>>>>> \(remainSecond)")
+                } onComplete: {
+                    APIService.shared.sendRequest(
+                        urlString: "\(baseUrl)agent/wallet-second-decrease",
+                        method: .post,
+                        body: ["second": self.apiCallTime],
+                        token: authToken
+                    ) { result in
+                        switch result {
+                        case .success(let response):
+                            print("✅ POST Response:", response)
+                        case .failure(let error):
+                            print("❌ wallet-second-decrease Error:", error.localizedDescription)
+                        }
+                    }
+                }
+            } else if newValue == "Disconnected" {
+                objViewModel.stopTimer()
             }
         }
         .onChange(of: objViewModel.messages.count) { oldValue, newValue in
@@ -211,9 +198,42 @@ struct ConversationalAIExampleView: View {
                 break
             }
         }
+        .onChange(of: totalCallSecond) { oldValue, newValue in
+            if newValue <= 0 {
+                if objViewModel.connectionStatus == "Disconnected" {
+                    print("Time is over and disconnected...")
+                }
+                else if objViewModel.connectionStatus == "Connected" {
+                    //self.showPopupMessage("Your call will automatically end in \(callEndPopupTime) seconds as your credit limit has been exceeded.")
+                    self.showPopupMessage(self.popupInfo.alertPopUpTitle, self.popupInfo.alertPopUpMessage)
+                    callEndTask?.cancel() // cancel any previous one before starting new
+                    if let seconds = UInt64(callEndPopupTime) {
+                        callEndTask = Task {
+                            do {
+                                try await Task.sleep(nanoseconds: seconds * 1_000_000_000)
+                                try Task.checkCancellation()
+                                await MainActor.run {
+                                    self.showPopupMessage(nil)
+                                }
+                                await self.endConnection()
+                            } catch {
+                                print("⏹ Call end task was cancelled")
+                            }
+                        }
+                    } else {
+                        print("⚠️ callEndPopupTime is not a valid number: \(callEndPopupTime)")
+                    }
+                }
+            }
+            
+        }
+        
     }
     
-    func endConnection() async {
+    func endConnection(_ isAutoDisconnect: Bool = false) async {
+        callEndTask?.cancel()
+        callEndTask = nil
+        
         APIService.shared.sendRequest(
             urlString: "\(baseUrl)agent/create-conversations",
             method: .post,
@@ -223,11 +243,45 @@ struct ConversationalAIExampleView: View {
             case .success(let response):
                 print("✅ POST Response:", response)
             case .failure(let error):
-                print("❌ Error:", error.localizedDescription)
+                print("❌ create-conversations Error:", error.localizedDescription)
             }
         }
         
-        await objViewModel.endConversation()
+        APIService.shared.sendRequest(
+            urlString: "\(baseUrl)agent/wallet-second-decrease",
+            method: .post,
+            body: ["second": "\((Int(self.apiCallTime) ?? 0) - tempApiCallRemainingSeconds)"],
+            //body: ["second": "10"],
+            token: authToken
+        ) { result in
+            switch result {
+            case .success(let response):
+                print("✅ POST Response:", response)
+            case .failure(let error):
+                print("❌ wallet-second-decrease Error:", error.localizedDescription)
+            }
+        }
+        
+        if(!isAutoDisconnect){
+            await objViewModel.endConversation()
+        }
+    }
+    
+    // MARK: - Reduce expression complexity by isolating main content
+    private var mainContent: some View {
+        AnyView(
+            VStack(spacing: 0) {
+                languagePicker
+                avatarWithRipple
+                agentHeader
+                agentStateIndicator
+                controls
+                communicationLog
+                    .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
+            }
+                .padding(.horizontal, 20)
+                .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
+        )
     }
     
     // MARK: - Background
@@ -267,6 +321,156 @@ struct ConversationalAIExampleView: View {
                 }
             }
         )
+    }
+    
+    // MARK: - Popup View
+    private var popupView: some View {
+        ZStack {
+            // Dimmed background
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+            self.popupBody
+        }
+    }
+    
+    // MARK: - Popupbody
+    private var popupBody: some View {
+        VStack(spacing: 16) {
+            // Title
+            Text(popupTitle) // replace with dynamic title if needed
+                .font(.headline)
+                .foregroundColor(.blue)
+            
+            // Message
+            Text(popupMessage)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.black)
+            
+            // OK Button
+            Button(action: {
+                showPopup = false
+            }) {
+                Text("OK")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+            }
+            .padding(.horizontal, 16) // left-right padding
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(radius: 8)
+        .frame(maxWidth: 300)
+    }
+    
+    // MARK: - Back Button
+    private var backButton: some View {
+        HStack {
+            Button(action: {
+                print("Back button press...")
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                RoundedRectangle(cornerRadius: 12)
+                    .frame(width: 40, height: 40)
+                    .shadow(radius: 5)
+                    .overlay(Image(systemName: "chevron.left")
+                        .foregroundColor(.white)
+                        .scaledToFit())
+                    .tint(Color.black.opacity(0.3))
+            }
+            .disabled(objViewModel.isConnected)
+            .opacity(objViewModel.isConnected ? 0.4 : 1.0)
+            .allowsHitTesting(self.isBtnTap)
+            
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 8) // small offset below the status bar
+        .background(Color.clear)
+    }
+    
+    // MARK: - AgentHeader
+    private var agentHeader: some View {
+        VStack(spacing: 4) {
+            Text(agent?.name ?? "Loading failed")
+                .font(.custom("Rubik-Bold", size: 20))
+                .foregroundColor(agent == nil ? .red : .white)
+            
+            Text("Status: \(objViewModel.connectionStatus)")
+                .font(.custom("Rubik-Regular", size: 13))
+                .foregroundColor(statusColor)
+                .padding(.bottom, 10)
+        }
+    }
+    private var statusColor: Color {
+        switch objViewModel.connectionStatus {
+        case "Connected":
+            return .green
+        case "Connecting...":
+            return Color(hex: "E1A500") ?? .yellow
+        default:
+            return .gray
+        }
+    }
+    
+    // MARK: - AgentStateIndicator
+    private var agentStateIndicator: some View {
+        Group {
+            if objViewModel.isConnected {
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(objViewModel.agentState == .speaking ? Color.green : Color.gray)
+                        .frame(width: 7, height: 7)
+                        .overlay(Circle().stroke(.white, lineWidth: 1))
+                    
+                    Text(objViewModel.agentState == .speaking ? "Speaking" : "Listening")
+                        .font(.custom("Rubik-Regular", size: 13))
+                        .foregroundColor(.white)
+                }
+                .padding(.bottom, 5)
+            }
+        }
+    }
+    
+    // MARK: - Controls
+    private var controls: some View {
+        HStack(spacing: 0) {
+            if objViewModel.isConnected {
+                AudioButton(isMicEnabled: objViewModel.isMuted) {
+                    Task { await objViewModel.toggleMute() }
+                }
+                .padding(.trailing, 16)
+            }
+            
+            CallButton(
+                connectionStatus: objViewModel.connectionStatus,
+                action: {
+                    if totalCallSecond <= 0 && objViewModel.connectionStatus == "Disconnected" {
+                        //                        self.showPopupMessage("You can't access this feature because your credit limit has been exceeded.")
+                        self.showPopupMessage(self.popupInfo.infoPopUpTitle, self.popupInfo.infoPopUpMessage)
+                    } else {
+                        if objViewModel.connectionStatus == "Disconnected" {
+                            chatMessages.removeAll()
+                        }
+                        
+                        if self.isBtnTap {
+                            self.isBtnTap = false
+                            Task {
+                                if objViewModel.isConnected {
+                                    await self.endConnection()
+                                } else {
+                                    await objViewModel.startConversation()
+                                }
+                            }
+                        }
+                    }
+                }
+            )
+        }
+        .padding(.bottom, 5)
     }
     
     // MARK: - Default image with Gradient
@@ -341,11 +545,11 @@ struct ConversationalAIExampleView: View {
     // MARK: - Default image for flag
     private func langFlagImage(_ urlString: String?) -> some View {
         let size: CGFloat = 24
-
+        
         return Group {
             if let s = urlString,
                let _ = URL(string: s),
-                s.lowercased().hasSuffix(".svg")
+               s.lowercased().hasSuffix(".svg")
             {
                 SVGImageView(urlString: urlString, size: size)
             }
@@ -491,6 +695,49 @@ struct ConversationalAIExampleView: View {
         }
     }
     
+    // MARK: - Show popup func
+    private func showPopupMessage(_ title: String,_ message: String?) {
+        if let message = message {
+            popupTitle = title
+            popupMessage = message
+            showPopup = true
+        } else {
+            showPopup = false // Passing nil closes popup manually
+        }
+    }
+    
+    // MARK: - Firebase Listener
+    private func setupFirebaseListener(userId: String) {
+        let db = Firestore.firestore()
+        
+        self.listener = db.collection("agent")
+            .document(userId)
+        //.collection("\(self.objViewModel.agent?.userID ?? 0)")
+        //.order(by: "timestamp", descending: false)
+            .addSnapshotListener { snapshot, error in
+                
+                if let error = error {
+                    print("Error fetching messages: \(error)")
+                    return
+                }
+                
+                guard let document = snapshot else {
+                    print("Error fetching document: \(error!)")
+                    return
+                }
+                
+                guard let data = document.data() else {
+                    print("Document data was empty.")
+                    return
+                }
+                
+                if let totalSeconds = data["totalSeconds"] as? Int {
+                    //self.remainingCallSecond = totalSeconds
+                    totalCallSecond = totalSeconds
+                    print("Remaining seconds: \(totalSeconds)")
+                }
+            }
+    }
 }
 
 
@@ -507,9 +754,13 @@ class ConversationViewModel: ObservableObject {
     
     private var conversation: Conversation?
     private var cancellables = Set<AnyCancellable>()
-
+    
     var agent: ObjAgent?
     var userId: String?
+    
+    @Published var apiCallRemainingSeconds: Int = 0
+    private var apiCallTimer: Timer?
+    
     
     func startConversation() async {
         ongoingTask?.cancel()  // cancel any previous task
@@ -527,11 +778,12 @@ class ConversationViewModel: ObservableObject {
     
     func startConversationSafe() async {
         do {
+            conversation = nil       // ✅ clear old reference
+            cancellables.removeAll() // ✅ clear old bindings
+            
             let langCode = (selectedLang?.languageCode ?? "en").lowercased()
             let agentOverrides = AgentOverrides(language: Language(rawValue: langCode))
             
-            print("Language >>>>>>> \(langCode) And User ID >>>>> \(userId ?? "")")
-            connectionStatus = "Connecting..."
             conversation = try await ElevenLabs.startConversation(
                 agentId: agent?.agentID ?? "",
                 config: ConversationConfig(agentOverrides: agentOverrides,
@@ -543,7 +795,7 @@ class ConversationViewModel: ObservableObject {
             connectionStatus = "Failed to connect"
         }
     }
-
+    
     func endConversation() async {
         ongoingTask?.cancel()
         ongoingTask = Task {
@@ -557,7 +809,7 @@ class ConversationViewModel: ObservableObject {
         conversation = nil
         cancellables.removeAll()
     }
-
+    
     func toggleMute() async {
         try? await conversation?.toggleMute()
     }
@@ -571,44 +823,70 @@ class ConversationViewModel: ObservableObject {
     }
     
     private func setupObservers() {
+        cancellables.removeAll()   // ✅ clear old subscriptions
+        
         guard let conversation else { return }
         
         conversation.$messages
+            .receive(on: DispatchQueue.main)   // ✅ ensure UI updates on main thread
             .assign(to: &$messages)
-
+        
         conversation.$state
             .map { state in
                 switch state {
-                case .idle:
-                    return "Disconnected"
-                case .connecting:
-                    return "Connecting..."
+                case .idle: return "Disconnected"
+                case .connecting: return "Connecting..."
                 case .active:
-                    print("Get Conversation ID >>>>>>>>>>>> ")
                     if let metadata = conversation.conversationMetadata {
                         self.strConversationId = metadata.conversationId
-                        print("Conversation ID >>>>>>>>>>>> active >>>>>", metadata.conversationId)
                     }
                     return "Connected"
-                case .ended:
-                    //return "Ended"
-                    return "Disconnected"
-                case .error:
-                    return "Error"
+                case .ended: return "Disconnected"
+                case .error: return "Error"
                 }
             }
+            .receive(on: DispatchQueue.main)
             .assign(to: &$connectionStatus)
-
+        
         conversation.$state
             .map { $0.isActive }
+            .receive(on: DispatchQueue.main)
             .assign(to: &$isConnected)
-
-        conversation.$isMuted
-            .assign(to: &$isMuted)
-
-        conversation.$agentState
-            .assign(to: &$agentState)
         
+        conversation.$isMuted
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$isMuted)
+        
+        conversation.$agentState
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$agentState)
+    }
+    
+    func startTimer(seconds: Int, onTick: @escaping (Int) -> Void, onComplete: @escaping () -> Void) {
+        stopTimer()
+        apiCallRemainingSeconds = seconds
+        
+        apiCallTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            
+            if self.apiCallRemainingSeconds > 0 {
+                self.apiCallRemainingSeconds -= 1
+                onTick(self.apiCallRemainingSeconds)
+            }
+            
+            if self.apiCallRemainingSeconds == 0 {
+                self.stopTimer()
+                onComplete()
+                self.startTimer(seconds: seconds, onTick: onTick, onComplete: onComplete)
+            }
+        }
+        
+        RunLoop.current.add(apiCallTimer!, forMode: .common)
+    }
+    
+    func stopTimer() {
+        apiCallTimer?.invalidate()
+        apiCallTimer = nil
     }
 }
 
@@ -617,9 +895,9 @@ class ConversationViewModel: ObservableObject {
 struct SVGImageView: View {
     let urlString: String?
     let size: CGFloat
-
+    
     @State private var uiImage: UIImage? = nil
-
+    
     var body: some View {
         Group {
             if let img = uiImage {
@@ -645,7 +923,7 @@ struct SVGImageView: View {
             loadSVG()
         }
     }
-
+    
     private func loadSVG() {
         guard let urlString, let url = URL(string: urlString) else { return }
         URLSession.shared.dataTask(with: url) { data, _, _ in
@@ -664,7 +942,7 @@ struct SVGImageView: View {
 struct CallButton: View {
     let connectionStatus: String
     let action: () -> Void
-
+    
     private var buttonImg: String {
         switch connectionStatus {
         case "Connected":
@@ -689,8 +967,8 @@ struct CallButton: View {
                     Image(buttonImg)
                         .resizable() // for asset images
                         .scaledToFit()
-                        //.frame(width: 24, height: 24)
-                        //.foregroundColor(.white)
+                    //.frame(width: 24, height: 24)
+                    //.foregroundColor(.white)
                 )
         }
         .padding(.bottom, 10)
@@ -701,19 +979,19 @@ struct CallButton: View {
 struct AudioButton: View {
     let isMicEnabled: Bool
     let action: () -> Void
-
+    
     var body: some View {
         Button(action: action) {
             RoundedRectangle(cornerRadius: 15)
-                //.fill(isMicEnabled ? Color.green : Color.gray)
+            //.fill(isMicEnabled ? Color.green : Color.gray)
                 .frame(width: 45, height: 45)
                 .shadow(radius: 5)
                 .overlay(
                     Image(isMicEnabled ? "mute" : "unmute")
                         .resizable() // for asset images
                         .scaledToFit()
-                        //.font(.system(size: 24, weight: .medium))
-                        //.foregroundColor(.white)
+                    //.font(.system(size: 24, weight: .medium))
+                    //.foregroundColor(.white)
                 )
         }
         .tint(.clear)
@@ -726,10 +1004,10 @@ extension Color {
     init?(hex: String) {
         var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
         hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-
+        
         var rgba: UInt64 = 0
         guard Scanner(string: hexSanitized).scanHexInt64(&rgba) else { return nil }
-
+        
         let r, g, b, a: Double
         switch hexSanitized.count {
         case 6: // RGB
@@ -745,19 +1023,20 @@ extension Color {
         default:
             return nil
         }
-        self.init(red: r, green: g, blue: b, opacity: a)
+        //self.init(red: r, green: g, blue: b, opacity: a)
+        self.init(.sRGB, red: r, green: g, blue: b, opacity: a)
     }
 }
 
 // MARK: - SwiftUI Wrapper
 struct RippleBackground: UIViewRepresentable {
     let status: String   // 👈 pass status from parent
-
+    
     func makeUIView(context: Context) -> RippleBackgroundView {
         let view = RippleBackgroundView()
         return view
     }
-
+    
     func updateUIView(_ uiView: RippleBackgroundView, context: Context) {
         if status == "Connected" || status == "Connecting..." {
             uiView.start()
@@ -769,33 +1048,33 @@ struct RippleBackground: UIViewRepresentable {
 
 // MARK: - UIKit Ripple View
 class RippleBackgroundView: UIView {
-
+    
     private let rippleCount = 3
     private let rippleDuration: CFTimeInterval = 3
     private var isAnimating = false
     private var replicator: CAReplicatorLayer?
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
     }
-
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         backgroundColor = .clear
     }
-
+    
     func start() {
         guard !isAnimating else { return }
         isAnimating = true
-
+        
         let replicator = CAReplicatorLayer()
         replicator.frame = bounds
         replicator.instanceCount = rippleCount
         replicator.instanceDelay = rippleDuration / Double(rippleCount)
         layer.addSublayer(replicator)
         self.replicator = replicator
-
+        
         let rippleLayer = CAShapeLayer()
         rippleLayer.frame = bounds
         rippleLayer.path = UIBezierPath(
@@ -806,24 +1085,24 @@ class RippleBackgroundView: UIView {
         rippleLayer.lineWidth = 25.0
         rippleLayer.opacity = 0
         replicator.addSublayer(rippleLayer)
-
+        
         // Animations
         let scale = CABasicAnimation(keyPath: "transform.scale")
         scale.fromValue = 1
         scale.toValue = 1.99
-
+        
         let opacity = CABasicAnimation(keyPath: "opacity")
         opacity.fromValue = 0.9
         opacity.toValue = 0.0
-
+        
         let group = CAAnimationGroup()
         group.animations = [scale, opacity]
         group.duration = rippleDuration
         group.repeatCount = .infinity
-
+        
         rippleLayer.add(group, forKey: "ripple")
     }
-
+    
     func stop() {
         replicator?.removeFromSuperlayer()
         isAnimating = false
@@ -882,7 +1161,7 @@ struct ObjAgent: Codable, Identifiable {
     var updatedAt: String?
     var imagePath: String?
     var agentLang: [AgentLang]?
-
+    
     enum CodingKeys: String, CodingKey {
         case id
         case userID = "userId"
@@ -979,7 +1258,7 @@ struct AgentLang: Codable, Identifiable, Hashable {
     var createdAt: String?
     var updatedAt: String?
     var langName: String?
-
+    
     enum CodingKeys: String, CodingKey {
         case id
         case userID = "userId"
@@ -1017,16 +1296,22 @@ struct APIService {
         urlString: String,
         method: HTTPMethod,
         body: [String: Any]? = nil,
+        token: String? = nil,
         completion: @escaping (Result<Data, Error>) -> Void
     ) {
         guard let url = URL(string: urlString) else {
             completion(.failure(NSError(domain: "Invalid URL", code: 0)))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue   // ✅ use enum
-
+        
+        // ✅ add Authorization header if token exists
+        if let token = token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        
         // Only attach body for POST/PUT/PATCH/DELETE (not GET/HEAD/OPTIONS)
         switch method {
         case .post, .put, .patch, .delete:
@@ -1037,19 +1322,35 @@ struct APIService {
         default:
             break
         }
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
-
+            
             guard let data = data else {
                 completion(.failure(NSError(domain: "No data", code: 0)))
                 return
             }
-
+            
             completion(.success(data))
         }.resume()
     }
 }
+
+//class AppUtility {
+//    
+//    static func lockOrientation(_ orientation: UIInterfaceOrientationMask,
+//                                andRotateTo rotateOrientation:UIInterfaceOrientation? = nil) {
+//        
+//        if let delegate = UIApplication.shared.delegate as? AppDelegate {
+//            delegate.orientationLock = orientation
+//        }
+//        
+//        if let rotateOrientation = rotateOrientation {
+//            UIDevice.current.setValue(rotateOrientation.rawValue, forKey: "orientation")
+//            UINavigationController.attemptRotationToDeviceOrientation()
+//        }
+//    }
+//}

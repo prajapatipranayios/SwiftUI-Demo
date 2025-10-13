@@ -11,10 +11,14 @@
 		122222802E5C353400B9D418 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1222227F2E5C353400B9D418 /* SDWebImageSwiftUI */; };
 		125019182E6579DA005BA4BE /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = 125019172E6579DA005BA4BE /* SVGKit */; };
 		1250191A2E6579DA005BA4BE /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 125019192E6579DA005BA4BE /* SVGKitSwift */; };
+		2A8E66CDDCF0F376161340E4 /* Pods_ConversationalAISwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE9637F42E360BD0D4592D78 /* Pods_ConversationalAISwift.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4FCC430A1D889E0B66196579 /* Pods-ConversationalAISwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ConversationalAISwift.release.xcconfig"; path = "Target Support Files/Pods-ConversationalAISwift/Pods-ConversationalAISwift.release.xcconfig"; sourceTree = "<group>"; };
+		AE9637F42E360BD0D4592D78 /* Pods_ConversationalAISwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ConversationalAISwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF5D8A6B2CDA213E00E1EEE4 /* ConversationalAISwift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ConversationalAISwift.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB6B3F1330E85CA18BE9ECE5 /* Pods-ConversationalAISwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ConversationalAISwift.debug.xcconfig"; path = "Target Support Files/Pods-ConversationalAISwift/Pods-ConversationalAISwift.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -47,17 +51,38 @@
 				125019182E6579DA005BA4BE /* SVGKit in Frameworks */,
 				122222802E5C353400B9D418 /* SDWebImageSwiftUI in Frameworks */,
 				121260DA2E6FF74F00032CF2 /* ElevenLabs in Frameworks */,
+				2A8E66CDDCF0F376161340E4 /* Pods_ConversationalAISwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2E8AA8DD5EF369ACA3C8AD48 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AE9637F42E360BD0D4592D78 /* Pods_ConversationalAISwift.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		75273A1F0434647717C35DA0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				DB6B3F1330E85CA18BE9ECE5 /* Pods-ConversationalAISwift.debug.xcconfig */,
+				4FCC430A1D889E0B66196579 /* Pods-ConversationalAISwift.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		BF5D8A622CDA213E00E1EEE4 = {
 			isa = PBXGroup;
 			children = (
 				BF5D8A6D2CDA213E00E1EEE4 /* ConversationalAISwift */,
 				BF5D8A6C2CDA213E00E1EEE4 /* Products */,
+				75273A1F0434647717C35DA0 /* Pods */,
+				2E8AA8DD5EF369ACA3C8AD48 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -76,9 +101,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF5D8A792CDA213F00E1EEE4 /* Build configuration list for PBXNativeTarget "ConversationalAISwift" */;
 			buildPhases = (
+				EC99B70EB3154FD29C077F77 /* [CP] Check Pods Manifest.lock */,
 				BF5D8A672CDA213E00E1EEE4 /* Sources */,
 				BF5D8A682CDA213E00E1EEE4 /* Frameworks */,
 				BF5D8A692CDA213E00E1EEE4 /* Resources */,
+				AECC951A349B7DFF55D06E77 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -146,6 +173,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AECC951A349B7DFF55D06E77 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ConversationalAISwift/Pods-ConversationalAISwift-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ConversationalAISwift/Pods-ConversationalAISwift-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ConversationalAISwift/Pods-ConversationalAISwift-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EC99B70EB3154FD29C077F77 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ConversationalAISwift-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BF5D8A672CDA213E00E1EEE4 /* Sources */ = {
@@ -279,6 +348,7 @@
 		};
 		BF5D8A7A2CDA213F00E1EEE4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DB6B3F1330E85CA18BE9ECE5 /* Pods-ConversationalAISwift.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -315,6 +385,7 @@
 		};
 		BF5D8A7B2CDA213F00E1EEE4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4FCC430A1D889E0B66196579 /* Pods-ConversationalAISwift.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

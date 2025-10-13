@@ -28,12 +28,17 @@ struct ConversationalAIExampleView: View {
     var callEndPopupTime: String
     var apiCallTime: String
     var authToken: String
-    
-    var popupInfo: PopupInfo
+    var popupInfo: PopupInfo = PopupInfo(
+        alertPopUpTitle: "Credit Limit Exceeded",
+        alertPopUpMessage: "You can't access this feature because your credit limit has been exceeded.",
+        infoPopUpTitle: "Information",
+        infoPopUpMessage: "Your call will end soon if credits run out."
+    )
     
     @StateObject private var objViewModel = ConversationViewModel()
     
     @State private var isBtnTap: Bool = true
+    @State private var isAppInBackground: Bool = false
     
     struct ChatMessage: Identifiable, Equatable {
         let id = UUID()
@@ -52,13 +57,11 @@ struct ConversationalAIExampleView: View {
     @State private var listener: ListenerRegistration? = nil
     @State private var totalCallSecond: Int = 0
     @State private var showPopup: Bool = false
-    @State private var popupTitle: String = ""
     @State private var popupMessage: String = ""
     @State private var apiCallTimer: Timer? = nil
     @State private var tempApiCallRemainingSeconds: Int = 0
     @State private var callEndTask: Task<Void, Never>? = nil
-    @State private var isAppInBackground: Bool = false
-    
+    @State private var popupTitle: String = ""
     
     init(agent: ObjAgent?, userId: String, baseUrl: String, callEndPopupTime: String, apiCallTime: String, authToken: String, popupInfo: PopupInfo) {
         self.agent = agent
@@ -67,41 +70,23 @@ struct ConversationalAIExampleView: View {
         self.callEndPopupTime = callEndPopupTime
         self.apiCallTime = apiCallTime
         self.authToken = authToken
-        
         self.popupInfo = popupInfo
     }
     
     var body: some View {
         ZStack {
-            // 1) Background only ignores safe area
+            // Background
             backgroundView
-                .ignoresSafeArea()
+            .ignoresSafeArea()
             
-            // 2) Main content fills the screen and stays inside safe area
-            VStack(spacing: 0) {
-                languagePicker
-                avatarWithRipple
-                agentHeader
-                agentStateIndicator
-                controls
-                // 3) CHAT LOG: expands to fill remaining space
-                communicationLog
-                    .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
-            }
-            .padding(.horizontal, 20)
-            // Ensure the VStack itself is allowed to fill the screen
-            .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
+            // Main content moved into smaller expression
+            mainContent
         }
         // 🔹 Popup overlay here (always on top of ZStack)
         .overlay(
             Group {
                 if showPopup {
-                    ZStack {
-                        // Dimmed background
-                        Color.black.opacity(0.4)
-                            .ignoresSafeArea()
-                        self.popupView
-                    }
+                    self.popupView
                 }
             }
         )
@@ -109,87 +94,16 @@ struct ConversationalAIExampleView: View {
         .safeAreaInset(edge: .top) {
             self.backButton
         }
+        .onAppear { setupLifecycle() }
         .onDisappear {
-            self.listener?.remove()
-            
+            listener?.remove()
             NotificationCenter.default.removeObserver(self)
-            AppUtility.lockOrientation(.all) // restore others
+            //AppUtility.lockOrientation(.all) // restore others
         }
-        .onAppear(perform: {
-            AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
-            objViewModel.agent = agent
-            objViewModel.userId = userId
-            
-            self.setupFirebaseListener(userId: "\(agent?.userID ?? 0)")
-            
-            NotificationCenter.default.addObserver(
-                forName: UIApplication.didEnterBackgroundNotification,
-                object: nil,
-                queue: .main
-            ) { _ in
-                self.isAppInBackground = true
-                print("App moved to background")
-                if objViewModel.connectionStatus == "Connected" {
-                    Task {
-                        await self.endConnection()
-                    }
-                }
-            }
-            
-            NotificationCenter.default.addObserver(
-                forName: UIApplication.willEnterForegroundNotification,
-                object: nil,
-                queue: .main
-            ) { _ in
-                print("App moved to foreground")
-                self.isAppInBackground = false
-                self.isBtnTap = true
-            }
-        })
-        .onChange(of: objViewModel.connectionStatus) { oldValue, newValue in
-            if self.isBtnTap && !isAppInBackground {
-                Task {
-                    await self.endConnection(isAutoDisconnect: true)
-                }
-                print("On Button tap >>>>>> false")
-            }
-            
-            switch newValue {
-            case "Disconnected", "Connected":
-                isBtnTap = true
-            case "Connecting...", "Disconnecting":
-                isBtnTap = false
-            default:
-                isBtnTap = false
-            }
-            
-            if newValue == "Connected" {
-                objViewModel.startTimer(seconds: Int(apiCallTime) ?? 0) { remainSecond in
-                //objViewModel.startTimer(seconds: 10) { remainSecond in
-                    tempApiCallRemainingSeconds = remainSecond
-                    print("remainSecond >>>>>>>>> \(remainSecond)")
-                } onComplete: {
-                    //Task { await self.endConnection() }
-                    APIService.shared.sendRequest(
-                        urlString: "\(baseUrl)agent/wallet-second-decrease",
-                        method: .post,
-                        body: ["second": self.apiCallTime],
-                        //body: ["second": "10"],
-                        token: authToken
-                    ) { result in
-                        switch result {
-                        case .success(let response):
-                            print("✅ POST Response:", response)
-                        case .failure(let error):
-                            print("❌ wallet-second-decrease Error:", error.localizedDescription)
-                        }
-                    }
-                }
-            } else if newValue == "Disconnected" {
-                objViewModel.stopTimer()
-            }
+        .onChange(of: objViewModel.connectionStatus) { _, newValue in
+            handleConnectionStatus(newValue)
         }
-        .onChange(of: objViewModel.messages.count) { oldValue, newValue in
+        .onChange(of: objViewModel.messages.count) { _, _ in
             if let last = objViewModel.messages.last {
                 let newChatMessage = ChatMessage(
                     role: last.role == .user ? "user" : "assistant",
@@ -201,61 +115,18 @@ struct ConversationalAIExampleView: View {
             }
         }
         .onChange(of: scenePhase) { _, newPhase in
-            switch newPhase {
-            case .active:
-                print("App moved to foreground")
-                
-                self.isBtnTap = true
-            case .background:
-                print("App moved to background")
-                Task {
-                    await self.endConnection()
-                }
-            case .inactive:
-                print("App inactive (transitioning)")
-            @unknown default:
-                break
-            }
+            handleScenePhase(newPhase)
         }
-        .onChange(of: totalCallSecond) { oldValue, newValue in
-            if newValue <= 0 {
-                if objViewModel.connectionStatus == "Disconnected" {
-                    print("Time is over and disconnected...")
-                }
-                else if objViewModel.connectionStatus == "Connected" {
-                    self.showPopupMessage(self.popupInfo.alertPopUpTitle, self.popupInfo.alertPopUpMessage)
-                    
-                    callEndTask?.cancel() // cancel any previous one before starting new
-                    
-                    if let seconds = UInt64(callEndPopupTime) {
-                        callEndTask = Task {
-                            do {
-                                try await Task.sleep(nanoseconds: seconds * 1_000_000_000)
-                                try Task.checkCancellation()
-                                await MainActor.run {
-                                    self.showPopupMessage(nil)
-                                }
-                                await self.endConnection()
-                            } catch {
-                                print("⏹ Call end task was cancelled")
-                            }
-                        }
-                    } else {
-                        print("⚠️ callEndPopupTime is not a valid number: \(callEndPopupTime)")
-                    }
-                }
-            }
-            
+        .onChange(of: totalCallSecond) { _, newValue in
+            handleCallTimer(newValue)
         }
-            
+        
     }
     
-    func endConnection(isAutoDisconnect: Bool = false) async {
-        objViewModel.stopTimer()
+    func endConnection(_ isAutoDisconnect: Bool = false) async {
         callEndTask?.cancel()
         callEndTask = nil
         
-        print("endConnection - create-conversations >>>>>>>>")
         APIService.shared.sendRequest(
             urlString: "\(baseUrl)agent/create-conversations",
             method: .post,
@@ -263,13 +134,12 @@ struct ConversationalAIExampleView: View {
         ) { result in
             switch result {
             case .success(let response):
-                print("✅ endConnection - create-conversations >>>>>>>> POST Response:", response)
+                print("✅ POST Response:", response)
             case .failure(let error):
                 print("❌ create-conversations Error:", error.localizedDescription)
             }
         }
         
-        print("endConnection - wallet-second-decrease >>>>>>>> \((Int(self.apiCallTime) ?? 0) - tempApiCallRemainingSeconds)")
         APIService.shared.sendRequest(
             urlString: "\(baseUrl)agent/wallet-second-decrease",
             method: .post,
@@ -279,16 +149,32 @@ struct ConversationalAIExampleView: View {
         ) { result in
             switch result {
             case .success(let response):
-                tempApiCallRemainingSeconds = (Int(self.apiCallTime) ?? 0)
-                print("✅ endConnection - wallet-second-decrease >>>>>>>> POST Response:", response)
+                print("✅ POST Response:", response)
             case .failure(let error):
                 print("❌ wallet-second-decrease Error:", error.localizedDescription)
             }
         }
         
-        if !isAutoDisconnect {
+        if(!isAutoDisconnect){
             await objViewModel.endConversation()
         }
+    }
+    
+    // MARK: - Reduce expression complexity by isolating main content
+    private var mainContent: some View {
+        AnyView(
+            VStack(spacing: 0) {
+                languagePicker
+                avatarWithRipple
+                agentHeader
+                agentStateIndicator
+                controls
+                communicationLog
+                    .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
+            }
+                .padding(.horizontal, 20)
+                .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
+        )
     }
     
     // MARK: - Background
@@ -332,6 +218,16 @@ struct ConversationalAIExampleView: View {
     
     // MARK: - Popup View
     private var popupView: some View {
+        ZStack {
+            // Dimmed background
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+            self.popupBody
+        }
+    }
+    
+    // MARK: - Popupbody
+    private var popupBody: some View {
         VStack(spacing: 16) {
             // Title
             Text(popupTitle) // replace with dynamic title if needed
@@ -395,7 +291,7 @@ struct ConversationalAIExampleView: View {
             Text(agent?.name ?? "Loading failed")
                 .font(.custom("Rubik-Bold", size: 20))
                 .foregroundColor(agent == nil ? .red : .white)
-
+            
             Text("Status: \(objViewModel.connectionStatus)")
                 .font(.custom("Rubik-Regular", size: 13))
                 .foregroundColor(statusColor)
@@ -446,6 +342,7 @@ struct ConversationalAIExampleView: View {
                 connectionStatus: objViewModel.connectionStatus,
                 action: {
                     if totalCallSecond <= 0 && objViewModel.connectionStatus == "Disconnected" {
+                        //                        self.showPopupMessage("You can't access this feature because your credit limit has been exceeded.")
                         self.showPopupMessage(self.popupInfo.infoPopUpTitle, self.popupInfo.infoPopUpMessage)
                     } else {
                         if objViewModel.connectionStatus == "Disconnected" {
@@ -708,8 +605,8 @@ struct ConversationalAIExampleView: View {
         
         self.listener = db.collection("agent")
             .document(userId)
-            //.collection("\(self.objViewModel.agent?.userID ?? 0)")
-            //.order(by: "timestamp", descending: false)
+        //.collection("\(self.objViewModel.agent?.userID ?? 0)")
+        //.order(by: "timestamp", descending: false)
             .addSnapshotListener { snapshot, error in
                 
                 if let error = error {
@@ -733,6 +630,125 @@ struct ConversationalAIExampleView: View {
                     print("Remaining seconds: \(totalSeconds)")
                 }
             }
+    }
+}
+
+// MARK: - Lifecycle & Handlers
+extension ConversationalAIExampleView {
+    
+    /// Setup notifications & Firebase listener
+    func setupLifecycle() {
+        //AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
+        objViewModel.agent = agent
+        objViewModel.userId = userId
+        
+        // Firebase listener
+        setupFirebaseListener(userId: "\(agent?.userID ?? 0)")
+        
+        // App moved to background
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            isAppInBackground = true
+            if objViewModel.connectionStatus == "Connected" {
+                Task { await endConnection() }
+            }
+        }
+        
+        // App moved to foreground
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willEnterForegroundNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            isAppInBackground = false
+            isBtnTap = true
+        }
+    }
+    
+    /// Handle scene phase changes
+    func handleScenePhase(_ newPhase: ScenePhase) {
+        switch newPhase {
+        case .active:
+            print("App moved to foreground")
+            isBtnTap = true
+        case .background:
+            print("App moved to background")
+            Task { await endConnection() }
+        case .inactive:
+            print("App inactive (transitioning)")
+        @unknown default:
+            break
+        }
+    }
+    
+    /// Handle connection status changes
+    func handleConnectionStatus(_ newValue: String) {
+        if isBtnTap && !isAppInBackground {
+            Task { await endConnection(true) }
+            print("On Button tap >>>>>> false")
+        }
+        
+        switch newValue {
+        case "Disconnected", "Connected":
+            isBtnTap = true
+        case "Connecting...", "Disconnecting":
+            isBtnTap = false
+        default:
+            isBtnTap = false
+        }
+        
+        if newValue == "Connected" {
+            objViewModel.startTimer(seconds: Int(apiCallTime) ?? 0) { remainSecond in
+                tempApiCallRemainingSeconds = remainSecond
+                print("remainSecond >>>>>>>>> \(remainSecond)")
+            } onComplete: {
+                APIService.shared.sendRequest(
+                    urlString: "\(baseUrl)agent/wallet-second-decrease",
+                    method: .post,
+                    body: ["second": apiCallTime],
+                    token: authToken
+                ) { result in
+                    switch result {
+                    case .success(let response):
+                        print("✅ POST Response:", response)
+                    case .failure(let error):
+                        print("❌ wallet-second-decrease Error:", error.localizedDescription)
+                    }
+                }
+            }
+        } else if newValue == "Disconnected" {
+            objViewModel.stopTimer()
+        }
+    }
+    
+    /// Handle call timer updates
+    func handleCallTimer(_ newValue: Int) {
+        if newValue <= 0 {
+            if objViewModel.connectionStatus == "Disconnected" {
+                print("Time is over and disconnected...")
+            }
+            else if objViewModel.connectionStatus == "Connected" {
+                showPopupMessage(popupInfo.alertPopUpTitle, popupInfo.alertPopUpMessage)
+                callEndTask?.cancel()
+                if let seconds = UInt64(callEndPopupTime) {
+                    callEndTask = Task {
+                        do {
+                            try await Task.sleep(nanoseconds: seconds * 1_000_000_000)
+                            try Task.checkCancellation()
+                            await MainActor.run { showPopupMessage("", nil) }
+                            await endConnection()
+                        } catch {
+                            print("⏹ Call end task was cancelled")
+                        }
+                    }
+                } else {
+                    print("⚠️ callEndPopupTime is not a valid number: \(callEndPopupTime)")
+                }
+            }
+        }
     }
 }
 
@@ -776,10 +792,10 @@ class ConversationViewModel: ObservableObject {
         do {
             conversation = nil       // ✅ clear old reference
             cancellables.removeAll() // ✅ clear old bindings
-
+            
             let langCode = (selectedLang?.languageCode ?? "en").lowercased()
             let agentOverrides = AgentOverrides(language: Language(rawValue: langCode))
-
+            
             conversation = try await ElevenLabs.startConversation(
                 agentId: agent?.agentID ?? "",
                 config: ConversationConfig(agentOverrides: agentOverrides,
@@ -822,11 +838,11 @@ class ConversationViewModel: ObservableObject {
         cancellables.removeAll()   // ✅ clear old subscriptions
         
         guard let conversation else { return }
-
+        
         conversation.$messages
             .receive(on: DispatchQueue.main)   // ✅ ensure UI updates on main thread
             .assign(to: &$messages)
-
+        
         conversation.$state
             .map { state in
                 switch state {
@@ -843,16 +859,16 @@ class ConversationViewModel: ObservableObject {
             }
             .receive(on: DispatchQueue.main)
             .assign(to: &$connectionStatus)
-
+        
         conversation.$state
             .map { $0.isActive }
             .receive(on: DispatchQueue.main)
             .assign(to: &$isConnected)
-
+        
         conversation.$isMuted
             .receive(on: DispatchQueue.main)
             .assign(to: &$isMuted)
-
+        
         conversation.$agentState
             .receive(on: DispatchQueue.main)
             .assign(to: &$agentState)
@@ -1019,7 +1035,8 @@ extension Color {
         default:
             return nil
         }
-        self.init(red: r, green: g, blue: b, opacity: a)
+        //self.init(red: r, green: g, blue: b, opacity: a)
+        self.init(.sRGB, red: r, green: g, blue: b, opacity: a)
     }
 }
 
@@ -1334,18 +1351,19 @@ struct APIService {
     }
 }
 
-class AppUtility {
- 
-    static func lockOrientation(_ orientation: UIInterfaceOrientationMask,
-                                andRotateTo rotateOrientation:UIInterfaceOrientation? = nil) {
-        
-        if let delegate = UIApplication.shared.delegate as? AppDelegate {
-            delegate.orientationLock = orientation
-        }
-        
-        if let rotateOrientation = rotateOrientation {
-            UIDevice.current.setValue(rotateOrientation.rawValue, forKey: "orientation")
-            UINavigationController.attemptRotationToDeviceOrientation()
-        }
-    }
-}
+//class AppUtility {
+//
+//    static func lockOrientation(_ orientation: UIInterfaceOrientationMask,
+//                                andRotateTo rotateOrientation:UIInterfaceOrientation? = nil) {
+//
+//        if let delegate = UIApplication.shared.delegate as? AppDelegate {
+//            delegate.orientationLock = orientation
+//        }
+//
+//        if let rotateOrientation = rotateOrientation {
+//            UIDevice.current.setValue(rotateOrientation.rawValue, forKey: "orientation")
+//            UINavigationController.attemptRotationToDeviceOrientation()
+//        }
+//    }
+//}
+

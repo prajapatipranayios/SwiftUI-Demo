@@ -119,7 +119,7 @@ struct SettingsView: View {
                             Image(uiImage: avatar)
                                 .resizable()
                                 .scaledToFill()
-                                .frame(width: (UIScreen.main.bounds.width / 4) * 2, height: (UIScreen.main.bounds.width / 4) * 2)
+                                .frame(width: (UIScreen.main.bounds.width / 5) * 1.5, height: (UIScreen.main.bounds.width / 5) * 1.5)
                                 .clipShape(Circle())
                         } else {
                             AsyncImage(url: URL(string: viewModel.profile.avatarURL)) { phase in
@@ -130,22 +130,21 @@ struct SettingsView: View {
                                 }
                             }
                             .scaledToFill()
-                            .frame(width: (UIScreen.main.bounds.width / 1.5), height: (UIScreen.main.bounds.width / 1.5))
+                            .frame(width: (UIScreen.main.bounds.width / 4) * 1.5, height: (UIScreen.main.bounds.width / 4) * 1.5)
                             .clipShape(Circle())
                         }
                     }
                     
                     // Text Fields
                     Group {
-                        TextField("Display Name", text: $viewModel.profile.displayName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                        TextField("First Name", text: $viewModel.profile.firstName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                        TextField("Last Name", text: $viewModel.profile.lastName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                        TextField("Gender", text: $viewModel.profile.gender)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .disableAutocorrection(true)
+                        //TextField("Display Name", text: $viewModel.profile.displayName)
+                        //.textFieldStyle(RoundedBorderTextFieldStyle())
+                        FloatingLabelTextField(title: "Display Name", text: $viewModel.profile.displayName, systemImage: "person.fill")
+                        FloatingLabelTextField(title: "Email Address", text: $viewModel.profile.email, systemImage: "envelope.fill", isEditable: false)
+                        FloatingLabelTextField(title: "First Name", text: $viewModel.profile.firstName, systemImage: "person.fill")
+                        FloatingLabelTextField(title: "Last Name", text: $viewModel.profile.lastName, systemImage: "person")
+                        
+                        GenderSelectionView(selectedGender: $viewModel.profile.gender)
                     }
                     
                     // Save Button
@@ -200,10 +199,102 @@ struct SettingsView: View {
                     }
                 }
             }
+            .hideKeyboardOnTap()
         } else {
             // Fallback on earlier versions
         }
     }
+    
+    struct FloatingLabelTextField: View {
+        var title: String
+        @Binding var text: String
+        var systemImage: String? = nil
+        var isEditable: Bool = true
+        
+        @FocusState private var isFocused: Bool
+        
+        var body: some View {
+            ZStack(alignment: .leading) {
+                // Border and icon
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(isFocused ? Color.brown : Color.gray.opacity(0.6), lineWidth: 1)
+                    .background(Color.white)
+                    .animation(.easeInOut, value: isFocused)
+                
+                HStack(spacing: 8) {
+                    if let icon = systemImage {
+                        Image(systemName: icon)
+                            .foregroundColor(isFocused ? .brown : .gray)
+                    }
+                    
+                    ZStack(alignment: .leading) {
+                        // Floating label
+                        Text(title)
+                            .foregroundColor(isFocused ? .brown : .gray)
+                            .background(Color.white)
+                            .padding(.horizontal, 3.0)
+                            .scaleEffect((isFocused || !text.isEmpty) ? 0.8 : 1.0, anchor: .leading)
+                            .offset(y: (isFocused || !text.isEmpty) ? -21 : 0)
+                            .animation(.easeInOut(duration: 0.2), value: isFocused || !text.isEmpty)
+                        
+                        // TextField
+                        TextField("", text: $text)
+                            .disabled(!isEditable)
+                            .focused($isFocused)
+                            .padding(.top, (isFocused || !text.isEmpty) ? 8 : 0)
+                            .opacity(isEditable ? 1 : 0.6)
+                    }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+            }
+            .frame(height: 56)
+        }
+    }
+    
+    // MARK: Gender selection
+    struct GenderSelectionView: View {
+        @Binding var selectedGender: String
+        
+        private let options = [
+            "Male",
+            "Female",
+            "Custom",
+            "Prefer Not to Say"
+        ]
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Gender")
+                    .font(.headline)
+                
+                // Split into rows of 2 options each
+                ForEach(0..<options.count / 2, id: \.self) { rowIndex in
+                    HStack(spacing: 20) {
+                        ForEach(0..<2) { colIndex in
+                            let index = rowIndex * 2 + colIndex
+                            if index < options.count {
+                                let option = options[index]
+                                HStack {
+                                    Image(systemName: selectedGender == option ? "circle.inset.filled" : "circle")
+                                        .foregroundColor(selectedGender == option ? .blue : .gray)
+                                        .imageScale(.large)
+                                    
+                                    Text(option)
+                                        .foregroundColor(.primary)
+                                }
+                                .onTapGesture {
+                                    selectedGender = option
+                                }
+                            }
+                        }
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+    
     
     func cometChatUnregisterPushToken() {
         CometChatNotifications.unregisterPushToken { success in
@@ -240,16 +331,16 @@ struct SettingsView: View {
     
     func userLogout() {
         
-//        if !Network.reachability.isReachable {
-//            self.isRetryInternet { (isretry) in
-//                if isretry! {
-//                    self.userLogout()
-//                }
-//            }
-//            return
-//        }
+        //        if !Network.reachability.isReachable {
+        //            self.isRetryInternet { (isretry) in
+        //                if isretry! {
+        //                    self.userLogout()
+        //                }
+        //            }
+        //            return
+        //        }
         
-//        showLoading()
+        //        showLoading()
         
         let param = [
             "deviceId": AppInfo.DeviceId.returnAppInfo()
@@ -258,7 +349,7 @@ struct SettingsView: View {
             if ((response?.status) != nil) {
                 Utilities.showPopup(title: response?.message ?? "", type: .success)
             } else {
-//                self.hideLoading()
+                //                self.hideLoading()
                 Utilities.showPopup(title: response?.message ?? "", type: .error)
             }
             APIManager.sharedManager.user = nil
@@ -268,18 +359,18 @@ struct SettingsView: View {
             // By Pranay
             //APIManager.sharedManager.intNotificationCount = 0
             UserDefaults.standard.set(0, forKey: UserDefaultType.notificationCount)
-//            self.tusslyTabVC!().notificationCount()
-//            self.tusslyTabVC!().chatNotificationCount()
-            // .
-//            DispatchQueue.main.async {
-//                appDelegate.isAutoLogin = false
-//                self.view.tusslyTabVC.selectedIndex = 0
-//                self.view!.tusslyTabVC.leagueConsoleId = -1
-//                self.view!.tusslyTabVC.logoLeadingConstant = 16
-//                self.hideLoading()
-//                appDelegate.isAutoLogin = false
-//                self.view.tusslyTabVC.loadTabsOfHomeScreen(isUserLoggedIn: false)
-//            }
+            //self.tusslyTabVC!().notificationCount()
+            //self.tusslyTabVC!().chatNotificationCount()
+            
+            //            DispatchQueue.main.async {
+            //                appDelegate.isAutoLogin = false
+            //                self.view.tusslyTabVC.selectedIndex = 0
+            //                self.view!.tusslyTabVC.leagueConsoleId = -1
+            //                self.view!.tusslyTabVC.logoLeadingConstant = 16
+            //                self.hideLoading()
+            //                appDelegate.isAutoLogin = false
+            //                self.view.tusslyTabVC.loadTabsOfHomeScreen(isUserLoggedIn: false)
+            //            }
         }
     }
 }
@@ -338,6 +429,16 @@ struct ImagePickerWithCrop: UIViewControllerRepresentable {
                                 didFinishCancelled cancelled: Bool) {
             cropViewController.dismiss(animated: true)
             completion(nil)
+        }
+    }
+}
+
+extension View {
+    /// Dismiss keyboard when tapped outside a TextField
+    func hideKeyboardOnTap() -> some View {
+        self.onTapGesture {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
+                                            to: nil, from: nil, for: nil)
         }
     }
 }

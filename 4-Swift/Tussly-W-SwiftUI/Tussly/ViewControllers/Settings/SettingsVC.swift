@@ -87,155 +87,155 @@ class SettingsVC: UIViewController, UIGestureRecognizerDelegate {
         
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        scrlView.setContentOffset(CGPoint(x: 0.0, y: 0.0), animated: true)
-        
-        if isAlreadyValidated {
-            isAlreadyValidated = false
-            return
-        }
-        
-        heightBtnSave.constant = 0
-        topBtnSave.constant = 0
-        btnSave.isHidden = true
-        self.lblDisplayNameError.text = ""
-        self.lblFirstNameError.text = ""
-        self.lblLastNameError.text = ""
-        isLogOutTap = false
-        isTABPressed = { status, leagueIndex in
-            if status {
-                if self.isLogOutTap == false {
-                    if (APIManager.sharedManager.user != nil) {
-                        if self.txtDisplayName.text != APIManager.sharedManager.user?.displayName || self.txtFirstName.text != APIManager.sharedManager.user?.firstName || self.txtLastName.text != APIManager.sharedManager.user?.lastName || self.txtGender.text != APIManager.sharedManager.user?.genderText || self.genderString(type: self.selectedGender != nil ? self.selectedGender!.rawValue : -1) != APIManager.sharedManager.user?.gender {
-                            
-                            self.view!.tusslyTabVC.settingsUpdated = true// Jaimesh
-                            let dialog = self.storyboard?.instantiateViewController(withIdentifier: "SaveProfileDialog") as! SaveProfileDialog
-                            dialog.modalPresentationStyle = .overCurrentContext
-                            dialog.modalTransitionStyle = .crossDissolve
-                            
-                            dialog.tapSave = {
-                                if self.checkValidation(to: 0, from: 4) {
-                                    self.view.endEditing(true)
-                                    self.updateUserProfile(isSaveChange: true, leagueIndex: leagueIndex!)
-                                } else {
-                                    self.isAlreadyValidated = true //Jaimesh
-                                    self.view!.tusslyTabVC.settingsUpdated = false// Jaimesh
-                                    self.view.tusslyTabVC.selectedIndex = 8
-                                    self.view!.tusslyTabVC.didPressTab(self.view.tusslyTabVC.buttons[self.view.tusslyTabVC.selectedIndex])
-                                }
-                            }
-                            
-                            dialog.tapNotSave = {
-                                DispatchQueue.main.async {
-                                    self.view!.tusslyTabVC.settingsUpdated = false// Jaimesh
-                                    print(self.view.tusslyTabVC.selectedIndex)
-                                    if leagueIndex != -1 {
-                                        self.view!.tusslyTabVC.customeView?.didSelectLeague!(leagueIndex!)
-                                    } else {
-                                        self.view!.tusslyTabVC.didPressTab(self.view.tusslyTabVC.buttons[self.view.tusslyTabVC.selectedIndex])
-                                    }
-                                }
-
-                                self.txtDisplayName.text = APIManager.sharedManager.user?.displayName
-                                self.txtFirstName.text = APIManager.sharedManager.user?.firstName
-                                self.txtLastName.text = APIManager.sharedManager.user?.lastName
-                                self.txtGender.text = APIManager.sharedManager.user?.genderText
-                                switch APIManager.sharedManager.user?.gender {
-                                case "MALE":
-                                    self.onTapGender(self.buttons[0])
-                                    break
-                                case "FEMALE":
-                                    self.onTapGender(self.buttons[1])
-                                    break
-                                case "OTHER":
-                                    self.onTapGender(self.buttons[2])
-                                    self.viewDisable.isHidden = true
-                                    self.txtGenderDisable.isHidden = true
-                                    self.txtGender.isHidden = false
-                                    break
-                                case "PREFER NOT TO SAY":
-                                    self.onTapGender(self.buttons[3])
-                                    break
-                                default:
-                                    //self.onTapGender(self.buttons[3])
-                                    break
-                                }
-                            }
-                            
-                            dialog.tapCancel = {
-                                self.view!.tusslyTabVC.didPressTab(self.view.tusslyTabVC.buttons[8])
-                            }
-                            
-                            self.view!.tusslyTabVC.present(dialog, animated: true, completion: nil)
-                        } else {
-
-                        }
-                    }
-                }
-            }
-        }
-        
-        for i in 0..<buttons.count {
-            buttons[i].isSelected = false
-        }
-        
-        selectedGender = nil
-        self.viewDisable.isHidden = false
-        self.txtGenderDisable.isHidden = false
-        txtGender.isHidden = true
-        if APIManager.sharedManager.user != nil {
-            if APIManager.sharedManager.user!.mobileNo == "" {
-                txtEmail.placeholder = "Email Address"
-            } else {
-                txtEmail.placeholder = "Phone Number"
-            }
-            ivLogo.setImage(imageUrl: APIManager.sharedManager.user!.avatarImage)
-            txtDisplayName.text = APIManager.sharedManager.user?.displayName
-            txtEmail.text = APIManager.sharedManager.user?.email == "" ? APIManager.sharedManager.user?.mobileNo : APIManager.sharedManager.user?.email
-            txtEmail.isEnabled = false
-            txtUserName.isEnabled = false
-            txtUserName.text = APIManager.sharedManager.user?.userName
-            txtFirstName.text = APIManager.sharedManager.user?.firstName
-            txtLastName.text = APIManager.sharedManager.user?.lastName
-            
-            switch APIManager.sharedManager.user?.gender {
-                case "MALE":
-                    onTapGender(buttons[0])
-                    break
-                case "FEMALE":
-                    onTapGender(buttons[1])
-                    break
-                case "OTHER":
-                    onTapGender(buttons[2])
-                    self.viewDisable.isHidden = true
-                    self.txtGenderDisable.isHidden = true
-                    txtGender.isHidden = false
-                    txtGender.text = APIManager.sharedManager.user?.genderText
-                    break
-                case "PREFER NOT TO SAY":
-                    onTapGender(buttons[3])
-                    break
-                default:
-                    break
-            }
-        } else {
-            ivLogo.image = UIImage.init(named: "Default")
-            txtDisplayName.text = ""
-            txtEmail.text = ""
-            txtEmail.isEnabled = false
-            txtUserName.isEnabled = false
-            txtUserName.text = ""
-            txtFirstName.text = ""
-            txtLastName.text = ""
-            txtGender.text = ""
-        }
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleViewTap(_:)))
-        tapGesture.cancelsTouchesInView = false
-        tapGesture.delegate = self
-        self.viewScrollInside.addGestureRecognizer(tapGesture)
-    }
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        scrlView.setContentOffset(CGPoint(x: 0.0, y: 0.0), animated: true)
+//
+//        if isAlreadyValidated {
+//            isAlreadyValidated = false
+//            return
+//        }
+//
+//        heightBtnSave.constant = 0
+//        topBtnSave.constant = 0
+//        btnSave.isHidden = true
+//        self.lblDisplayNameError.text = ""
+//        self.lblFirstNameError.text = ""
+//        self.lblLastNameError.text = ""
+//        isLogOutTap = false
+//        isTABPressed = { status, leagueIndex in
+//            if status {
+//                if self.isLogOutTap == false {
+//                    if (APIManager.sharedManager.user != nil) {
+//                        if self.txtDisplayName.text != APIManager.sharedManager.user?.displayName || self.txtFirstName.text != APIManager.sharedManager.user?.firstName || self.txtLastName.text != APIManager.sharedManager.user?.lastName || self.txtGender.text != APIManager.sharedManager.user?.genderText || self.genderString(type: self.selectedGender != nil ? self.selectedGender!.rawValue : -1) != APIManager.sharedManager.user?.gender {
+//
+//                            self.view!.tusslyTabVC.settingsUpdated = true// Jaimesh
+//                            let dialog = self.storyboard?.instantiateViewController(withIdentifier: "SaveProfileDialog") as! SaveProfileDialog
+//                            dialog.modalPresentationStyle = .overCurrentContext
+//                            dialog.modalTransitionStyle = .crossDissolve
+//
+//                            dialog.tapSave = {
+//                                if self.checkValidation(to: 0, from: 4) {
+//                                    self.view.endEditing(true)
+//                                    self.updateUserProfile(isSaveChange: true, leagueIndex: leagueIndex!)
+//                                } else {
+//                                    self.isAlreadyValidated = true //Jaimesh
+//                                    self.view!.tusslyTabVC.settingsUpdated = false// Jaimesh
+//                                    self.view.tusslyTabVC.selectedIndex = 8
+//                                    self.view!.tusslyTabVC.didPressTab(self.view.tusslyTabVC.buttons[self.view.tusslyTabVC.selectedIndex])
+//                                }
+//                            }
+//
+//                            dialog.tapNotSave = {
+//                                DispatchQueue.main.async {
+//                                    self.view!.tusslyTabVC.settingsUpdated = false// Jaimesh
+//                                    print(self.view.tusslyTabVC.selectedIndex)
+//                                    if leagueIndex != -1 {
+//                                        self.view!.tusslyTabVC.customeView?.didSelectLeague!(leagueIndex!)
+//                                    } else {
+//                                        self.view!.tusslyTabVC.didPressTab(self.view.tusslyTabVC.buttons[self.view.tusslyTabVC.selectedIndex])
+//                                    }
+//                                }
+//
+//                                self.txtDisplayName.text = APIManager.sharedManager.user?.displayName
+//                                self.txtFirstName.text = APIManager.sharedManager.user?.firstName
+//                                self.txtLastName.text = APIManager.sharedManager.user?.lastName
+//                                self.txtGender.text = APIManager.sharedManager.user?.genderText
+//                                switch APIManager.sharedManager.user?.gender {
+//                                case "MALE":
+//                                    self.onTapGender(self.buttons[0])
+//                                    break
+//                                case "FEMALE":
+//                                    self.onTapGender(self.buttons[1])
+//                                    break
+//                                case "OTHER":
+//                                    self.onTapGender(self.buttons[2])
+//                                    self.viewDisable.isHidden = true
+//                                    self.txtGenderDisable.isHidden = true
+//                                    self.txtGender.isHidden = false
+//                                    break
+//                                case "PREFER NOT TO SAY":
+//                                    self.onTapGender(self.buttons[3])
+//                                    break
+//                                default:
+//                                    //self.onTapGender(self.buttons[3])
+//                                    break
+//                                }
+//                            }
+//
+//                            dialog.tapCancel = {
+//                                self.view!.tusslyTabVC.didPressTab(self.view.tusslyTabVC.buttons[8])
+//                            }
+//
+//                            self.view!.tusslyTabVC.present(dialog, animated: true, completion: nil)
+//                        } else {
+//
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        for i in 0..<buttons.count {
+//            buttons[i].isSelected = false
+//        }
+//
+//        selectedGender = nil
+//        self.viewDisable.isHidden = false
+//        self.txtGenderDisable.isHidden = false
+//        txtGender.isHidden = true
+//        if APIManager.sharedManager.user != nil {
+//            if APIManager.sharedManager.user!.mobileNo == "" {
+//                txtEmail.placeholder = "Email Address"
+//            } else {
+//                txtEmail.placeholder = "Phone Number"
+//            }
+//            ivLogo.setImage(imageUrl: APIManager.sharedManager.user!.avatarImage)
+//            txtDisplayName.text = APIManager.sharedManager.user?.displayName
+//            txtEmail.text = APIManager.sharedManager.user?.email == "" ? APIManager.sharedManager.user?.mobileNo : APIManager.sharedManager.user?.email
+//            txtEmail.isEnabled = false
+//            txtUserName.isEnabled = false
+//            txtUserName.text = APIManager.sharedManager.user?.userName
+//            txtFirstName.text = APIManager.sharedManager.user?.firstName
+//            txtLastName.text = APIManager.sharedManager.user?.lastName
+//
+//            switch APIManager.sharedManager.user?.gender {
+//                case "MALE":
+//                    onTapGender(buttons[0])
+//                    break
+//                case "FEMALE":
+//                    onTapGender(buttons[1])
+//                    break
+//                case "OTHER":
+//                    onTapGender(buttons[2])
+//                    self.viewDisable.isHidden = true
+//                    self.txtGenderDisable.isHidden = true
+//                    txtGender.isHidden = false
+//                    txtGender.text = APIManager.sharedManager.user?.genderText
+//                    break
+//                case "PREFER NOT TO SAY":
+//                    onTapGender(buttons[3])
+//                    break
+//                default:
+//                    break
+//            }
+//        } else {
+//            ivLogo.image = UIImage.init(named: "Default")
+//            txtDisplayName.text = ""
+//            txtEmail.text = ""
+//            txtEmail.isEnabled = false
+//            txtUserName.isEnabled = false
+//            txtUserName.text = ""
+//            txtFirstName.text = ""
+//            txtLastName.text = ""
+//            txtGender.text = ""
+//        }
+//
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleViewTap(_:)))
+//        tapGesture.cancelsTouchesInView = false
+//        tapGesture.delegate = self
+//        self.viewScrollInside.addGestureRecognizer(tapGesture)
+//    }
     
     @objc func handleViewTap(_ gesture: UITapGestureRecognizer) {
         self.view.endEditing(true)

@@ -1,13 +1,27 @@
-import SwiftUI
 
-//@main
+//
+//  ConversationView.swift
+//  ConversationalAISwift
+//
+//  Created by Auxano on 03/09/25.
+//
+
+
+import SwiftUI
+import FirebaseCore
+
+@main
 struct ConversationalAISwiftApp: App {
-    @Environment(\.scenePhase) private var scenePhase
+    
+    init() {
+        FirebaseApp.configure()
+    }
+    
     var body: some Scene {
         WindowGroup {
             ConversationalAIExampleView(
                 agent: ObjAgent(),
-                userId: "123",
+                userId: "12345",
                 baseUrl: "https://api.example.com",
                 callEndPopupTime: "30",
                 apiCallTime: "300",
@@ -18,17 +32,8 @@ struct ConversationalAISwiftApp: App {
                     infoPopUpTitle: "Information",
                     infoPopUpMessage: "Your call will end soon if credits run out."
                 )
-            ).onChange(of: scenePhase) { oldPhase, newPhase in
-                switch newPhase {
-                case .active:
-                    print("App moved to foreground")
-                case .background:
-                    print("App moved to background")
-                case .inactive:
-                    print("App inactive")
-                @unknown default: break
-                }
-            }
+            )
         }
     }
 }
+
