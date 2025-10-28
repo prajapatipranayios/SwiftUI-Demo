@@ -1,7 +1,21 @@
+
+//
+//  ConversationView.swift
+//  ConversationalAISwift
+//
+//  Created by Auxano on 03/09/25.
+//
+
+
 import SwiftUI
+import FirebaseCore
 
 @main
 struct ConversationalAISwiftApp: App {
+    
+    init() {
+        FirebaseApp.configure()
+    }
     
     var body: some Scene {
         WindowGroup {

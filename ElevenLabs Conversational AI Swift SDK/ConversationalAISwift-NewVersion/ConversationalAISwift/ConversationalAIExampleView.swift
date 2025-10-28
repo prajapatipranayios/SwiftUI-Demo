@@ -94,84 +94,16 @@ struct ConversationalAIExampleView: View {
         .safeAreaInset(edge: .top) {
             self.backButton
         }
+        .onAppear { setupLifecycle() }
         .onDisappear {
-            self.listener?.remove()
-            
+            listener?.remove()
             NotificationCenter.default.removeObserver(self)
             //AppUtility.lockOrientation(.all) // restore others
         }
-        .onAppear(perform: {
-            //AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
-            objViewModel.agent = agent
-            objViewModel.userId = userId
-            
-            self.setupFirebaseListener(userId: "\(agent?.userID ?? 0)")
-            
-            NotificationCenter.default.addObserver(
-                forName: UIApplication.didEnterBackgroundNotification,
-                object: nil,
-                queue: .main
-            ) { _ in
-                print("App moved to background")
-                isAppInBackground = true
-                if objViewModel.connectionStatus == "Connected" {
-                    Task {
-                        await self.endConnection()
-                    }
-                }
-            }
-            
-            NotificationCenter.default.addObserver(
-                forName: UIApplication.willEnterForegroundNotification,
-                object: nil,
-                queue: .main
-            ) { _ in
-                isAppInBackground = false
-                print("App moved to foreground")
-                self.isBtnTap = true
-            }
-        })
-        .onChange(of: objViewModel.connectionStatus) { oldValue, newValue in
-            if self.isBtnTap && !isAppInBackground {
-                Task {
-                    await self.endConnection(true)
-                }
-                print("On Button tap >>>>>> false")
-            }
-            
-            switch newValue {
-            case "Disconnected", "Connected":
-                isBtnTap = true
-            case "Connecting...", "Disconnecting":
-                isBtnTap = false
-            default:
-                isBtnTap = false
-            }
-            
-            if newValue == "Connected" {
-                objViewModel.startTimer(seconds: Int(apiCallTime) ?? 0) { remainSecond in
-                    tempApiCallRemainingSeconds = remainSecond
-                    print("remainSecond >>>>>>>>> \(remainSecond)")
-                } onComplete: {
-                    APIService.shared.sendRequest(
-                        urlString: "\(baseUrl)agent/wallet-second-decrease",
-                        method: .post,
-                        body: ["second": self.apiCallTime],
-                        token: authToken
-                    ) { result in
-                        switch result {
-                        case .success(let response):
-                            print("✅ POST Response:", response)
-                        case .failure(let error):
-                            print("❌ wallet-second-decrease Error:", error.localizedDescription)
-                        }
-                    }
-                }
-            } else if newValue == "Disconnected" {
-                objViewModel.stopTimer()
-            }
+        .onChange(of: objViewModel.connectionStatus) { _, newValue in
+            handleConnectionStatus(newValue)
         }
-        .onChange(of: objViewModel.messages.count) { oldValue, newValue in
+        .onChange(of: objViewModel.messages.count) { _, _ in
             if let last = objViewModel.messages.last {
                 let newChatMessage = ChatMessage(
                     role: last.role == .user ? "user" : "assistant",
@@ -183,49 +115,10 @@ struct ConversationalAIExampleView: View {
             }
         }
         .onChange(of: scenePhase) { _, newPhase in
-            switch newPhase {
-            case .active:
-                print("App moved to foreground")
-                self.isBtnTap = true
-            case .background:
-                print("App moved to background")
-                Task {
-                    await self.endConnection()
-                }
-            case .inactive:
-                print("App inactive (transitioning)")
-            @unknown default:
-                break
-            }
+            handleScenePhase(newPhase)
         }
-        .onChange(of: totalCallSecond) { oldValue, newValue in
-            if newValue <= 0 {
-                if objViewModel.connectionStatus == "Disconnected" {
-                    print("Time is over and disconnected...")
-                }
-                else if objViewModel.connectionStatus == "Connected" {
-                    //self.showPopupMessage("Your call will automatically end in \(callEndPopupTime) seconds as your credit limit has been exceeded.")
-                    self.showPopupMessage(self.popupInfo.alertPopUpTitle, self.popupInfo.alertPopUpMessage)
-                    callEndTask?.cancel() // cancel any previous one before starting new
-                    if let seconds = UInt64(callEndPopupTime) {
-                        callEndTask = Task {
-                            do {
-                                try await Task.sleep(nanoseconds: seconds * 1_000_000_000)
-                                try Task.checkCancellation()
-                                await MainActor.run {
-                                    self.showPopupMessage(nil)
-                                }
-                                await self.endConnection()
-                            } catch {
-                                print("⏹ Call end task was cancelled")
-                            }
-                        }
-                    } else {
-                        print("⚠️ callEndPopupTime is not a valid number: \(callEndPopupTime)")
-                    }
-                }
-            }
-            
+        .onChange(of: totalCallSecond) { _, newValue in
+            handleCallTimer(newValue)
         }
         
     }
@@ -737,6 +630,125 @@ struct ConversationalAIExampleView: View {
                     print("Remaining seconds: \(totalSeconds)")
                 }
             }
+    }
+}
+
+// MARK: - Lifecycle & Handlers
+extension ConversationalAIExampleView {
+    
+    /// Setup notifications & Firebase listener
+    func setupLifecycle() {
+        //AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
+        objViewModel.agent = agent
+        objViewModel.userId = userId
+        
+        // Firebase listener
+        setupFirebaseListener(userId: "\(agent?.userID ?? 0)")
+        
+        // App moved to background
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            isAppInBackground = true
+            if objViewModel.connectionStatus == "Connected" {
+                Task { await endConnection() }
+            }
+        }
+        
+        // App moved to foreground
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willEnterForegroundNotification,
+            object: nil,
+            queue: .main
+        ) { _ in
+            isAppInBackground = false
+            isBtnTap = true
+        }
+    }
+    
+    /// Handle scene phase changes
+    func handleScenePhase(_ newPhase: ScenePhase) {
+        switch newPhase {
+        case .active:
+            print("App moved to foreground")
+            isBtnTap = true
+        case .background:
+            print("App moved to background")
+            Task { await endConnection() }
+        case .inactive:
+            print("App inactive (transitioning)")
+        @unknown default:
+            break
+        }
+    }
+    
+    /// Handle connection status changes
+    func handleConnectionStatus(_ newValue: String) {
+        if isBtnTap && !isAppInBackground {
+            Task { await endConnection(true) }
+            print("On Button tap >>>>>> false")
+        }
+        
+        switch newValue {
+        case "Disconnected", "Connected":
+            isBtnTap = true
+        case "Connecting...", "Disconnecting":
+            isBtnTap = false
+        default:
+            isBtnTap = false
+        }
+        
+        if newValue == "Connected" {
+            objViewModel.startTimer(seconds: Int(apiCallTime) ?? 0) { remainSecond in
+                tempApiCallRemainingSeconds = remainSecond
+                print("remainSecond >>>>>>>>> \(remainSecond)")
+            } onComplete: {
+                APIService.shared.sendRequest(
+                    urlString: "\(baseUrl)agent/wallet-second-decrease",
+                    method: .post,
+                    body: ["second": apiCallTime],
+                    token: authToken
+                ) { result in
+                    switch result {
+                    case .success(let response):
+                        print("✅ POST Response:", response)
+                    case .failure(let error):
+                        print("❌ wallet-second-decrease Error:", error.localizedDescription)
+                    }
+                }
+            }
+        } else if newValue == "Disconnected" {
+            objViewModel.stopTimer()
+        }
+    }
+    
+    /// Handle call timer updates
+    func handleCallTimer(_ newValue: Int) {
+        if newValue <= 0 {
+            if objViewModel.connectionStatus == "Disconnected" {
+                print("Time is over and disconnected...")
+            }
+            else if objViewModel.connectionStatus == "Connected" {
+                showPopupMessage(popupInfo.alertPopUpTitle, popupInfo.alertPopUpMessage)
+                callEndTask?.cancel()
+                if let seconds = UInt64(callEndPopupTime) {
+                    callEndTask = Task {
+                        do {
+                            try await Task.sleep(nanoseconds: seconds * 1_000_000_000)
+                            try Task.checkCancellation()
+                            await MainActor.run { showPopupMessage("", nil) }
+                            await endConnection()
+                        } catch {
+                            print("⏹ Call end task was cancelled")
+                        }
+                    }
+                } else {
+                    print("⚠️ callEndPopupTime is not a valid number: \(callEndPopupTime)")
+                }
+            }
+        }
     }
 }
 
