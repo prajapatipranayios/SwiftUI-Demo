@@ -341,10 +341,11 @@ struct ConversationalAIExampleView: View {
             CallButton(
                 connectionStatus: objViewModel.connectionStatus,
                 action: {
-                    if totalCallSecond <= 0 && objViewModel.connectionStatus == "Disconnected" {
-                        //                        self.showPopupMessage("You can't access this feature because your credit limit has been exceeded.")
-                        self.showPopupMessage(self.popupInfo.infoPopUpTitle, self.popupInfo.infoPopUpMessage)
-                    } else {
+//                    if totalCallSecond <= 0 && objViewModel.connectionStatus == "Disconnected" {
+//                        //                        self.showPopupMessage("You can't access this feature because your credit limit has been exceeded.")
+//                        self.showPopupMessage(self.popupInfo.infoPopUpTitle, self.popupInfo.infoPopUpMessage)
+//                    }
+//                    else {
                         if objViewModel.connectionStatus == "Disconnected" {
                             chatMessages.removeAll()
                         }
@@ -359,7 +360,7 @@ struct ConversationalAIExampleView: View {
                                 }
                             }
                         }
-                    }
+//                    }
                 }
             )
         }
@@ -790,6 +791,7 @@ class ConversationViewModel: ObservableObject {
     
     func startConversationSafe() async {
         do {
+            connectionStatus = "Connecting..."   // ✅ Emit early, before await
             conversation = nil       // ✅ clear old reference
             cancellables.removeAll() // ✅ clear old bindings
             
@@ -846,14 +848,21 @@ class ConversationViewModel: ObservableObject {
         conversation.$state
             .map { state in
                 switch state {
-                case .idle: return "Disconnected"
-                case .connecting: return "Connecting..."
+                case .idle:
+                    print("Get New status >>>>>>>>>>  Disconnected...")
+                    return "Disconnected"
+                case .connecting:
+                    print("Get New status >>>>>>>>>>  Connecting...")
+                    return "Connecting..."
                 case .active:
                     if let metadata = conversation.conversationMetadata {
                         self.strConversationId = metadata.conversationId
                     }
+                    print("Get New status >>>>>>>>>>  Connected...")
                     return "Connected"
-                case .ended: return "Disconnected"
+                case .ended: 
+                    print("Get New status >>>>>>>>>>  Disconnected...")
+                    return "Disconnected"
                 case .error: return "Error"
                 }
             }
