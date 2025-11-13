@@ -1,0 +1,371 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9C5CF51C2466C035003B4AA8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C5CF51B2466C035003B4AA8 /* AppDelegate.swift */; };
+		9C5CF51E2466C035003B4AA8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C5CF51D2466C035003B4AA8 /* SceneDelegate.swift */; };
+		9C5CF5202466C035003B4AA8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C5CF51F2466C035003B4AA8 /* ViewController.swift */; };
+		9C5CF5232466C035003B4AA8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C5CF5212466C035003B4AA8 /* Main.storyboard */; };
+		9C5CF5252466C03A003B4AA8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C5CF5242466C03A003B4AA8 /* Assets.xcassets */; };
+		9C5CF5282466C03A003B4AA8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C5CF5262466C03A003B4AA8 /* LaunchScreen.storyboard */; };
+		9C5CF5312466C927003B4AA8 /* PlainHorizontalProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C5CF5302466C927003B4AA8 /* PlainHorizontalProgressBar.swift */; };
+		9C5CF5332466F03D003B4AA8 /* PlainCircularProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C5CF5322466F03D003B4AA8 /* PlainCircularProgressBar.swift */; };
+		9C5CF53524670ED8003B4AA8 /* GradientHorizontalProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C5CF53424670ED8003B4AA8 /* GradientHorizontalProgressBar.swift */; };
+		9C5CF53724673A51003B4AA8 /* GradientCircularProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C5CF53624673A51003B4AA8 /* GradientCircularProgressBar.swift */; };
+		9C5CF53924674854003B4AA8 /* RotatingCircularGradientProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C5CF53824674854003B4AA8 /* RotatingCircularGradientProgressBar.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		9C5CF5182466C035003B4AA8 /* ProgressBars.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProgressBars.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C5CF51B2466C035003B4AA8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		9C5CF51D2466C035003B4AA8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		9C5CF51F2466C035003B4AA8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		9C5CF5222466C035003B4AA8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		9C5CF5242466C03A003B4AA8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9C5CF5272466C03A003B4AA8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9C5CF5292466C03A003B4AA8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9C5CF5302466C927003B4AA8 /* PlainHorizontalProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainHorizontalProgressBar.swift; sourceTree = "<group>"; };
+		9C5CF5322466F03D003B4AA8 /* PlainCircularProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainCircularProgressBar.swift; sourceTree = "<group>"; };
+		9C5CF53424670ED8003B4AA8 /* GradientHorizontalProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientHorizontalProgressBar.swift; sourceTree = "<group>"; };
+		9C5CF53624673A51003B4AA8 /* GradientCircularProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientCircularProgressBar.swift; sourceTree = "<group>"; };
+		9C5CF53824674854003B4AA8 /* RotatingCircularGradientProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatingCircularGradientProgressBar.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9C5CF5152466C035003B4AA8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9C5CF50F2466C035003B4AA8 = {
+			isa = PBXGroup;
+			children = (
+				9C5CF51A2466C035003B4AA8 /* ProgressBars */,
+				9C5CF5192466C035003B4AA8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9C5CF5192466C035003B4AA8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9C5CF5182466C035003B4AA8 /* ProgressBars.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9C5CF51A2466C035003B4AA8 /* ProgressBars */ = {
+			isa = PBXGroup;
+			children = (
+				9C5CF52F2466C047003B4AA8 /* Bars */,
+				9C5CF51B2466C035003B4AA8 /* AppDelegate.swift */,
+				9C5CF51D2466C035003B4AA8 /* SceneDelegate.swift */,
+				9C5CF51F2466C035003B4AA8 /* ViewController.swift */,
+				9C5CF5212466C035003B4AA8 /* Main.storyboard */,
+				9C5CF5242466C03A003B4AA8 /* Assets.xcassets */,
+				9C5CF5262466C03A003B4AA8 /* LaunchScreen.storyboard */,
+				9C5CF5292466C03A003B4AA8 /* Info.plist */,
+			);
+			path = ProgressBars;
+			sourceTree = "<group>";
+		};
+		9C5CF52F2466C047003B4AA8 /* Bars */ = {
+			isa = PBXGroup;
+			children = (
+				9C5CF5302466C927003B4AA8 /* PlainHorizontalProgressBar.swift */,
+				9C5CF5322466F03D003B4AA8 /* PlainCircularProgressBar.swift */,
+				9C5CF53424670ED8003B4AA8 /* GradientHorizontalProgressBar.swift */,
+				9C5CF53624673A51003B4AA8 /* GradientCircularProgressBar.swift */,
+				9C5CF53824674854003B4AA8 /* RotatingCircularGradientProgressBar.swift */,
+			);
+			path = Bars;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9C5CF5172466C035003B4AA8 /* ProgressBars */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9C5CF52C2466C03A003B4AA8 /* Build configuration list for PBXNativeTarget "ProgressBars" */;
+			buildPhases = (
+				9C5CF5142466C035003B4AA8 /* Sources */,
+				9C5CF5152466C035003B4AA8 /* Frameworks */,
+				9C5CF5162466C035003B4AA8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ProgressBars;
+			productName = ProgrssBars;
+			productReference = 9C5CF5182466C035003B4AA8 /* ProgressBars.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9C5CF5102466C035003B4AA8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1140;
+				LastUpgradeCheck = 1140;
+				ORGANIZATIONNAME = Marina;
+				TargetAttributes = {
+					9C5CF5172466C035003B4AA8 = {
+						CreatedOnToolsVersion = 11.4.1;
+					};
+				};
+			};
+			buildConfigurationList = 9C5CF5132466C035003B4AA8 /* Build configuration list for PBXProject "ProgressBars" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 9C5CF50F2466C035003B4AA8;
+			productRefGroup = 9C5CF5192466C035003B4AA8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9C5CF5172466C035003B4AA8 /* ProgressBars */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9C5CF5162466C035003B4AA8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9C5CF5282466C03A003B4AA8 /* LaunchScreen.storyboard in Resources */,
+				9C5CF5252466C03A003B4AA8 /* Assets.xcassets in Resources */,
+				9C5CF5232466C035003B4AA8 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9C5CF5142466C035003B4AA8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9C5CF53524670ED8003B4AA8 /* GradientHorizontalProgressBar.swift in Sources */,
+				9C5CF53924674854003B4AA8 /* RotatingCircularGradientProgressBar.swift in Sources */,
+				9C5CF5202466C035003B4AA8 /* ViewController.swift in Sources */,
+				9C5CF51C2466C035003B4AA8 /* AppDelegate.swift in Sources */,
+				9C5CF53724673A51003B4AA8 /* GradientCircularProgressBar.swift in Sources */,
+				9C5CF5312466C927003B4AA8 /* PlainHorizontalProgressBar.swift in Sources */,
+				9C5CF51E2466C035003B4AA8 /* SceneDelegate.swift in Sources */,
+				9C5CF5332466F03D003B4AA8 /* PlainCircularProgressBar.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		9C5CF5212466C035003B4AA8 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9C5CF5222466C035003B4AA8 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		9C5CF5262466C03A003B4AA8 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9C5CF5272466C03A003B4AA8 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		9C5CF52A2466C03A003B4AA8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		9C5CF52B2466C03A003B4AA8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9C5CF52D2466C03A003B4AA8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H4XZ98954Q;
+				INFOPLIST_FILE = ProgressBars/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.marinasau.ProgressBars;
+				PRODUCT_NAME = ProgressBars;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9C5CF52E2466C03A003B4AA8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H4XZ98954Q;
+				INFOPLIST_FILE = ProgressBars/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.marinasau.ProgressBars;
+				PRODUCT_NAME = ProgressBars;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9C5CF5132466C035003B4AA8 /* Build configuration list for PBXProject "ProgressBars" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9C5CF52A2466C03A003B4AA8 /* Debug */,
+				9C5CF52B2466C03A003B4AA8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9C5CF52C2466C03A003B4AA8 /* Build configuration list for PBXNativeTarget "ProgressBars" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9C5CF52D2466C03A003B4AA8 /* Debug */,
+				9C5CF52E2466C03A003B4AA8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9C5CF5102466C035003B4AA8 /* Project object */;
+}
