@@ -336,6 +336,14 @@ class ViewController: UIViewController {
 //        //if let url = URL(string: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4") {
 //            self.viewPlayer.playVideo(from: url)
 //        }
+        
+        Logger.shared.log("API call failed", data: ["code": 500], level: .error)
+        Logger.debug("API Response", data: ["status": 200, "message": "OK"])
+        Logger.info("Fetching API data")
+        Logger.debug("Simple text", data: "Hello world")
+        Logger.error("Failed decoding user", data: ["status": 401, "message": "Failed"])
+        Logger.warning("Missing field", data: ["field": "email"])
+
     }
     
     private func setupNavigationBar() {

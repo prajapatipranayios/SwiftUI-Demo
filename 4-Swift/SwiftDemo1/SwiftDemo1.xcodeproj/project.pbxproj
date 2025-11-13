@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		124998992D005DEB003A29CE /* CustomDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 124998982D005DEB003A29CE /* CustomDropdownView.swift */; };
 		1264F22F2D9289F0006A16A5 /* SidemenuComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1264F22E2D9289F0006A16A5 /* SidemenuComponent.swift */; };
+		12A593CA2EC5BF6A00D5DA0B /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12A593C92EC5BF6A00D5DA0B /* Logger.swift */; };
 		12B54DE02D3F7404008B2441 /* CurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B54DDF2D3F7404008B2441 /* CurrencyFormatter.swift */; };
 		12E3FECB2CCBC5480014B440 /* CustomDateSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12E3FECA2CCBC5480014B440 /* CustomDateSelection.swift */; };
 		12EA23692CD9F511008CAC98 /* CameraUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EA23682CD9F511008CAC98 /* CameraUtility.swift */; };
@@ -36,6 +37,7 @@
 /* Begin PBXFileReference section */
 		124998982D005DEB003A29CE /* CustomDropdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDropdownView.swift; sourceTree = "<group>"; };
 		1264F22E2D9289F0006A16A5 /* SidemenuComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidemenuComponent.swift; sourceTree = "<group>"; };
+		12A593C92EC5BF6A00D5DA0B /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		12B54DDF2D3F7404008B2441 /* CurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatter.swift; sourceTree = "<group>"; };
 		12E3FECA2CCBC5480014B440 /* CustomDateSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDateSelection.swift; sourceTree = "<group>"; };
 		12EA23682CD9F511008CAC98 /* CameraUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraUtility.swift; path = ../../../SupportFiles/Swift/CameraUtility.swift; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 				12FEFE732D916BD30056AB00 /* SecondScreenVC.swift */,
 				12FEFE752D916C080056AB00 /* ThirdScreenVC.swift */,
 				12FEFE772D916C210056AB00 /* ForthScreenVC.swift */,
+				12A593C92EC5BF6A00D5DA0B /* Logger.swift */,
 				6DD750302E6C3A7A00FF6080 /* ConversationalAIView.swift */,
 				1250C1962DB22B850052D0D6 /* ChatBubble */,
 				12F476452CCA115C00BE01E0 /* Main.storyboard */,
@@ -285,6 +288,7 @@
 				12FEFE702D912F9D0056AB00 /* MenuManager.swift in Sources */,
 				12F476442CCA115B00BE01E0 /* ViewController.swift in Sources */,
 				12F476562CCA4D1E00BE01E0 /* ToastMessage.swift in Sources */,
+				12A593CA2EC5BF6A00D5DA0B /* Logger.swift in Sources */,
 				12F4765A2CCA646700BE01E0 /* CustomPopupView.swift in Sources */,
 				12EA23692CD9F511008CAC98 /* CameraUtility.swift in Sources */,
 				6DD750312E6C3A7A00FF6080 /* ConversationalAIView.swift in Sources */,
