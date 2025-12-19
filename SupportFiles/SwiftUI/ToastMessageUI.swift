@@ -4,115 +4,135 @@
 //  Created by Pranay on 23/10/24.
 //
 
-import Foundation
 import SwiftUI
 
-
-// Enum to define toast types
+// MARK: - Toast Type
 enum ToastType {
     case success
     case warning
-    case failure
+    case error
 }
 
-// Enum to define toast position
+// MARK: - Toast Position
 enum ToastPosition {
     case top
     case center
     case bottom
 }
 
-// Struct for the ToastMessage
+// MARK: - Toast Message View
 struct ToastMessage: View {
+
     let message: String
     let type: ToastType
     let position: ToastPosition
-    var customBackgroundColor: Color?
-    var customTextColor: Color?
-    var withAnimation: Bool = false // Animation control parameter
-    
-    // State to control the visibility of the toast
-    @State private var isVisible: Bool = false
-    
-    // Default colors based on toast type
-    private var defaultBackgroundColor: Color {
-        switch type {
-        case .success:
-            return Color.green.opacity(0.8)
-        case .warning:
-            return Color.yellow.opacity(0.8)
-        case .failure:
-            return Color.red.opacity(0.8)
-        }
+
+    var duration: Double = 2
+    var withAnimation: Bool = true
+    var customBackgroundColor: Color? = nil
+    var customTextColor: Color? = nil
+
+    @State private var isVisible = false
+
+    // MARK: - Default Colors
+    private var backgroundColor: Color {
+        customBackgroundColor ?? {
+            switch type {
+            case .success:
+                return Color.green.opacity(0.85)
+            case .warning:
+                return Color.orange.opacity(0.85)
+            case .error:
+                return Color.red.opacity(0.85)
+            }
+        }()
     }
-    
-    private var defaultTextColor: Color {
-        switch type {
-        case .success, .warning:
-            return Color.black
-        case .failure:
-            return Color.white
-        }
+
+    private var textColor: Color {
+        customTextColor ?? {
+            switch type {
+            case .success, .warning:
+                return .black
+            case .error:
+                return .white
+            }
+        }()
     }
-    
+
+    // MARK: - Body
     var body: some View {
         VStack {
             if isVisible {
-                switch position {
-                case .top:
-                    Text(message)
-                        .font(.headline)
-                        .foregroundColor(customTextColor ?? defaultTextColor)
-                        .padding()
-                        .background(customBackgroundColor ?? defaultBackgroundColor)
-                        .cornerRadius(10)
-                        .shadow(radius: 10)
-                        .padding(.horizontal, 40)
-                        .transition(withAnimation ? .move(edge: .top) : .identity)
-                        .animation(withAnimation ? .easeInOut : nil, value: isVisible)
-                    Spacer()
-                    
-                case .bottom:
-                    Spacer()
-                    Text(message)
-                        .font(.headline)
-                        .foregroundColor(customTextColor ?? defaultTextColor)
-                        .padding()
-                        .background(customBackgroundColor ?? defaultBackgroundColor)
-                        .cornerRadius(10)
-                        .shadow(radius: 10)
-                        .padding(.horizontal, 40)
-                        .transition(withAnimation ? .move(edge: .bottom) : .identity)
-                        .animation(withAnimation ? .easeInOut : nil, value: isVisible)
-                    
-                case .center:
-                    Text(message)
-                        .font(.headline)
-                        .foregroundColor(customTextColor ?? defaultTextColor)
-                        .padding()
-                        .background(customBackgroundColor ?? defaultBackgroundColor)
-                        .cornerRadius(10)
-                        .shadow(radius: 10)
-                        .padding(.horizontal, 40)
-                        .transition(withAnimation ? .scale : .identity)
-                        .animation(withAnimation ? .easeInOut : nil, value: isVisible)
-                }
+                toastContent
             }
         }
         .onAppear {
-            // Show the toast with animation if specified
-            SwiftUI.withAnimation(withAnimation ? .easeInOut : nil) {
-                isVisible = true
-            }
-            // Automatically hide the toast after 2 seconds
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                SwiftUI.withAnimation(withAnimation ? .easeInOut : nil) {
-                    isVisible = false
-                }
+            showToast()
+        }
+    }
+
+    // MARK: - Toast Content
+    @ViewBuilder
+    private var toastContent: some View {
+        switch position {
+        case .top:
+            toastView
+            Spacer()
+
+        case .center:
+            Spacer()
+            toastView
+            Spacer()
+
+        case .bottom:
+            Spacer()
+            toastView
+        }
+    }
+
+    private var toastView: some View {
+        Text(message)
+            .font(.headline)
+            .foregroundColor(textColor)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(backgroundColor)
+            .cornerRadius(10)
+            .shadow(radius: 10)
+            .padding(.horizontal, 40)
+            .transition(transition)
+            .animation(withAnimation ? .easeInOut : nil, value: isVisible)
+    }
+
+    // MARK: - Animation
+    private var transition: AnyTransition {
+        guard withAnimation else { return .identity }
+
+        switch position {
+        case .top:
+            return .move(edge: .top)
+        case .bottom:
+            return .move(edge: .bottom)
+        case .center:
+            return .scale
+        }
+    }
+
+    // MARK: - Logic
+    private func showToast() {
+        withAnimation(withAnimation ? .easeInOut : nil) {
+            isVisible = true
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            withAnimation(withAnimation ? .easeInOut : nil) {
+                isVisible = false
             }
         }
     }
 }
+
+
 
 
 /*struct LoginView: View {
