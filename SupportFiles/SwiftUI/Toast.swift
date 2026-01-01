@@ -237,4 +237,3 @@ struct GlobalToastView: View {
         .animation(.easeInOut, value: manager.toast)
     }
 }
-
