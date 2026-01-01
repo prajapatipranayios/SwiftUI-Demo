@@ -12,7 +12,6 @@ import Combine
 import LiveKit
 import SVGKit
 import FirebaseFirestore
-import AVFoundation
 
 struct PopupInfo: Codable {
     var alertPopUpTitle: String
@@ -35,7 +34,6 @@ struct ConversationalAIExampleView: View {
         infoPopUpTitle: "Information",
         infoPopUpMessage: "Your call will end soon if credits run out."
     )
-    var isTextOnly: Bool = true
     
     @StateObject private var objViewModel = ConversationViewModel()
     
@@ -55,7 +53,6 @@ struct ConversationalAIExampleView: View {
     
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.colorScheme) private var colorScheme
     
     @State private var listener: ListenerRegistration? = nil
     @State private var totalCallSecond: Int = 0
@@ -65,10 +62,8 @@ struct ConversationalAIExampleView: View {
     @State private var tempApiCallRemainingSeconds: Int = 0
     @State private var callEndTask: Task<Void, Never>? = nil
     @State private var popupTitle: String = ""
-    @State private var messageText: String = ""
     
-    
-    init(agent: ObjAgent?, userId: String, baseUrl: String, callEndPopupTime: String, apiCallTime: String, authToken: String, popupInfo: PopupInfo, isTextOnly: Bool) {
+    init(agent: ObjAgent?, userId: String, baseUrl: String, callEndPopupTime: String, apiCallTime: String, authToken: String, popupInfo: PopupInfo) {
         self.agent = agent
         self.userId = userId
         self.baseUrl = baseUrl
@@ -76,19 +71,13 @@ struct ConversationalAIExampleView: View {
         self.apiCallTime = apiCallTime
         self.authToken = authToken
         self.popupInfo = popupInfo
-        self.isTextOnly = isTextOnly
     }
     
     var body: some View {
         ZStack {
-            // ✅ Conditional Background
-            if self.isTextOnly {
-                (colorScheme == .dark ? Color.black : Color.white)
-                    .ignoresSafeArea()
-            } else {
-                backgroundView
-                    .ignoresSafeArea()
-            }
+            // Background
+            backgroundView
+            .ignoresSafeArea()
             
             // Main content moved into smaller expression
             mainContent
@@ -109,7 +98,7 @@ struct ConversationalAIExampleView: View {
         .onDisappear {
             listener?.remove()
             NotificationCenter.default.removeObserver(self)
-            AppUtility.lockOrientation(.all) // restore others
+            //AppUtility.lockOrientation(.all) // restore others
         }
         .onChange(of: objViewModel.connectionStatus) { _, newValue in
             handleConnectionStatus(newValue)
@@ -131,11 +120,7 @@ struct ConversationalAIExampleView: View {
         .onChange(of: totalCallSecond) { _, newValue in
             handleCallTimer(newValue)
         }
-        .safeAreaInset(edge: .bottom) {
-            if isTextOnly {
-                chatInputBar
-            }
-        }
+        
     }
     
     func endConnection(_ isAutoDisconnect: Bool = false) async {
@@ -179,13 +164,11 @@ struct ConversationalAIExampleView: View {
     private var mainContent: some View {
         AnyView(
             VStack(spacing: 0) {
-                if !self.isTextOnly {
-                    languagePicker
-                    avatarWithRipple
-                    agentHeader
-                    agentStateIndicator
-                    controls
-                }
+                languagePicker
+                avatarWithRipple
+                agentHeader
+                agentStateIndicator
+                controls
                 communicationLog
                     .frame(maxWidth: UIScreen.main.bounds.width, maxHeight: .infinity, alignment: .top)
             }
@@ -277,13 +260,10 @@ struct ConversationalAIExampleView: View {
     }
     
     // MARK: - Back Button
-    /*private var backButton: some View {
+    private var backButton: some View {
         HStack {
             Button(action: {
                 print("Back button press...")
-                if isTextOnly {
-                    Task { await endConnection() }
-                }
                 presentationMode.wrappedValue.dismiss()
             }) {
                 RoundedRectangle(cornerRadius: 12)
@@ -294,85 +274,16 @@ struct ConversationalAIExampleView: View {
                         .scaledToFit())
                     .tint(Color.black.opacity(0.3))
             }
-            .disabled(!isTextOnly && objViewModel.isConnected)
-            .opacity((!isTextOnly && objViewModel.isConnected) ? 0.4 : 1.0)
-            .allowsHitTesting(isTextOnly || isBtnTap)
+            .disabled(objViewModel.isConnected)
+            .opacity(objViewModel.isConnected ? 0.4 : 1.0)
+            .allowsHitTesting(self.isBtnTap)
             
             Spacer()
         }
         .padding(.horizontal, 16)
-        .padding(.top, 8)
-        .background(Color.clear)
-    }   /// */
-    // MARK: - Back Button + Agent Header
-    private var backButton: some View {
-        HStack(spacing: 12) {
-            
-            // 🤖 Agent Name + Status (ONLY for Text Only)
-            if isTextOnly {
-                // ⬅️ Back Button (Asset Image)
-                Button(action: {
-                    print("Back button press...")
-                    Task { await endConnection() }
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Image(colorScheme == .dark ? "backWhite" : "back")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .padding(10)
-                }
-                
-                var status: String {
-                    if objViewModel.connectionStatus == "Connected" {
-                        if chatMessages.isEmpty {
-                            return "Connecting..."
-                        }
-                        return "Chatting..."
-                    } else {
-                        return objViewModel.connectionStatus
-                    }
-                }
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(agent?.name ?? "Agent")
-                        .font(.custom("Rubik-Bold", size: 16))
-                        //.foregroundColor(.black)
-                        .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
-
-                    Text(status)
-                        .font(.custom("Rubik-Regular", size: 12))
-                        .foregroundColor(statusColor)
-                }
-            }
-            else {
-                // ⬅️ Back Button
-                Button(action: {
-                    print("Back button press...")
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    RoundedRectangle(cornerRadius: 12)
-                        .frame(width: 40, height: 40)
-                        .shadow(radius: 5)
-                        .overlay(
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(.white)
-                                .scaledToFit()
-                        )
-                        .tint(Color.black.opacity(0.3))
-                }
-                .disabled(!isTextOnly && objViewModel.isConnected)
-                .opacity((!isTextOnly && objViewModel.isConnected) ? 0.4 : 1.0)
-                .allowsHitTesting(isTextOnly || isBtnTap)
-            }
-
-            Spacer()
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
+        .padding(.top, 8) // small offset below the status bar
         .background(Color.clear)
     }
-
     
     // MARK: - AgentHeader
     private var agentHeader: some View {
@@ -633,70 +544,39 @@ struct ConversationalAIExampleView: View {
     // MARK: - Communication Log
     private var communicationLog: some View {
         ScrollViewReader { proxy in
-            ScrollView(.vertical, showsIndicators: !isTextOnly) {
-
-                if isTextOnly {
-                    // ✅ NEW CHAT UI (Bubble style)
-                    LazyVStack(spacing: 12) {
-                        ForEach(chatMessages) { msg in
-                            if msg.role.lowercased() == "user" {
-                                userMessageRow(msg)
-                            } else {
-                                agentMessageRow(msg)
+            ScrollView(.vertical, showsIndicators: true) {
+                LazyVStack(alignment: .leading) {
+                    ForEach(chatMessages) { msg in
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(msg.role.lowercased() == "user" ? "Me :" : "\(agent?.name ?? "") :")
+                                    .font(
+                                        .custom("Rubik-Bold", size: 14)
+                                    )
+                                    .padding(.horizontal, 1)
+                                    .padding(.vertical, 1)
+                                    .foregroundColor(msg.role.lowercased() == "user" ? .red : .blue)
+                                
+                                Text(msg.text.isEmpty ? " " : msg.text)
+                                    .font(
+                                        .custom("Rubik-Italic", size: 13)
+                                    )
+                                    .foregroundColor(.white)
+                                    .padding(1)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
+                        .frame(maxWidth: UIScreen.main.bounds.width, alignment: .leading)
+                        .id(msg.id)
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-
-                } else {
-                    // ✅ OLD LOG UI (Your original design)
-                    LazyVStack(alignment: .leading) {
-                        ForEach(chatMessages) { msg in
-                            HStack(alignment: .top) {
-                                VStack(alignment: .leading, spacing: 0) {
-
-                                    Text(msg.role.lowercased() == "user"
-                                         ? "Me :"
-                                         : "\(agent?.name ?? "") :")
-                                        .font(.custom("Rubik-Bold", size: 14))
-                                        .padding(.horizontal, 1)
-                                        .padding(.vertical, 1)
-                                        .foregroundColor(
-                                            msg.role.lowercased() == "user"
-                                            ? .red
-                                            : .blue
-                                        )
-
-                                    Text(msg.text.isEmpty ? " " : msg.text)
-                                        .font(.custom("Rubik-Italic", size: 13))
-                                        .foregroundColor(.white)
-                                        .padding(1)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                        .frame(
-                                            maxWidth: .infinity,
-                                            alignment: .leading
-                                        )
-                                }
-                            }
-                            .frame(
-                                maxWidth: UIScreen.main.bounds.width,
-                                alignment: .leading
-                            )
-                            .id(msg.id)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 8)
-                    .frame(maxWidth: UIScreen.main.bounds.width)
                 }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 8)
+                .frame(maxWidth: UIScreen.main.bounds.width)
             }
-            .background(
-                isTextOnly
-                ? Color.clear
-                : (chatMessages.isEmpty ? Color.clear : Color.black.opacity(0.1))
-            )
-            .cornerRadius(isTextOnly ? 0 : 12)
+            .background(chatMessages.isEmpty ? Color.clear : Color.black.opacity(0.1))
+            .cornerRadius(12)
             .clipped()
             .onChange(of: chatMessages.count) {
                 if let lastID = chatMessages.last?.id {
@@ -707,118 +587,6 @@ struct ConversationalAIExampleView: View {
             }
         }
     }
-    // MARK: User Message Row
-    // MARK: User Message Row
-    private func userMessageRow(_ msg: ChatMessage) -> some View {
-        HStack {
-            Spacer()
-
-            Text(msg.text)
-                .font(.custom("Rubik-Regular", size: 14))
-                .foregroundColor(colorScheme == .dark ? .black : .white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
-                .background(
-                    colorScheme == .dark
-                    ? Color.white          // 🌙 Dark Mode → white bubble
-                    : Color.black          // ☀️ Light Mode → black bubble
-                )
-                .cornerRadius(16)
-                .frame(
-                    maxWidth: UIScreen.main.bounds.width * 0.65,
-                    alignment: .trailing
-                )
-        }
-        .id(msg.id)
-    }
-    // MARK: Agent Message Row
-    private func agentMessageRow(_ msg: ChatMessage) -> some View {
-        HStack(alignment: .top, spacing: 4) {
-
-            // Avatar
-            if let url = URL(string: agent?.imagePath ?? "") {
-                AsyncImage(url: url) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    } else {
-                        Image("defaultUser")
-                            .resizable()
-                            .scaledToFill()
-                    }
-                }
-                .frame(width: 36, height: 36)
-                .clipShape(Circle())
-                .padding(.leading, -4)
-            }
-
-            // Message bubble
-            Text(msg.text)
-                .font(.custom("Rubik-Regular", size: 16))
-                .foregroundColor(.black)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(Color(hex: "#F3F2F8"))
-                .cornerRadius(16)
-                .frame(maxWidth: UIScreen.main.bounds.width * 0.65, alignment: .leading)
-
-            Spacer()
-        }
-        .id(msg.id)
-    }
-    
-    
-    // MARK: - Chat InputBar
-    private var chatInputBar: some View {
-        HStack(spacing: 8) {
-            TextField("Type a message...", text: $messageText)
-                .padding(10)
-                .background(colorScheme == .dark ? Color.black : Color.white)
-                .foregroundColor(colorScheme == .dark ? .white : .black)
-                .cornerRadius(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(
-                            colorScheme == .dark
-                            ? Color.white.opacity(0.5)
-                            : Color.black.opacity(0.5),
-                            lineWidth: 1
-                        )
-                )
-
-            Button {
-                //sendMessage()
-                if objViewModel.connectionStatus == "Connected" {
-                    Task {
-                        let success = await objViewModel.sendMessage(messageText)
-                        
-                        if success {
-                            messageText = ""
-                        }
-                    }
-                }
-            } label: {
-                Image(colorScheme == .dark ? "sendWhite" : "send")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 25, height: 25)
-                    .padding(8)
-                    .background(Color.clear)
-                    .clipShape(Circle())
-            }
-            .disabled(messageText.trimmingCharacters(in: .whitespaces).isEmpty)
-            //.opacity(messageText.trimmingCharacters(in: .whitespaces).isEmpty ? 0.4 : 1.0)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(
-            //Color.black.opacity(0.3)
-            (colorScheme == .dark ? Color.black : Color.white)
-                .ignoresSafeArea(edges: .bottom)
-        )
-    }
-
     
     // MARK: - Show popup func
     private func showPopupMessage(_ title: String,_ message: String?) {
@@ -863,40 +631,16 @@ struct ConversationalAIExampleView: View {
                 }
             }
     }
-    
-    // MARK: Loader Overlay
-    private var loaderView: some View {
-        ZStack {
-            Color.black.opacity(0.4)
-                .ignoresSafeArea()
-
-            VStack(spacing: 12) {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .scaleEffect(1.4)
-
-                Text("Connecting...")
-                    .font(.custom("Rubik-Regular", size: 17))
-                    .foregroundColor(.white)
-            }
-            .padding(24)
-            .background(Color.black.opacity(0.7))
-            .cornerRadius(12)
-        }
-    }
-
 }
-
 
 // MARK: - Lifecycle & Handlers
 extension ConversationalAIExampleView {
     
     /// Setup notifications & Firebase listener
     func setupLifecycle() {
-        AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
+        //AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
         objViewModel.agent = agent
         objViewModel.userId = userId
-        objViewModel.isTextOnly = self.isTextOnly
         
         // Firebase listener
         setupFirebaseListener(userId: "\(agent?.userID ?? 0)")
@@ -921,16 +665,6 @@ extension ConversationalAIExampleView {
         ) { _ in
             isAppInBackground = false
             isBtnTap = true
-        }
-        
-        Task {
-            if self.isTextOnly {
-                ToastManager.shared.show(style: .success, message: "setPlaybackOnlySession func call.")
-                self.setPlaybackOnlySession()        // OS-level mic disable
-                await objViewModel.startConversation()
-            } else {
-                self.setVoiceSession()                   // restore mic for voice agent
-            }
         }
     }
     
@@ -1016,34 +750,6 @@ extension ConversationalAIExampleView {
             }
         }
     }
-    
-    func setPlaybackOnlySession() {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            try session.setCategory(.playback, mode: .spokenAudio, options: [])
-            try session.setActive(true)
-            print("🔊 AudioSession = playback (NO MIC)")
-            ToastManager.shared.show(style: .success, message: "🔊 AudioSession = playback (NO MIC)")
-        } catch {
-            print("❌ Failed to set playback session:", error)
-        }
-    }
-
-    func setVoiceSession() {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            try session.setCategory(
-                .playAndRecord,
-                mode: .voiceChat,
-                options: [.defaultToSpeaker, .allowBluetooth]
-            )
-            try session.setActive(true)
-            print("🎙 AudioSession = playAndRecord (MIC ON)")
-            ToastManager.shared.show(style: .success, message: "🎙 AudioSession = playAndRecord (MIC ON)")
-        } catch {
-            print("❌ Failed to set voice session:", error)
-        }
-    }
 }
 
 
@@ -1057,7 +763,6 @@ class ConversationViewModel: ObservableObject {
     @Published var selectedLang: AgentLang? = nil
     @Published var strConversationId: String? = ""
     @Published var ongoingTask: Task<Void, Never>? = nil
-    @Published var isTextOnly = false
     
     private var conversation: Conversation?
     private var cancellables = Set<AnyCancellable>()
@@ -1085,26 +790,17 @@ class ConversationViewModel: ObservableObject {
     
     func startConversationSafe() async {
         do {
-            connectionStatus = "Connecting..."
             conversation = nil       // ✅ clear old reference
             cancellables.removeAll() // ✅ clear old bindings
             
             let langCode = (selectedLang?.languageCode ?? "en").lowercased()
             let agentOverrides = AgentOverrides(language: Language(rawValue: langCode))
             
-            let conversationOverrides = ConversationOverrides(
-                textOnly: isTextOnly
-            )
-            
-            let config = ConversationConfig(agentOverrides: agentOverrides,
-                                            //conversationOverrides: conversationOverrides,
-                                            userId: userId ?? "")
-            
             conversation = try await ElevenLabs.startConversation(
                 agentId: agent?.agentID ?? "",
-                config: config
+                config: ConversationConfig(agentOverrides: agentOverrides,
+                                           userId: userId ?? "")
             )
-            
             setupObservers()
         } catch {
             print("Failed to start conversation: \(error)")
@@ -1138,32 +834,6 @@ class ConversationViewModel: ObservableObject {
         return "NoConvID"
     }
     
-    func sendMessage(_ text: String) async -> Bool {
-        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !trimmedText.isEmpty else {
-            print("⚠️ sendMessage aborted: empty text")
-            return false
-        }
-        
-        guard let conversation else {
-            print("❌ sendMessage failed: conversation is nil")
-            return false
-        }
-
-        do {
-            try await conversation.sendMessage(trimmedText)
-            print("✅ Message sent successfully: \(trimmedText)")
-            ToastManager.shared.show(style: .success, message: "✅ Message sent successfully: \(trimmedText)")
-            return true   // ✅ SUCCESS
-        } catch {
-            print("❌ Failed to send message")
-            print("➡️ Error:", error.localizedDescription)
-            ToastManager.shared.show(style: .success, message: "❌ Failed to send message")
-            return false  // ❌ FAILURE
-        }
-    }
-    
     private func setupObservers() {
         cancellables.removeAll()   // ✅ clear old subscriptions
         
@@ -1182,7 +852,6 @@ class ConversationViewModel: ObservableObject {
                     if let metadata = conversation.conversationMetadata {
                         self.strConversationId = metadata.conversationId
                     }
-                    
                     return "Connected"
                 case .ended: return "Disconnected"
                 case .error: return "Error"
@@ -1190,43 +859,6 @@ class ConversationViewModel: ObservableObject {
             }
             .receive(on: DispatchQueue.main)
             .assign(to: &$connectionStatus)
-        
-//        // State → connectionStatus + audio session
-//        conversation.$state
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] state in
-//                guard let self else { return }
-//                
-//                switch state {
-//                case .idle:
-//                    self.connectionStatus = "Disconnected"
-//                    self.isConnected = false
-//                    
-//                case .connecting:
-//                    self.connectionStatus = "Connecting..."
-//                    self.isConnected = false
-//                    
-//                case .active:
-//                    self.connectionStatus = "Connected"
-//                    self.isConnected = true
-//                    
-//                    if let metadata = self.conversation?.conversationMetadata {
-//                        self.strConversationId = metadata.conversationId
-//                    }
-//                    
-//                    // 🔑 Apply audio session AFTER LiveKit setup
-//                    self.applyAudioSessionForCurrentMode()
-//                    
-//                case .ended:
-//                    self.connectionStatus = "Disconnected"
-//                    self.isConnected = false
-//                    
-//                case .error:
-//                    self.connectionStatus = "Error"
-//                    self.isConnected = false
-//                }
-//            }
-//            .store(in: &cancellables)
         
         conversation.$state
             .map { $0.isActive }
@@ -1268,35 +900,6 @@ class ConversationViewModel: ObservableObject {
         apiCallTimer?.invalidate()
         apiCallTimer = nil
     }
-    
-    func applyAudioSessionForCurrentMode() {
-        if isTextOnly {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                let session = AVAudioSession.sharedInstance()
-                do {
-                    try session.setCategory(.playback, mode: .spokenAudio, options: [])
-                    try session.setActive(true)
-                    print("🔊 AudioSession FORCED to playback (NO MIC)")
-                } catch {
-                    print("❌ AudioSession error:", error)
-                }
-            }
-        } else {
-            let session = AVAudioSession.sharedInstance()
-            do {
-                try session.setCategory(
-                    .playAndRecord,
-                    mode: .voiceChat,
-                    options: [.defaultToSpeaker, .allowBluetooth]
-                )
-                try session.setActive(true)
-                print("🎙 AudioSession restored to playAndRecord")
-            } catch {
-                print("❌ Voice AudioSession error:", error)
-            }
-        }
-    }
-
 }
 
 
@@ -1748,19 +1351,19 @@ struct APIService {
     }
 }
 
-class AppUtility {
-
-    static func lockOrientation(_ orientation: UIInterfaceOrientationMask,
-                                andRotateTo rotateOrientation:UIInterfaceOrientation? = nil) {
-
-        if let delegate = UIApplication.shared.delegate as? AppDelegate {
-            delegate.orientationLock = orientation
-        }
-
-        if let rotateOrientation = rotateOrientation {
-            UIDevice.current.setValue(rotateOrientation.rawValue, forKey: "orientation")
-            UINavigationController.attemptRotationToDeviceOrientation()
-        }
-    }
-}
+//class AppUtility {
+//
+//    static func lockOrientation(_ orientation: UIInterfaceOrientationMask,
+//                                andRotateTo rotateOrientation:UIInterfaceOrientation? = nil) {
+//
+//        if let delegate = UIApplication.shared.delegate as? AppDelegate {
+//            delegate.orientationLock = orientation
+//        }
+//
+//        if let rotateOrientation = rotateOrientation {
+//            UIDevice.current.setValue(rotateOrientation.rawValue, forKey: "orientation")
+//            UINavigationController.attemptRotationToDeviceOrientation()
+//        }
+//    }
+//}
 
